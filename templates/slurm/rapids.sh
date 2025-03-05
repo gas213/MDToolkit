@@ -4,8 +4,8 @@
 # Max run time on rapids is 3 days
 
 #SBATCH --partition=rapids
-#SBATCH --time=3-00:00:00
-#SBATCH --nodes=2
+#SBATCH --time={{d-hh:mm:ss}}
+#SBATCH --nodes={{num_nodes}}
 #SBATCH --ntasks-per-node=64
 #SBATCH --job-name {{job_name}}
 #SBATCH --output="job.%j.%N.out"
