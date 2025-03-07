@@ -25,7 +25,10 @@ improper_style  none
 ## Variables requiring specification
 # FILL IN {{FIELDS}}
 
-# Thermostat temperature in degrees Celsius (25, 40, 60, 80)
+# Does droplet include salt ions? (true for saline, false for pure water)
+variable    IS_SALTED equal {{true/false}}
+
+# Thermostat temperature in degrees Celsius (25.0, 40.0, 60.0, 80.0)
 variable	TEMP_C equal {{T}}
 
 # Number of time steps to run; try 200000 (0.4 ns if time step size is 4 fs)
@@ -70,10 +73,15 @@ region		VAPOR_REGION sphere $(v_DROP_X) $(v_DROP_Y) $(v_DROP_Z) $(v_DROP_R) side
 
 ## Define atom/molecule groups
 
-group		H2O type 6 7
-group		CHLORINE type 4
-group		SODIUM type 5
-group		OXYGEN type 6
+# The pure water droplet data and the saline droplet data do not have the same atom type IDs
+if "${IS_SALTED}" then &
+    "group      CHLORINE type 4" &
+    "group      SODIUM type 5" &
+    "group      OXYGEN type 6" &
+    "group      H2O type 6 7" &
+else &
+    "group      OXYGEN type 4" &
+    "group      H2O type 4 5"
 
 ## Define dynamic groups for vapor sampling
 
@@ -113,11 +121,13 @@ fix 		SHAKE all shake 1e-5 1000 0 m 1.0
 ## Thermostatting
 
 fix         NVT_H2O H2O nvt temp $(v_TEMP_K) $(v_TEMP_K) 100.0
-fix         NVT_Cl CHLORINE nvt temp $(v_TEMP_K) $(v_TEMP_K) 100.0
-fix         NVT_Na SODIUM nvt temp $(v_TEMP_K) $(v_TEMP_K) 100.0
-velocity    CHLORINE create $(v_TEMP_K) 2248358 dist gaussian
-velocity    SODIUM create $(v_TEMP_K) 2218358 dist gaussian
 velocity    H2O create $(v_TEMP_K) 2628358 dist gaussian
+
+if "${IS_SALTED}" then &
+    "fix        NVT_Cl CHLORINE nvt temp $(v_TEMP_K) $(v_TEMP_K) 100.0" &
+    "fix        NVT_Na SODIUM nvt temp $(v_TEMP_K) $(v_TEMP_K) 100.0" &
+    "velocity   CHLORINE create $(v_TEMP_K) 2248358 dist gaussian" &
+    "velocity   SODIUM create $(v_TEMP_K) 2218358 dist gaussian"
 
 ## Thermodynamic output settings
 
