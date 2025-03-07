@@ -13,10 +13,10 @@ variable    START_DATA string {{file}}
 # Does droplet include salt ions? (true for saline, false for pure water)
 variable    IS_SALTED equal {{true/false}}
 
-# Thermostat temperature in degrees Celsius (25.0, 40.0, 60.0, 80.0)
+# Thermostat temperature in degrees Celsius (25.0, 50.0, 80.0)
 variable	TEMP_C equal {{T}}
 
-# Number of time steps to run; try 200000 (0.4 ns if time step size is 4 fs)
+# Number of time steps to run; try 200000 (200k steps == 0.4 ns if time step size is 2 fs)
 variable	STEPS equal {{N}}
 # Frequency of counting vapor particles (every N steps); try 100
 variable	VAPOR_COUNT_FREQ equal {{N}}
