@@ -1,29 +1,14 @@
 ### LAMMPS Input File - Equilibration of cube droplet
 
-## Initialization
-
-units           real
-atom_style      full
-boundary        p p p
-pair_style      lj/cut/coul/long 10 10
-pair_modify     mix arithmetic
-pair_modify     tail no
-special_bonds   amber
-bond_style      harmonic
-angle_style     harmonic
-dihedral_style  opls
-improper_style  none
-
-## Read an initial data file or a restart file
-# UNCOMMENT ONE OF THE TWO COMMANDS BELOW AND FILL IN {{FIELD}} IF NEEDED
-# IF YOU ARE RESTARTING A RUN WITHIN THE SAME DIRECTORY, RENAME YOUR LOG FILES SO THEY DON'T GET OVERWRITTEN
-# Using the * wildcard will find the largest-numbered restart file in the directory
-
-#read_data      {{data_file}}
-#read_restart	restart_*.rst
-
-## Variables requiring specification
+## Configuration Variables
 # FILL IN {{FIELDS}}
+# IF YOU ARE RESTARTING A RUN WITHIN THE SAME DIRECTORY, RENAME YOUR LOG FILES SO THEY DON'T GET OVERWRITTEN
+
+# Is this a restart? (true if starting from a binary restart file, false if starting from a data text file)
+variable    IS_RESTART equal {{true/false}}
+# File name of the binary restart file or initial data text file
+# For restart files, using the * wildcard will find the largest-numbered restart file in the directory (ex: restart_*.rs)
+variable    START_DATA string {{file}}
 
 # Does droplet include salt ions? (true for saline, false for pure water)
 variable    IS_SALTED equal {{true/false}}
@@ -50,6 +35,27 @@ variable    DROP_X equal 231.0
 variable    DROP_Y equal 223.0
 variable    DROP_Z equal 304.0
 variable    DROP_R equal 165.0
+
+## Initialization
+
+units           real
+atom_style      full
+boundary        p p p
+pair_style      lj/cut/coul/long 10 10
+pair_modify     mix arithmetic
+pair_modify     tail no
+special_bonds   amber
+bond_style      harmonic
+angle_style     harmonic
+dihedral_style  opls
+improper_style  none
+
+## Read an initial data file or a restart file
+
+if "${IS_RESTART}" then &
+    "read_restart   ${START_DATA}" &
+else &
+    "read_data      ${START_DATA}"
 
 ## Variables with auto-calculated values
 
@@ -112,7 +118,7 @@ dump_modify     DUMP_NETCDF sort id
 
 ## Restart settings
 
-restart		$(v_RESTART_FREQ) restart_*.rst
+restart		$(v_RESTART_FREQ) restart_*.rs
 
 ## Constraint for bond lengths
 
