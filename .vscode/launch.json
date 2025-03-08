@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "src/main.py",
             "console": "integratedTerminal",
-            "args": ["/home/greg/Downloads/temp/eq_cube_021425/dump_200000.nc"]
+            "args": ["~/Downloads/temp/dump_160000.dump"]
         }
     ]
 }
