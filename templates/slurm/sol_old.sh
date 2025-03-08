@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # REPLACE THE {{FIELDS}}
-# Max run time on eng is 3 days
+# Maximum run time on eng is 3 days
 
 #SBATCH --partition=eng
-#SBATCH --time=3-00:00:00
+#SBATCH --time={{d-hh:mm:ss}}
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=22
 #SBATCH --job-name {{job_name}}
