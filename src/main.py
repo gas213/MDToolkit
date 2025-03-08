@@ -1,7 +1,7 @@
 import sys
 
 from argvReader import read_data_path
-from constants import box_vapor
+from constants import sphere_vapor
 from dumpFileReader import read_header, read_atoms
 import sanityChecks
 import writer
@@ -12,7 +12,7 @@ config = {
 
 config.update(read_header(config["data path"]))
 
-atom_results = read_atoms(config["data path"], config["box"], box_vapor)
+atom_results = read_atoms(config["data path"], config["box"], sphere_vapor)
 
 sanity_checks = {}
 sanity_checks = sanityChecks.atoms_within_box(sanity_checks, config, atom_results["atom extremes"])

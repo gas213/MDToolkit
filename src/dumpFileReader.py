@@ -1,3 +1,4 @@
+import math
 import os.path
 import re
 
@@ -58,7 +59,7 @@ def read_header(path):
                     raise Exception(message)
                 else: return results
 
-def read_atoms(path, box_sim, box_vapor):
+def read_atoms(path, box_sim, sphere_vapor):
     smoke_test(path)
 
     results = {
@@ -107,12 +108,12 @@ def read_atoms(path, box_sim, box_vapor):
 
                     index += 1
 
-                atom_type = int(row[1])
-                if (atom_type == 6 and
-                    coords["x"] >= box_vapor["xlo"] and coords["x"] < box_vapor["xhi"] and
-                    coords["y"] >= box_vapor["ylo"] and coords["y"] < box_vapor["yhi"] and
-                    coords["z"] >= box_vapor["zlo"] and coords["z"] < box_vapor["zhi"]):
-                        results["vapor counter"] += 1
+                if (int(row[1]) == 6): # Atom type == oxygen (saline data)
+                    distance_r = 0.0
+                    for axis in ["x", "y", "z"]:
+                        distance_r += (coords[axis] - sphere_vapor[axis])**2
+                    distance_r = math.sqrt(distance_r)
+                    if (distance_r > sphere_vapor["r"]): results["vapor counter"] += 1
 
     return results
 
