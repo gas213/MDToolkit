@@ -7,11 +7,14 @@ class Atom(NamedTuple):
     y: float
     z: float
 
-class Header(NamedTuple):
-    atom_count: int
+class Box(NamedTuple):
     xlo: float
     xhi: float
     ylo: float
     yhi: float
     zlo: float
     zhi: float
+
+class Header(NamedTuple):
+    atom_count: int
+    box: Box

@@ -20,8 +20,7 @@ results += "Performed: " + str(datetime.datetime.now()) + "\n"
 results += "\nHeader data:\n\n"
 for name, val in header._asdict().items(): results += name + ": " + str(val) + "\n"
 
-with open(data_path + analysis_filetype, "w") as analysis:
-    analysis.write(results)
+with open(data_path + analysis_filetype, "w") as analysis: analysis.write(results)
 
 # config = {
 #     "data path": read_data_path(sys.argv)
