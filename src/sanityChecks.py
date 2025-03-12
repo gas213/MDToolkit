@@ -1,30 +1,34 @@
-def atoms_within_box(sanity_checks, config, atom_extremes):
-    name = "All atoms positioned within box"
+from named_tuples import Box
 
-    if (atom_extremes["x"][0] > config["box"]["xlo"] and
-        atom_extremes["x"][1] < config["box"]["xhi"] and
-        atom_extremes["y"][0] > config["box"]["ylo"] and
-        atom_extremes["y"][1] < config["box"]["yhi"] and
-        atom_extremes["z"][0] > config["box"]["zlo"] and
-        atom_extremes["z"][1] < config["box"]["zhi"]):
-        sanity_checks[name] = True
-    else:
-        sanity_checks[name] = False
+def find_atom_extremes(atoms):
+    xlo = atoms[0].x
+    xhi = atoms[0].x
+    ylo = atoms[0].y
+    yhi = atoms[0].y
+    zlo = atoms[0].z
+    zhi = atoms[0].z
+    for atom in atoms:
+        if atom.x < xlo: xlo = atom.x
+        if atom.x > xhi: xhi = atom.x
+        if atom.y < ylo: ylo = atom.y
+        if atom.y > yhi: yhi = atom.y
+        if atom.z < zlo: zlo = atom.z
+        if atom.z > zhi: zhi = atom.z
 
-    return sanity_checks
+    return Box(xlo, xhi, ylo, yhi, zlo, zhi)
 
-def total_atom_count(sanity_checks, config, atom_counter):
-    name = "Count of atom rows matches total atom count"
+def atoms_within_box(box, atom_extremes):
+    result = (box.xlo <= atom_extremes.xlo and box.xhi >= atom_extremes.xhi and
+              box.ylo <= atom_extremes.ylo and box.yhi >= atom_extremes.yhi and
+              box.zlo <= atom_extremes.zlo and box.zhi >= atom_extremes.zhi)
+    return "All atoms positioned with box: " + str(result)
 
-    if atom_counter == config["total atoms"]: sanity_checks[name] = True
-    else: sanity_checks[name] = False
+def total_atom_count(header, len_atoms):
+    result = (header.atom_count == len_atoms)
+    return "Atom count in header matches number of atom records: " + str(result)
 
-    return sanity_checks
-
-def density_profile_atom_count(sanity_checks, config, density_profiles):
-    for axis in ["x", "y", "z"]:
-        name = axis.upper() + " density profile accounts for all atoms"
-        if sum(density_profiles[axis].values()) == config["total atoms"]: sanity_checks[name] = True
-        else: sanity_checks[name] = False
-
-    return sanity_checks
+def density_profile_atom_count(header, density_profiles):
+    result = (header.atom_count == sum(density_profiles.x.values()) and
+              header.atom_count == sum(density_profiles.y.values()) and
+              header.atom_count == sum(density_profiles.z.values()))
+    return "Density profiles each include every atom: " + str(result)
