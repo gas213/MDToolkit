@@ -10,4 +10,15 @@ approximation_sphere = {
     "r": 165.0,
 }
 
+# Atomic masses lookup table, as given in the atom data file
+masses = {
+    1: 12.011,    # C
+    2: 12.011,    # C
+    3: 18.9984,   # F
+    4: 35.453,    # Cl
+    5: 22.98977,  # Na
+    6: 15.9994,   # O
+    7: 1.008      # H
+}
+
 oxygen_type = 6

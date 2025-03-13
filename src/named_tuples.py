@@ -23,3 +23,8 @@ class DensityProfileGroup(NamedTuple):
 class Header(NamedTuple):
     atom_count: int
     box: Box
+
+class Vector3D(NamedTuple):
+    x: float
+    y: float
+    z: float

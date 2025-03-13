@@ -1,6 +1,7 @@
 import datetime
 import sys
 
+from analyses.center_of_mass import calc_droplet_center
 from analyses.density_profiles import build_density_profiles
 from analyses.vapor_count import count_vapor_particles
 from readers.argv_reader import read_data_path
@@ -19,6 +20,7 @@ header = header_from_dump_txt(data_path)
 atoms = atoms_from_dump_txt(data_path)
 atom_extremes = find_atom_extremes(atoms)
 vapor_count = count_vapor_particles(atoms)
+droplet_center = calc_droplet_center(atoms)
 density_profiles = build_density_profiles(header, atoms)
 
 results = "ANALYSIS OF DATA FILE LOCATED AT: " + data_path
@@ -31,7 +33,10 @@ results += "\n" + total_atom_count(header, len(atoms))
 results += "\n" + density_profile_atom_count(header, density_profiles)
 results += "\n\nMost extreme atom coordinates:"
 results += "\n" + str(atom_extremes)
-results += "\n\nVapor count: " + str(vapor_count)
+results += "\n\nVapor count: "
+results += "\n" + str(vapor_count)
+results += "\n\nDroplet center of mass: "
+results += "\n" + str(droplet_center)
 results += "\n\nProfile of atom density (count) by truncated x coordinate:"
 for key, val in density_profiles.x.items(): results += "\n" + str(key) + ": " + str(val)
 results += "\n\nProfile of atom density (count) by truncated y coordinate:"
