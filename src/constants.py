@@ -22,3 +22,6 @@ masses = {
 }
 
 oxygen_type = 6
+
+# Starting radius to use when building radial density profiles as a series of concentric spherical shells
+min_radius_for_density_profiles = 10

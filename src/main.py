@@ -21,7 +21,7 @@ atoms = atoms_from_dump_txt(data_path)
 atom_extremes = find_atom_extremes(atoms)
 vapor_count = count_vapor_particles(atoms)
 droplet_center = calc_droplet_center(atoms)
-density_profiles = build_density_profiles(header, atoms)
+density_profiles = build_density_profiles(header, atoms, droplet_center)
 
 results = "ANALYSIS OF DATA FILE LOCATED AT: " + data_path
 results += "\nPerformed: " + str(datetime.datetime.now())
@@ -37,11 +37,13 @@ results += "\n\nVapor count: "
 results += "\n" + str(vapor_count)
 results += "\n\nDroplet center of mass: "
 results += "\n" + str(droplet_center)
-results += "\n\nProfile of atom density (count) by truncated x coordinate:"
+results += "\n\nProfile of atom density (raw count) by truncated radius, based on center of mass:"
+for key, val in density_profiles.r.items(): results += "\n" + str(key) + ": " + str(val)
+results += "\n\nProfile of atom density (raw count) by truncated x coordinate:"
 for key, val in density_profiles.x.items(): results += "\n" + str(key) + ": " + str(val)
-results += "\n\nProfile of atom density (count) by truncated y coordinate:"
+results += "\n\nProfile of atom density (raw count) by truncated y coordinate:"
 for key, val in density_profiles.y.items(): results += "\n" + str(key) + ": " + str(val)
-results += "\n\nProfile of atom density (count) by truncated z coordinate:"
+results += "\n\nProfile of atom density (raw count) by truncated z coordinate:"
 for key, val in density_profiles.z.items(): results += "\n" + str(key) + ": " + str(val)
 
 with open(data_path + analysis_filetype, "w") as analysis: analysis.write(results)

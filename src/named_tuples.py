@@ -19,6 +19,7 @@ class DensityProfileGroup(NamedTuple):
     x: dict[int, int]
     y: dict[int, int]
     z: dict[int, int]
+    r: dict[int, int]
 
 class Header(NamedTuple):
     atom_count: int
