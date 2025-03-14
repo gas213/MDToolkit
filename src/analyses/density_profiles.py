@@ -10,11 +10,13 @@ def build_density_profiles(header, atoms, droplet_center, atom_type = 0):
     x = dict()
     y = dict()
     z = dict()
-    r = dict()
+    r_count = dict()
+    r_density = dict()
     for val in range(int(header.box.xlo), int(header.box.xhi) + 1): x[val] = 0
     for val in range(int(header.box.ylo), int(header.box.yhi) + 1): y[val] = 0
     for val in range(int(header.box.zlo), int(header.box.zhi) + 1): z[val] = 0
-    for val in range(min_radius_for_radial_profiles, int(approximation_sphere["r"])): r[val] = 0
+    for val in range(min_radius_for_radial_profiles, int(approximation_sphere["r"])): r_count[val] = 0
+    for val in range(min_radius_for_radial_profiles, int(approximation_sphere["r"])): r_density[val] = 0
     
     for atom in atoms:
         if (atom_type == 0 or atom.type == atom_type):
@@ -23,6 +25,12 @@ def build_density_profiles(header, atoms, droplet_center, atom_type = 0):
             z[int(atom.z)] += 1
 
             r_atom = math.sqrt((atom.x - x_c)**2 + (atom.y - y_c)**2 + (atom.z - z_c)**2)
-            if int(r_atom) in r: r[int(r_atom)] += 1
+            if int(r_atom) in r_count: r_count[int(r_atom)] += 1
 
-    return DensityProfileGroup(x, y, z, r)
+    v_inner = four_thirds_pi * float(min_radius_for_radial_profiles)**3
+    for r_inner in range(min_radius_for_radial_profiles, int(approximation_sphere["r"])):
+        v_outer = four_thirds_pi * float(r_inner + 1)**3
+        r_density[r_inner] = float(r_count[r_inner]) / (v_outer - v_inner)
+        v_inner = v_outer
+
+    return DensityProfileGroup(x, y, z, r_count, r_density)

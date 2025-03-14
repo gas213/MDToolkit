@@ -35,12 +35,14 @@ def print_droplet_center(droplet_center):
     return text
 
 def print_density_profiles(atom_count_profiles, name):
-    text = "\n\nProfile of " + name + " count by truncated radius, based on droplet center of mass:"
-    for key, val in atom_count_profiles.r.items(): text += "\n" + str(key) + ": " + str(val)
+    text = "\n\nProfile of " + name + " density by truncated radius, based on droplet center of mass:"
+    for key, val in atom_count_profiles.r_density.items(): text += "\n" + str(key) + " " + str(val)
+    text += "\n\nProfile of " + name + " count by truncated radius, based on droplet center of mass:"
+    for key, val in atom_count_profiles.r_count.items(): text += "\n" + str(key) + " " + str(val)
     text += "\n\nProfile of " + name + " count by truncated x coordinate:"
-    for key, val in atom_count_profiles.x.items(): text += "\n" + str(key) + ": " + str(val)
+    for key, val in atom_count_profiles.x.items(): text += "\n" + str(key) + " " + str(val)
     text += "\n\nProfile of " + name + " count by truncated y coordinate:"
-    for key, val in atom_count_profiles.y.items(): text += "\n" + str(key) + ": " + str(val)
+    for key, val in atom_count_profiles.y.items(): text += "\n" + str(key) + " " + str(val)
     text += "\n\nProfile of " + name + " count by truncated z coordinate:"
-    for key, val in atom_count_profiles.z.items(): text += "\n" + str(key) + ": " + str(val)
+    for key, val in atom_count_profiles.z.items(): text += "\n" + str(key) + " " + str(val)
     return text
