@@ -15,7 +15,7 @@ class Box(NamedTuple):
     zlo: float
     zhi: float
 
-class DensityProfileGroup(NamedTuple):
+class ProfileGroup(NamedTuple):
     x: dict[int, int]
     y: dict[int, int]
     z: dict[int, int]
