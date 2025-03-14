@@ -24,6 +24,9 @@ def print_sanity_checks(header, atom_extremes, atoms, atom_count_profiles):
     text += "\n" + density_profile_atom_count(header, atom_count_profiles)
     return text
 
+def print_salt_concentration(salt_concentration):
+    return f"\n\nSalt concentration: {salt_concentration * 100 : 0.3f}%"
+
 def print_vapor_count(vapor_count):
     text = "\n\nVapor count: "
     text += "\n" + str(vapor_count)

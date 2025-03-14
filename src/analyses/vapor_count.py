@@ -1,4 +1,4 @@
-from constants import approximation_sphere, oxygen_type
+from constants import approximation_sphere, atom_type_groups
 
 def count_vapor_particles(atoms):
     x0 = approximation_sphere["x"]
@@ -7,7 +7,7 @@ def count_vapor_particles(atoms):
     r2 = approximation_sphere["r"]**2
     result = 0
     for atom in atoms:
-        if (atom.type == oxygen_type and ((atom.x - x0)**2 + (atom.y - y0)**2 + (atom.z - z0)**2) > r2):
+        if (atom.type in atom_type_groups["oxygen"] and ((atom.x - x0)**2 + (atom.y - y0)**2 + (atom.z - z0)**2) > r2):
             result += 1
 
     return result

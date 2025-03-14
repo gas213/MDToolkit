@@ -3,6 +3,7 @@ import sys
 from analyses.atom_extremes import find_atom_extremes
 from analyses.center_of_mass import calc_droplet_center
 from analyses.density_profiles import build_density_profiles
+from analyses.salt_concentration import calc_salt_concentration
 from analyses.vapor_count import count_vapor_particles
 from readers.argv_reader import read_data_path
 from readers.atoms_reader import atoms_from_dump_txt
@@ -14,6 +15,7 @@ data_path = read_data_path(sys.argv)
 header = header_from_dump_txt(data_path)
 atoms = atoms_from_dump_txt(data_path)
 atom_extremes = find_atom_extremes(atoms)
+salt_concentration = calc_salt_concentration(atoms)
 vapor_count = count_vapor_particles(atoms)
 droplet_center = calc_droplet_center(atoms)
 atom_count_profiles = build_density_profiles(header, atoms, droplet_center)
@@ -27,6 +29,7 @@ results += printer.print_title(data_path)
 results += printer.print_header(header)
 results += printer.print_atom_extremes(atom_extremes)
 results += printer.print_sanity_checks(header, atom_extremes, atoms, atom_count_profiles)
+results += printer.print_salt_concentration(salt_concentration)
 results += printer.print_vapor_count(vapor_count)
 results += printer.print_droplet_center(droplet_center)
 results += printer.print_density_profiles(atom_count_profiles, "all-atom")

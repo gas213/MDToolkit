@@ -23,7 +23,11 @@ masses = {
     7: 1.008      # H
 }
 
-oxygen_type = 6
+atom_type_groups = {
+    "oxygen": [6],
+    "salt": [4, 5],
+    "saltwater": [4, 5, 6, 7]
+}
 
 # Starting radius to use when building radial count/density profiles as a series of concentric spherical shells
 min_radius_for_radial_profiles = 10
