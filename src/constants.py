@@ -1,3 +1,5 @@
+import math
+
 analysis_filetype = ".analysis"
 
 # Sphere that closely but safely envelops the equilibrated droplet
@@ -25,3 +27,6 @@ oxygen_type = 6
 
 # Starting radius to use when building radial count/density profiles as a series of concentric spherical shells
 min_radius_for_radial_profiles = 10
+
+# For sphere volume calculation
+four_thirds_pi = 4.0 * math.pi / 3.0

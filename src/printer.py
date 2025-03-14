@@ -1,6 +1,6 @@
 import datetime
 
-from sanity_checks import atoms_within_box, total_atom_count, profile_atom_count
+from sanity_checks import atoms_within_box, total_atom_count, density_profile_atom_count
 
 def print_title(data_path):
     text = "ANALYSIS OF DATA FILE LOCATED AT: " + data_path
@@ -21,7 +21,7 @@ def print_sanity_checks(header, atom_extremes, atoms, atom_count_profiles):
     text = "\n\nSanity checks:"
     text += "\n" + atoms_within_box(header.box, atom_extremes)
     text += "\n" + total_atom_count(header, len(atoms))
-    text += "\n" + profile_atom_count(header, atom_count_profiles)
+    text += "\n" + density_profile_atom_count(header, atom_count_profiles)
     return text
 
 def print_vapor_count(vapor_count):
@@ -34,13 +34,13 @@ def print_droplet_center(droplet_center):
     text += "\n" + str(droplet_center)
     return text
 
-def print_atom_count_profiles(atom_count_profiles):
-    text = "\n\nProfile of atom count by truncated radius, based on droplet center of mass:"
+def print_density_profiles(atom_count_profiles, name):
+    text = "\n\nProfile of " + name + " count by truncated radius, based on droplet center of mass:"
     for key, val in atom_count_profiles.r.items(): text += "\n" + str(key) + ": " + str(val)
-    text += "\n\nProfile of atom count by truncated x coordinate:"
+    text += "\n\nProfile of " + name + " count by truncated x coordinate:"
     for key, val in atom_count_profiles.x.items(): text += "\n" + str(key) + ": " + str(val)
-    text += "\n\nProfile of atom count by truncated y coordinate:"
+    text += "\n\nProfile of " + name + " count by truncated y coordinate:"
     for key, val in atom_count_profiles.y.items(): text += "\n" + str(key) + ": " + str(val)
-    text += "\n\nProfile of atom count by truncated z coordinate:"
+    text += "\n\nProfile of " + name + " count by truncated z coordinate:"
     for key, val in atom_count_profiles.z.items(): text += "\n" + str(key) + ": " + str(val)
     return text

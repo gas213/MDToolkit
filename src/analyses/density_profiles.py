@@ -1,9 +1,9 @@
 import math
 
-from constants import approximation_sphere, min_radius_for_radial_profiles
-from named_tuples import ProfileGroup
+from constants import approximation_sphere, min_radius_for_radial_profiles, four_thirds_pi
+from named_tuples import DensityProfileGroup
 
-def build_atom_count_profiles(header, atoms, droplet_center, atom_type = 0):
+def build_density_profiles(header, atoms, droplet_center, atom_type = 0):
     x_c = droplet_center.x
     y_c = droplet_center.y
     z_c = droplet_center.z
@@ -25,4 +25,4 @@ def build_atom_count_profiles(header, atoms, droplet_center, atom_type = 0):
             r_atom = math.sqrt((atom.x - x_c)**2 + (atom.y - y_c)**2 + (atom.z - z_c)**2)
             if int(r_atom) in r: r[int(r_atom)] += 1
 
-    return ProfileGroup(x, y, z, r)
+    return DensityProfileGroup(x, y, z, r)
