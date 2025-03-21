@@ -1,6 +1,6 @@
 import re
 
-from readers.check_path import check_path
+from md_readers.check_path import check_path
 from named_tuples import Box, Header
 
 def header_from_dump_txt(path):

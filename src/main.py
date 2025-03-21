@@ -1,13 +1,13 @@
 import sys
 
-from analyses.atom_extremes import find_atom_extremes
-from analyses.center_of_mass import calc_droplet_center
-from analyses.density_profiles import build_density_profiles
-from analyses.salt_concentration import calc_salt_concentration
-from analyses.vapor_count import count_vapor_particles
-from readers.argv_reader import read_data_path
-from readers.atoms_reader import atoms_from_dump_txt
-from readers.header_reader import header_from_dump_txt
+from md_analyses.atom_extremes import find_atom_extremes
+from md_analyses.center_of_mass import calc_droplet_center
+from md_analyses.density_profiles import build_density_profiles
+from md_analyses.salt_concentration import calc_salt_concentration
+from md_analyses.vapor_count import count_vapor_particles
+from md_readers.argv_reader import read_data_path
+from md_readers.atoms_reader import atoms_from_dump_txt
+from md_readers.header_reader import header_from_dump_txt
 from constants import analysis_filetype
 import printer
 
