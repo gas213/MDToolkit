@@ -1,6 +1,6 @@
 import datetime
 
-from sanity_checks import atoms_within_box, total_atom_count, density_profile_atom_count
+from analyses.sanity_checks import atoms_within_box, total_atom_count, density_profile_atom_count
 
 def print_title(data_path):
     return f"ANALYSIS OF DATA FILE LOCATED AT: {data_path}\nPerformed: {datetime.datetime.now()}"
