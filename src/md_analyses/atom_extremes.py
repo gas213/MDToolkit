@@ -1,18 +1,19 @@
-from named_tuples import Box
+from md_dataclasses.box import Box
+from md_dataclasses.vector3d import Vector3D
 
 def find_atom_extremes(atoms):
-    xlo = atoms[0].x
-    xhi = atoms[0].x
-    ylo = atoms[0].y
-    yhi = atoms[0].y
-    zlo = atoms[0].z
-    zhi = atoms[0].z
+    xlo = atoms[0].pos.x
+    xhi = atoms[0].pos.x
+    ylo = atoms[0].pos.y
+    yhi = atoms[0].pos.y
+    zlo = atoms[0].pos.z
+    zhi = atoms[0].pos.z
     for atom in atoms:
-        if atom.x < xlo: xlo = atom.x
-        if atom.x > xhi: xhi = atom.x
-        if atom.y < ylo: ylo = atom.y
-        if atom.y > yhi: yhi = atom.y
-        if atom.z < zlo: zlo = atom.z
-        if atom.z > zhi: zhi = atom.z
+        if atom.pos.x < xlo: xlo = atom.pos.x
+        if atom.pos.x > xhi: xhi = atom.pos.x
+        if atom.pos.y < ylo: ylo = atom.pos.y
+        if atom.pos.y > yhi: yhi = atom.pos.y
+        if atom.pos.z < zlo: zlo = atom.pos.z
+        if atom.pos.z > zhi: zhi = atom.pos.z
 
-    return Box(xlo, xhi, ylo, yhi, zlo, zhi)
+    return Box(Vector3D(xlo, ylo, zlo), Vector3D(xhi, yhi, zhi))

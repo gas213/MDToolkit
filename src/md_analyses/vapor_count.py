@@ -7,7 +7,7 @@ def count_vapor_particles(atoms):
     r2 = approximation_sphere["r"]**2
     result = 0
     for atom in atoms:
-        if (atom.type in atom_type_groups["oxygen"] and ((atom.x - x0)**2 + (atom.y - y0)**2 + (atom.z - z0)**2) > r2):
+        if (atom.type in atom_type_groups["oxygen"] and ((atom.pos.x - x0)**2 + (atom.pos.y - y0)**2 + (atom.pos.z - z0)**2) > r2):
             result += 1
 
     return result

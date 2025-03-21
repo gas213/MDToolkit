@@ -6,9 +6,7 @@ def print_title(data_path):
     return f"ANALYSIS OF DATA FILE LOCATED AT: {data_path}\nPerformed: {datetime.datetime.now()}"
 
 def print_header(header):
-    text = f"\n\nHeader data:"
-    for name, val in header._asdict().items(): text += f"\n{name}: {val}"
-    return text
+    return f"\n\nHeader data:\n{str(header)}"
 
 def print_atom_extremes(atom_extremes):
     return f"\n\nMost extreme atom coordinates:\n{atom_extremes}"

@@ -1,7 +1,7 @@
 import math
 
 from constants import approximation_sphere, min_radius_for_radial_profiles, four_thirds_pi
-from named_tuples import DensityProfileGroup
+from md_dataclasses.density_profile import DensityProfileGroup
 
 def build_density_profiles(header, atoms, droplet_center, atom_type = 0):
     x_c = droplet_center.x
@@ -13,20 +13,20 @@ def build_density_profiles(header, atoms, droplet_center, atom_type = 0):
     r_count = dict()
     r_density = dict()
     r_density_norm = dict()
-    for val in range(int(header.box.xlo), int(header.box.xhi) + 1): x[val] = 0
-    for val in range(int(header.box.ylo), int(header.box.yhi) + 1): y[val] = 0
-    for val in range(int(header.box.zlo), int(header.box.zhi) + 1): z[val] = 0
+    for val in range(int(header.box.lo.x), int(header.box.hi.x) + 1): x[val] = 0
+    for val in range(int(header.box.lo.y), int(header.box.hi.y) + 1): y[val] = 0
+    for val in range(int(header.box.lo.z), int(header.box.hi.z) + 1): z[val] = 0
     for val in range(min_radius_for_radial_profiles, int(approximation_sphere["r"])): r_count[val] = 0
     for val in range(min_radius_for_radial_profiles, int(approximation_sphere["r"])): r_density[val] = 0
     for val in range(min_radius_for_radial_profiles, int(approximation_sphere["r"])): r_density_norm[val] = 0
     
     for atom in atoms:
         if (atom_type == 0 or atom.type == atom_type):
-            x[int(atom.x)] += 1
-            y[int(atom.y)] += 1
-            z[int(atom.z)] += 1
+            x[int(atom.pos.x)] += 1
+            y[int(atom.pos.y)] += 1
+            z[int(atom.pos.z)] += 1
 
-            r_atom = math.sqrt((atom.x - x_c)**2 + (atom.y - y_c)**2 + (atom.z - z_c)**2)
+            r_atom = math.sqrt((atom.pos.x - x_c)**2 + (atom.pos.y - y_c)**2 + (atom.pos.z - z_c)**2)
             if int(r_atom) in r_count: r_count[int(r_atom)] += 1
 
     r_count_total = sum(r_count.values())

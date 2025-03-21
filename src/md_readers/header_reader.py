@@ -1,7 +1,9 @@
 import re
 
+from md_dataclasses.box import Box
+from md_dataclasses.header import Header
+from md_dataclasses.vector3d import Vector3D
 from md_readers.check_path import check_path
-from named_tuples import Box, Header
 
 def header_from_dump_txt(path):
     check_path(path)
@@ -46,5 +48,5 @@ def header_from_dump_txt(path):
                             keys_missing_data.append(key)
                     message += ", ".join(keys_missing_data)
                     raise Exception(message)
-                else: return Header(results["atom_count"], Box(results["box"]["xlo"], results["box"]["xhi"],
-                                    results["box"]["ylo"], results["box"]["yhi"], results["box"]["zlo"], results["box"]["zhi"]))
+                else: return Header(results["atom_count"], Box(Vector3D(results["box"]["xlo"], results["box"]["ylo"], results["box"]["zlo"]),
+                                                               Vector3D(results["box"]["xhi"], results["box"]["yhi"], results["box"]["zhi"])))

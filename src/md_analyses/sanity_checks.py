@@ -1,7 +1,7 @@
 def atoms_within_box(box, atom_extremes):
-    result = (box.xlo <= atom_extremes.xlo and box.xhi >= atom_extremes.xhi and
-              box.ylo <= atom_extremes.ylo and box.yhi >= atom_extremes.yhi and
-              box.zlo <= atom_extremes.zlo and box.zhi >= atom_extremes.zhi)
+    result = (box.lo.x <= atom_extremes.lo.x and box.hi.x >= atom_extremes.hi.x and
+              box.lo.y <= atom_extremes.lo.y and box.hi.y >= atom_extremes.hi.y and
+              box.lo.z <= atom_extremes.lo.z and box.hi.z >= atom_extremes.hi.z)
     return f"All atoms positioned with box: {result}"
 
 def total_atom_count(header, len_atoms):
