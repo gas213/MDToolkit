@@ -6,14 +6,13 @@ from md_analyses.density_profiles import build_density_profiles
 from md_analyses.salt_concentration import calc_salt_concentration
 from md_analyses.vapor_count import count_vapor_particles
 from md_readers.argv_reader import read_data_path
-from md_readers.atoms_reader import atoms_from_dump_txt
-from md_readers.header_reader import header_from_dump_txt
+from md_readers.dump_txt_reader import read_header, read_atoms
 from constants import analysis_filetype
 import printer
 
 data_path = read_data_path(sys.argv)
-header = header_from_dump_txt(data_path)
-atoms = atoms_from_dump_txt(data_path)
+header = read_header(data_path)
+atoms = read_atoms(data_path)
 atom_extremes = find_atom_extremes(atoms)
 salt_concentration = calc_salt_concentration(atoms)
 vapor_count = count_vapor_particles(atoms)
