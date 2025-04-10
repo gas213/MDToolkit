@@ -26,6 +26,4 @@ def atoms_from_dump_txt(path):
                 row = line.split()
                 atoms.append(Atom(int(row[0]), int(row[1]), Vector3D(float(row[2]), float(row[3]), float(row[4]))))
 
-    # Adding and removing [None] is a trick to get the atom objects to retain their namedtuple field names during the array conversion
-    # https://stackoverflow.com/a/53577004
-    return np.array(atoms + [None], object)[:-1]
+    return np.array(atoms)
