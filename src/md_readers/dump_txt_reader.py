@@ -7,6 +7,18 @@ from md_dataclasses.header import Header
 from md_dataclasses.vector3d import Vector3D
 from md_readers.check_path import check_path
 
+# EXPLANATION OF REGEX COMPONENTS
+# \d+               Positive integer
+# -?\d+             Positive or negative integer
+# -?\d+\.?\d+       Positive or negative number that must have decimal digits
+# -?\d+(\.\d+)?     Positive or negative number that might have decimal digits
+regexes = {
+    "atom count label": "^ITEM: NUMBER OF ATOMS$",
+    "box label": "^ITEM: BOX BOUNDS.*$",
+    "atoms header": "^ITEM: ATOMS.*$",
+    "atoms record": "^\d+ \d+ -?\d+\.?\d+ -?\d+\.?\d+ -?\d+\.?\d+$"
+}
+
 def read_header(path):
     check_path(path)
     
@@ -34,13 +46,13 @@ def read_header(path):
                 elif box_flag == "y": box_flag = "z"
                 else: box_flag = None
                 continue
-            elif re.search("^ITEM: NUMBER OF ATOMS$", line) is not None:
+            elif re.search(regexes["atom count label"], line) is not None:
                 atoms_flag = True
                 continue
-            elif re.search("^ITEM: BOX BOUNDS.*$", line) is not None:
+            elif re.search(regexes["box label"], line) is not None:
                 box_flag = "x"
                 continue
-            elif re.search("^ITEM: ATOMS.*$", line) is not None:
+            elif re.search(regexes["atoms header"], line) is not None:
                 # We're not in the header section anymore, so make sure all header values have been obtained
                 if any(val is None for val in results.values()):
                     message = "ERROR Did not find config values for the following: "
@@ -53,11 +65,6 @@ def read_header(path):
                 else: return Header(results["atom_count"], Box(Vector3D(results["box"]["xlo"], results["box"]["ylo"], results["box"]["zlo"]),
                                                                Vector3D(results["box"]["xhi"], results["box"]["yhi"], results["box"]["zhi"])))
                 
-# EXPLANATION OF REGEX COMPONENTS
-# \d+               Positive integer
-# -?\d+             Positive or negative integer
-# -?\d+\.?\d+       Positive or negative number that must have decimal digits
-# -?\d+(\.\d+)?     Positive or negative number that might have decimal digits
 def read_atoms(path):
     check_path(path)
 
@@ -66,11 +73,11 @@ def read_atoms(path):
         atoms_section_reached = False
         for line in data:
             if not atoms_section_reached:
-                if re.search("^ITEM: ATOMS.*$", line) is not None:
+                if re.search(regexes["atoms header"], line) is not None:
                     atoms_section_reached = True
                     continue
                 else: continue
-            elif re.search("^\d+ \d+ -?\d+\.?\d+ -?\d+\.?\d+ -?\d+\.?\d+$", line) is not None:
+            elif re.search(regexes["atoms record"], line) is not None:
                 row = line.split()
                 atoms.append(Atom(int(row[0]), int(row[1]), Vector3D(float(row[2]), float(row[3]), float(row[4]))))
 
