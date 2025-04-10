@@ -3,7 +3,7 @@ import datetime
 from md_analyses.sanity_checks import atoms_within_box, total_atom_count, density_profile_atom_count
 
 def print_title(data_path):
-    return f"ANALYSIS OF DATA FILE LOCATED AT: {data_path}\nPerformed: {datetime.datetime.now()}"
+    return f"ANALYSIS OF FILE LOCATED AT: {data_path}\nPerformed: {datetime.datetime.now()}"
 
 def print_header(header):
     return f"\n\nHeader data:\n{str(header)}"
