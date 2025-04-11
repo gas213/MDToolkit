@@ -5,7 +5,6 @@ from md_dataclasses.atom import Atom
 from md_dataclasses.box import Box
 from md_dataclasses.header import Header
 from md_dataclasses.vector3d import Vector3D
-from md_readers.check_path import check_path
 
 # EXPLANATION OF REGEX COMPONENTS
 # \d+               Positive integer
@@ -22,9 +21,7 @@ regexes = {
     "velocities header": "^Velocities.*$"
 }
 
-def read_header(path):
-    check_path(path)
-    
+def read_header(path):    
     results = {
         "atom_count": None,
         "box": {}
@@ -64,8 +61,6 @@ def read_header(path):
                                                                Vector3D(results["box"]["xhi"], results["box"]["yhi"], results["box"]["zhi"])))
                 
 def read_atoms(path):
-    check_path(path)
-
     atoms = []
     with open(path, "r") as data:
         atoms_section_reached = False

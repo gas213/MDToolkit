@@ -6,7 +6,7 @@ from md_analyses.density_profiles import build_density_profiles
 from md_analyses.salt_concentration import calc_salt_concentration
 from md_analyses.vapor_count import count_vapor_particles
 from md_readers.argv_reader import read_data_path
-from md_readers.dump_txt_reader import read_header, read_atoms
+from md_readers.reader_manager import read_header, read_atoms
 from constants import analysis_filetype
 import printer
 
