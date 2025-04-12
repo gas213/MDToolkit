@@ -10,7 +10,8 @@
             "request": "launch",
             "program": "src/main.py",
             "console": "integratedTerminal",
-            "args": ["~/Downloads/temp/dump_160000.dump"]
+            "args": ["~/Downloads/temp/droplet_extracted.data"],
+            // "preLaunchTask": "Build"
         }
     ]
 }

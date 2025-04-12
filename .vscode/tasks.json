@@ -1,0 +1,52 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        // {
+        //     "label": "Build",
+        //     "dependsOn": [
+        //         "Make directories",
+        //         "Build pyz executable"
+        //     ],
+        //     "dependsOrder": "sequence",
+        //     "group": {
+        //         "kind": "build",
+        //         "isDefault": true
+        //     }
+        // },
+        // {
+        //     "label": "Make directories",
+        //     "type": "shell",
+        //     "command": "mkdir -p bin"
+        // },
+        // {
+        //     // Didn't work because numpy has some C-based code, so it doesn't get bundled in
+        //     "label": "Build pyz executable",
+        //     "type": "shell",
+        //     "command": "${command:python.interpreterPath}",
+        //     "args": [
+        //         "-m",
+        //         "zipapp",
+        //         "${workspaceFolder}/src/",
+        //         "-m",
+        //         "main:main",
+        //         "-c",
+        //         "-o",
+        //         "bin/mdtoolkit.pyz"
+        //     ]
+        // },
+        // {
+        //     // Didn't work because you get "Permission Denied" if you try to run executable on Sol
+        //     "label": "PyInstaller Build",
+        //     "type": "shell",
+        //     "command": "pyinstaller",
+        //     "args": [
+        //         "--onefile",
+        //         "--name",
+        //         "mdtoolkit",
+        //         "${workspaceFolder}/src/main.py"
+        //     ]
+        // }
+    ]
+}
