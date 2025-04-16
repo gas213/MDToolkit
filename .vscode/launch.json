@@ -8,7 +8,7 @@
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
-            "program": "src/main.py",
+            "program": "src/__main__.py",
             "console": "integratedTerminal",
             "args": ["~/Downloads/temp/droplet_extracted.data"],
             // "preLaunchTask": "Build"
