@@ -1,10 +1,10 @@
-from constants import approximation_sphere, atom_type_groups, masses
+from constants import atom_type_groups, masses
 
-def calc_salt_concentration(atoms):
-    x0 = approximation_sphere["x"]
-    y0 = approximation_sphere["y"]
-    z0 = approximation_sphere["z"]
-    r2 = approximation_sphere["r"]**2
+def calc_salt_concentration(config, atoms):
+    x0 = config.approx_sphere["X"]
+    y0 = config.approx_sphere["Y"]
+    z0 = config.approx_sphere["Z"]
+    r2 = config.approx_sphere["R"]**2
     m_salt = 0.0
     m_saltwater = 0.0
     for atom in atoms:

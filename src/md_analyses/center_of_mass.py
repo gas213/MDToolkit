@@ -1,11 +1,11 @@
-from constants import approximation_sphere, masses
+from constants import masses
 from md_dataclasses.vector3d import Vector3D
 
-def calc_droplet_center(atoms):
-    x0 = approximation_sphere["x"]
-    y0 = approximation_sphere["y"]
-    z0 = approximation_sphere["z"]
-    r2 = approximation_sphere["r"]**2
+def calc_droplet_center(config, atoms):
+    x0 = config.approx_sphere["X"]
+    y0 = config.approx_sphere["Y"]
+    z0 = config.approx_sphere["Z"]
+    r2 = config.approx_sphere["R"]**2
     sum_x = 0.0
     sum_y = 0.0
     sum_z = 0.0
