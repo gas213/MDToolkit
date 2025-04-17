@@ -9,6 +9,17 @@ class ConfigReader:
         if not os.path.isfile(config_path): raise Exception(f"Config file not found at path: {config_path}")
         self.config.read(config_path)
         self._data_path = self.config["DEFAULT"]["DataPath"]
+        self._data_type = self.config["DEFAULT"]["DataType"]
+        if self._data_type == "NetCDF":
+            self._data_columns = {}
+        else:
+            self._data_columns = {
+                "Id": int(self.config[self._data_type]["ColumnAtomId"]),
+                "Type": int(self.config[self._data_type]["ColumnAtomType"]),
+                "X": int(self.config[self._data_type]["ColumnAtomX"]),
+                "Y": int(self.config[self._data_type]["ColumnAtomY"]),
+                "Z": int(self.config[self._data_type]["ColumnAtomZ"]),
+            }
         self._approx_sphere = {
             "X": float(self.config["DEFAULT"]["ApproxSphereX"]),
             "Y": float(self.config["DEFAULT"]["ApproxSphereY"]),
@@ -29,6 +40,14 @@ class ConfigReader:
     @property
     def data_path(self) -> str:
         return self._data_path
+    
+    @property
+    def data_type(self) -> str:
+        return self._data_type
+    
+    @property
+    def data_columns(self) -> dict[str, int]:
+        return self._data_columns
     
     @property
     def approx_sphere(self) -> dict[str, float]:

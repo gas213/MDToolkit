@@ -1,10 +1,10 @@
-import numpy as np
 import re
 
 from md_dataclasses.atom import Atom
 from md_dataclasses.box import Box
 from md_dataclasses.header import Header
 from md_dataclasses.vector3d import Vector3D
+from md_readers.config_reader import ConfigReader
 
 # EXPLANATION OF REGEX COMPONENTS
 # \d+               Positive integer
@@ -18,7 +18,7 @@ regexes = {
     "atoms record": "^\d+ \d+ -?\d+\.?\d+ -?\d+\.?\d+ -?\d+\.?\d+$"
 }
 
-def read_header(path: str) -> Header:    
+def read_header(config: ConfigReader) -> Header:    
     results = {
         "atom_count": None,
         "box": {}
@@ -30,7 +30,7 @@ def read_header(path: str) -> Header:
 
     atoms_flag = False
     box_flag = None
-    with open(path, "r") as data:
+    with open(config.data_path, "r") as data:
         for line in data:
             if atoms_flag:
                 results["atom_count"] = int(line)
@@ -62,9 +62,9 @@ def read_header(path: str) -> Header:
                 else: return Header(results["atom_count"], Box(Vector3D(results["box"]["xlo"], results["box"]["ylo"], results["box"]["zlo"]),
                                                                Vector3D(results["box"]["xhi"], results["box"]["yhi"], results["box"]["zhi"])))
                 
-def read_atoms(path: str) -> list[Atom]:
+def read_atoms(config: ConfigReader) -> list[Atom]:
     atoms = []
-    with open(path, "r") as data:
+    with open(config.data_path, "r") as data:
         atoms_section_reached = False
         for line in data:
             if not atoms_section_reached:
@@ -74,6 +74,11 @@ def read_atoms(path: str) -> list[Atom]:
                 else: continue
             elif re.search(regexes["atoms record"], line) is not None:
                 row = line.split()
-                atoms.append(Atom(int(row[0]), int(row[1]), Vector3D(float(row[2]), float(row[3]), float(row[4]))))
+                id = int(row[config.data_columns["Id"]])
+                type = int(row[config.data_columns["Type"]])
+                x = float(row[config.data_columns["X"]])
+                y = float(row[config.data_columns["Y"]])
+                z = float(row[config.data_columns["Z"]])
+                atoms.append(Atom(id, type, Vector3D(x, y, z)))
 
     return atoms
