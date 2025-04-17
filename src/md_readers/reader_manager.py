@@ -12,9 +12,9 @@ def check_path(path):
     if path is None:
         raise Exception("Path not provided")
     elif not os.path.isfile(path):
-        raise Exception("No file was found at the specified path")
+        raise Exception(f"No file was found at the specified path: {path}")
     elif get_filetype(path) not in filetypes:
-        raise Exception("Data file type extnension not recognized")
+        raise Exception(f"Data file type extension not recognized: {path}")
     
 def get_filetype(path):
     return str.split(path, ".")[-1]

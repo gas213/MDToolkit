@@ -6,15 +6,16 @@ from md_analyses.center_of_mass import calc_droplet_center
 from md_analyses.density_profiles import build_density_profiles
 from md_analyses.salt_concentration import calc_salt_concentration
 from md_analyses.vapor_count import count_vapor_particles
-from md_readers.argv_reader import read_data_path
+from md_readers.argv_reader import read_config_path
+from md_readers.config_reader import ConfigReader
 from md_readers.reader_manager import read_header, read_atoms
 from make_directories import make_directories
 import printer
 
-data_path = read_data_path(sys.argv)
-dir_write = make_directories(data_path)
-header = read_header(data_path)
-atoms = read_atoms(data_path)
+config = ConfigReader(read_config_path(sys.argv))
+dir_write = make_directories(config.data_path)
+header = read_header(config.data_path)
+atoms = read_atoms(config.data_path)
 atom_extremes = find_atom_extremes(atoms)
 salt_concentration = calc_salt_concentration(atoms)
 vapor_count = count_vapor_particles(atoms)
@@ -26,7 +27,7 @@ oxygen_count_profiles = build_density_profiles(header, atoms, droplet_center, 6)
 hydrogen_count_profiles = build_density_profiles(header, atoms, droplet_center, 7)
 
 results = ""
-results += printer.print_title(data_path)
+results += printer.print_title(config.data_path)
 results += printer.print_header(header)
 results += printer.print_atom_extremes(atom_extremes)
 results += printer.print_sanity_checks(header, atom_extremes, atoms, atom_count_profiles)

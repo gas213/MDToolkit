@@ -10,8 +10,7 @@
             "request": "launch",
             "program": "src/__main__.py",
             "console": "integratedTerminal",
-            "args": ["~/Downloads/temp/droplet_extracted.data"],
-            // "preLaunchTask": "Build"
+            "args": ["${workspaceFolder}/templates/mdtoolkit/mdtoolkit_config.ini"],
         }
     ]
 }

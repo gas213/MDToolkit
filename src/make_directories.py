@@ -10,7 +10,7 @@ def make_directories(data_path):
     \t\t\t- profiles/
     """
 
-    dir_root = os.path.dirname(os.path.abspath(data_path))
+    dir_root = os.path.dirname(data_path)
     dir_analysis = os.path.join(dir_root, "analysis")
     if not os.path.isdir(dir_analysis): os.makedirs(dir_analysis)
 
