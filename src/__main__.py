@@ -1,3 +1,4 @@
+import os.path
 import sys
 
 from md_analyses.atom_extremes import find_atom_extremes
@@ -7,10 +8,11 @@ from md_analyses.salt_concentration import calc_salt_concentration
 from md_analyses.vapor_count import count_vapor_particles
 from md_readers.argv_reader import read_data_path
 from md_readers.reader_manager import read_header, read_atoms
-from constants import analysis_filetype
+from make_directories import make_directories
 import printer
 
 data_path = read_data_path(sys.argv)
+dir_write = make_directories(data_path)
 header = read_header(data_path)
 atoms = read_atoms(data_path)
 atom_extremes = find_atom_extremes(atoms)
@@ -37,6 +39,6 @@ results += printer.print_density_profiles(sodium_count_profiles, "sodium")
 results += printer.print_density_profiles(oxygen_count_profiles, "oxygen")
 results += printer.print_density_profiles(hydrogen_count_profiles, "hydrogen")
 
-with open(data_path + analysis_filetype, "w") as analysis: analysis.write(results)
+with open(os.path.join(dir_write, "analysis.txt"), "w") as analysis: analysis.write(results)
 
 print("Analysis complete")

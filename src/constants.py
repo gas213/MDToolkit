@@ -1,7 +1,5 @@
 import math
 
-analysis_filetype = ".analysis"
-
 # Sphere that closely but safely envelops the equilibrated droplet
 # Used for situations where we need a loose idea of which particles belong to the droplet and which are vapor
 # (ex. counting vapor particles or finding droplet's center of mass)
