@@ -1,4 +1,3 @@
-from constants import masses
 from md_dataclasses.vector3d import Vector3D
 
 def calc_droplet_center(config, atoms):
@@ -12,7 +11,7 @@ def calc_droplet_center(config, atoms):
     sum_m = 0.0
     for atom in atoms:
         if ((atom.pos.x - x0)**2 + (atom.pos.y - y0)**2 + (atom.pos.z - z0)**2) <= r2:
-            m = masses[atom.type]
+            m = config.mass_lookup[atom.type]
             sum_x += m * atom.pos.x
             sum_y += m * atom.pos.y
             sum_z += m * atom.pos.z

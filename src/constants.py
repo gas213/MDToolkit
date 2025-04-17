@@ -1,20 +1,13 @@
 import math
 
-# Atomic masses lookup table, as given in the atom data file
+# Atomic masses lookup table (should match the masses in the LAMMPS data file)
 masses = {
-    1: 12.011,    # C
-    2: 12.011,    # C
-    3: 18.9984,   # F
-    4: 35.453,    # Cl
-    5: 22.98977,  # Na
-    6: 15.9994,   # O
-    7: 1.008      # H
-}
-
-atom_type_groups = {
-    "oxygen": [6],
-    "salt": [4, 5],
-    "saltwater": [4, 5, 6, 7]
+    "C": 12.011,
+    "Cl": 35.453,
+    "F": 18.9984,
+    "H": 1.008,
+    "Na": 22.98977,
+    "O": 15.9994,
 }
 
 # Starting radius to use when building radial count/density profiles as a series of concentric spherical shells
