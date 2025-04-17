@@ -39,6 +39,6 @@ results += printer.print_density_profiles(sodium_count_profiles, "sodium")
 results += printer.print_density_profiles(oxygen_count_profiles, "oxygen")
 results += printer.print_density_profiles(hydrogen_count_profiles, "hydrogen")
 
-with open(os.path.join(dir_write, "analysis.txt"), "w") as analysis: analysis.write(results)
+with open(os.path.join(dir_write, "summary.txt"), "w") as analysis: analysis.write(results)
 
 print("Analysis complete")
