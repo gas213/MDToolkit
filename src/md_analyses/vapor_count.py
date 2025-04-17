@@ -1,4 +1,7 @@
-def count_vapor_particles(config, atoms):
+from md_dataclasses.atom import Atom
+from md_readers.config_reader import ConfigReader
+
+def count_vapor_particles(config: ConfigReader, atoms: list[Atom]) -> int:
     x0 = config.approx_sphere["X"]
     y0 = config.approx_sphere["Y"]
     z0 = config.approx_sphere["Z"]

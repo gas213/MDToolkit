@@ -1,6 +1,6 @@
 import os.path
 
-def make_directories(data_path):
+def make_directories(data_path: str) -> str:
     """
     Creates folder structure for outputting results.\n
     Example using file named 69.data:\n

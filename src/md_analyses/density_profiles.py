@@ -1,9 +1,13 @@
 import math
 
 from constants import min_radius_for_radial_profiles, four_thirds_pi
+from md_dataclasses.atom import Atom
 from md_dataclasses.density_profile import DensityProfileGroup
+from md_dataclasses.header import Header
+from md_dataclasses.vector3d import Vector3D
+from md_readers.config_reader import ConfigReader
 
-def build_density_profiles(config, header, atoms, droplet_center, atom_type = 0):
+def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Atom], droplet_center: Vector3D, atom_type: int = 0) -> DensityProfileGroup:
     x_c = droplet_center.x
     y_c = droplet_center.y
     z_c = droplet_center.z

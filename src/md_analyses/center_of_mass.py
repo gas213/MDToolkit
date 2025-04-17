@@ -1,6 +1,8 @@
+from md_dataclasses.atom import Atom
 from md_dataclasses.vector3d import Vector3D
+from md_readers.config_reader import ConfigReader
 
-def calc_droplet_center(config, atoms):
+def calc_droplet_center(config: ConfigReader, atoms: list[Atom]) -> Vector3D:
     x0 = config.approx_sphere["X"]
     y0 = config.approx_sphere["Y"]
     z0 = config.approx_sphere["Z"]

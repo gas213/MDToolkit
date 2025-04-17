@@ -1,6 +1,6 @@
 import netCDF4 as nc
 
-def test(path):
+def test(path: str):
     id = 0
     data = nc.Dataset(path, "r")
     for frame in data.variables["coordinates"]:

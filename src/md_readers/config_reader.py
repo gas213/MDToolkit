@@ -4,7 +4,7 @@ import os.path
 from constants import masses
 
 class ConfigReader:
-    def __init__(self, config_path):
+    def __init__(self, config_path: str):
         self.config = configparser.ConfigParser()
         if not os.path.isfile(config_path): raise Exception(f"Config file not found at path: {config_path}")
         self.config.read(config_path)
@@ -38,7 +38,7 @@ class ConfigReader:
     def mass_lookup(self):
         return self._mass_lookup
     
-    def get_atom_type_ids(self, elements):
+    def get_atom_type_ids(self, elements: list[str]) -> list[int]:
         type_ids = []
         for element in elements:
             if element not in self._atom_types.values():

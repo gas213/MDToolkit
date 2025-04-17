@@ -21,7 +21,7 @@ regexes = {
     "velocities header": "^Velocities.*$"
 }
 
-def read_header(path):    
+def read_header(path: str) -> Header:    
     results = {
         "atom_count": None,
         "box": {}
@@ -60,7 +60,7 @@ def read_header(path):
                 else: return Header(results["atom_count"], Box(Vector3D(results["box"]["xlo"], results["box"]["ylo"], results["box"]["zlo"]),
                                                                Vector3D(results["box"]["xhi"], results["box"]["yhi"], results["box"]["zhi"])))
                 
-def read_atoms(path):
+def read_atoms(path: str) -> list[Atom]:
     atoms = []
     with open(path, "r") as data:
         atoms_section_reached = False
@@ -77,4 +77,4 @@ def read_atoms(path):
                 # We reached the end of the atoms section
                 break
 
-    return np.array(atoms)
+    return atoms

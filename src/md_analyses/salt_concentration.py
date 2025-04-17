@@ -1,4 +1,7 @@
-def calc_salt_concentration(config, atoms):
+from md_dataclasses.atom import Atom
+from md_readers.config_reader import ConfigReader
+
+def calc_salt_concentration(config: ConfigReader, atoms: list[Atom]) -> float:
     x0 = config.approx_sphere["X"]
     y0 = config.approx_sphere["Y"]
     z0 = config.approx_sphere["Z"]

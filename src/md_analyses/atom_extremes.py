@@ -1,7 +1,8 @@
+from md_dataclasses.atom import Atom
 from md_dataclasses.box import Box
 from md_dataclasses.vector3d import Vector3D
 
-def find_atom_extremes(atoms):
+def find_atom_extremes(atoms: list[Atom]) -> Box:
     xlo = atoms[0].pos.x
     xhi = atoms[0].pos.x
     ylo = atoms[0].pos.y
