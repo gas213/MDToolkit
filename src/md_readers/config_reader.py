@@ -27,15 +27,15 @@ class ConfigReader:
             self._mass_lookup[key] = masses[value]
 
     @property
-    def data_path(self):
+    def data_path(self) -> str:
         return self._data_path
     
     @property
-    def approx_sphere(self):
+    def approx_sphere(self) -> dict[str, float]:
         return self._approx_sphere
     
     @property
-    def mass_lookup(self):
+    def mass_lookup(self) -> dict[int, float]:
         return self._mass_lookup
     
     def get_atom_type_ids(self, elements: list[str]) -> list[int]:
