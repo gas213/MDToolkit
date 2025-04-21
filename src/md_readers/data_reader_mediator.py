@@ -3,7 +3,7 @@ import os.path
 from md_dataclasses.atom import Atom
 from md_dataclasses.header import Header
 from md_readers.config_reader import ConfigReader
-from md_readers import data_txt_reader as datatxt
+from md_readers import lmp_data_reader as datatxt
 from md_readers import dump_txt_reader as dumptxt
 
 def check_path(path: str):

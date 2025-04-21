@@ -9,7 +9,7 @@ from md_analyses.vapor_count import count_vapor_particles
 from md_dataclasses.density_profile import DensityProfile
 from md_readers.argv_reader import read_config_path
 from md_readers.config_reader import ConfigReader
-from md_readers.reader_manager import read_header, read_atoms
+from md_readers.data_reader_mediator import read_header, read_atoms
 from make_directories import make_directories
 import printer
 
