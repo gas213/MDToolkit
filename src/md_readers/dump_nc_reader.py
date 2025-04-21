@@ -1,10 +1,32 @@
 import netCDF4 as nc
 
-def test(path: str):
-    id = 0
-    data = nc.Dataset(path, "r")
-    for frame in data.variables["coordinates"]:
-        for atom in frame:
-            id += 1
-            print(str(id) + " ".join(format(coord, "10.3f") for coord in atom))
-    return
+from md_dataclasses.atom import Atom
+from md_dataclasses.box import Box
+from md_dataclasses.header import Header
+from md_dataclasses.vector3d import Vector3D
+from md_readers.config_reader import ConfigReader
+
+# I don't know the purpose of "frame" yet
+# Maybe this would have more than one value if you have multiple time steps in a single dump file?
+frame = 0
+
+def read_header(config: ConfigReader) -> Header:
+    dataset = nc.Dataset(config.data_path, "r")
+    atom_count = len(dataset.variables["id"][frame])
+    cell_origin = dataset.variables["cell_origin"][frame] # Origin coordinates of the simulation box (x, y, z)
+    cell_lengths = dataset.variables["cell_lengths"][frame] # Side lengths of the simulation box (x, y, z)
+    box_lo = Vector3D(cell_origin[0], cell_origin[1], cell_origin[2])
+    box_hi = Vector3D(cell_origin[0] + cell_lengths[0], cell_origin[1] + cell_lengths[1], cell_origin[2] + cell_lengths[2])
+    return Header(atom_count, Box(box_lo, box_hi))
+
+def read_atoms(config: ConfigReader) -> list[Atom]:
+    dataset = nc.Dataset(config.data_path, "r")
+    ids = dataset.variables["id"][frame]
+    types = dataset.variables["type"][frame]
+    coords = dataset.variables["coordinates"][frame]
+    
+    atoms: list[Atom] = [None] * len(ids)
+    for index, id in enumerate(ids):
+        atoms[index] = Atom(id, types[index], Vector3D(coords[index][0], coords[index][1], coords[index][2]))
+
+    return atoms
