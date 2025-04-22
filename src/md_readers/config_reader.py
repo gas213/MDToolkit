@@ -28,7 +28,10 @@ class ConfigReader:
         }
         atom_type_set = self.config["DEFAULT"]["AtomTypeSet"]
         self._atom_types = {
+            int(self.config[atom_type_set]["AtomTypeC1"]): "C",
+            int(self.config[atom_type_set]["AtomTypeC2"]): "C",
             int(self.config[atom_type_set]["AtomTypeCl"]): "Cl",
+            int(self.config[atom_type_set]["AtomTypeF"]): "F",
             int(self.config[atom_type_set]["AtomTypeH"]): "H",
             int(self.config[atom_type_set]["AtomTypeNa"]): "Na",
             int(self.config[atom_type_set]["AtomTypeO"]): "O",
