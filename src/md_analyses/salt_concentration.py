@@ -16,4 +16,4 @@ def calc_salt_concentration(config: ConfigReader, atoms: list[Atom]) -> float:
             if atom.type in atom_types_salt:
                 m_salt += config.mass_lookup[atom.type]
 
-    return m_salt / m_saltwater
+    return 0.0 if m_saltwater == 0.0 else m_salt / m_saltwater

@@ -19,4 +19,4 @@ def calc_droplet_center(config: ConfigReader, atoms: list[Atom]) -> Vector3D:
             sum_z += m * atom.pos.z
             sum_m += m
     
-    return Vector3D(sum_x / sum_m, sum_y / sum_m, sum_z / sum_m)
+    return Vector3D(0.0, 0.0, 0.0) if sum_m == 0.0 else Vector3D(sum_x / sum_m, sum_y / sum_m, sum_z / sum_m)
