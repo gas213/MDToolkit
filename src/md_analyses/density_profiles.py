@@ -7,7 +7,7 @@ from md_dataclasses.header import Header
 from md_dataclasses.vector3d import Vector3D
 from md_readers.config_reader import ConfigReader
 
-def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Atom], droplet_center: Vector3D, atom_type: int, atom_name: str) -> dict[str, DensityProfile]:
+def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Atom], droplet_center: Vector3D, atom_types: list[int], description: str) -> dict[str, DensityProfile]:
     x_c = droplet_center.x
     y_c = droplet_center.y
     z_c = droplet_center.z
@@ -25,7 +25,7 @@ def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Ato
     for val in range(min_radius_for_radial_profiles, int(config.approx_sphere["R"])): r_density_norm[val] = 0
     
     for atom in atoms:
-        if (atom_type == 0 or atom.type == atom_type):
+        if (atom_types == [0] or atom.type in atom_types):
             x[int(atom.pos.x)] += 1
             y[int(atom.pos.y)] += 1
             z[int(atom.pos.z)] += 1
@@ -35,7 +35,7 @@ def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Ato
 
     r_count_total = sum(r_count.values())
     v_total = four_thirds_pi * float(config.approx_sphere["R"])**3
-    norm_factor = v_total / r_count_total
+    norm_factor = 1 if r_count_total == 0 else v_total / r_count_total
 
     v_inner = four_thirds_pi * float(min_radius_for_radial_profiles)**3
     for r_inner in range(min_radius_for_radial_profiles, int(config.approx_sphere["R"])):
@@ -45,10 +45,10 @@ def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Ato
         v_inner = v_outer
 
     return {
-        "x": DensityProfile(x, f"Profile of {atom_name} count vs truncated x coordinate:"),
-        "y": DensityProfile(y, f"Profile of {atom_name} count vs truncated y coordinate:"),
-        "z": DensityProfile(z, f"Profile of {atom_name} count vs truncated z coordinate:"),
-        "r_count": DensityProfile(r_count, f"Profile of {atom_name} count vs truncated radius, based on droplet center of mass:"),
-        "r_density": DensityProfile(r_density, f"Profile of {atom_name} density (atoms/angstrom**3) vs truncated radius, based on droplet center of mass:"),
-        "r_density_norm": DensityProfile(r_density_norm, f"Profile of {atom_name} normalized density vs truncated radius, based on droplet center of mass:"),
+        "x": DensityProfile(x, f"Profile of {description} atom count vs truncated x coordinate:"),
+        "y": DensityProfile(y, f"Profile of {description} atom count vs truncated y coordinate:"),
+        "z": DensityProfile(z, f"Profile of {description} atom count vs truncated z coordinate:"),
+        "r_count": DensityProfile(r_count, f"Profile of {description} atom count vs truncated radius, based on droplet center of mass:"),
+        "r_density": DensityProfile(r_density, f"Profile of {description} density (atoms/angstrom**3) vs truncated radius, based on droplet center of mass:"),
+        "r_density_norm": DensityProfile(r_density_norm, f"Profile of {description} normalized density vs truncated radius, based on droplet center of mass:"),
     }

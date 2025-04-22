@@ -31,11 +31,19 @@ print("Calculating droplet center of mass...")
 droplet_center = calc_droplet_center(config, atoms)
 print("Building density profiles...")
 density_profiles: dict[str, dict[str, DensityProfile]] = {
-    "all_atom": build_density_profiles(config, header, atoms, droplet_center, 0, "all_atom"),
-    "chlorine": build_density_profiles(config, header, atoms, droplet_center, 4, "chlorine"),
-    "hydrogen": build_density_profiles(config, header, atoms, droplet_center, 7, "hydrogen"),
-    "oxygen": build_density_profiles(config, header, atoms, droplet_center, 6, "oxygen"),
-    "sodium": build_density_profiles(config, header, atoms, droplet_center, 5, "sodium"),
+    # Individual elements
+    "carbon": build_density_profiles(config, header, atoms, droplet_center, config.get_atom_type_ids(["C"]), "carbon"),
+    "chlorine": build_density_profiles(config, header, atoms, droplet_center, config.get_atom_type_ids(["Cl"]), "chlorine"),
+    "fluorine": build_density_profiles(config, header, atoms, droplet_center, config.get_atom_type_ids(["F"]), "fluorine"),
+    "hydrogen": build_density_profiles(config, header, atoms, droplet_center, config.get_atom_type_ids(["H"]), "hydrogen"),
+    "oxygen": build_density_profiles(config, header, atoms, droplet_center, config.get_atom_type_ids(["O"]), "oxygen"),
+    "sodium": build_density_profiles(config, header, atoms, droplet_center, config.get_atom_type_ids(["Na"]), "sodium"),
+    # Groups of elements
+    "all": build_density_profiles(config, header, atoms, droplet_center, [0], "all-element"),
+    "ptfe": build_density_profiles(config, header, atoms, droplet_center, config.get_atom_type_ids(["C", "F"]), "ptfe"),
+    "salt": build_density_profiles(config, header, atoms, droplet_center, config.get_atom_type_ids(["Cl", "Na"]), "salt"),
+    "saltwater": build_density_profiles(config, header, atoms, droplet_center, config.get_atom_type_ids(["Cl", "Na", "H", "O"]), "saltwater"),
+    "water": build_density_profiles(config, header, atoms, droplet_center, config.get_atom_type_ids(["H", "O"]), "water"),
 }
 
 print("Writing output files...")
@@ -43,7 +51,7 @@ summary = ""
 summary += printer.print_title(config.data_path)
 summary += printer.print_header(header)
 summary += printer.print_atom_extremes(atom_extremes)
-summary += printer.print_sanity_checks(header, atom_extremes, atoms, density_profiles["all_atom"])
+summary += printer.print_sanity_checks(header, atom_extremes, atoms, density_profiles["all"])
 summary += printer.print_salt_concentration(salt_concentration)
 summary += printer.print_vapor_count(vapor_count)
 summary += printer.print_droplet_center(droplet_center)
