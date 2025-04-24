@@ -1,4 +1,5 @@
 ### LAMMPS Input File - Equilibration of cube droplet
+# From MDToolkit template file: eq_cube.in
 
 ## Configuration Variables
 # FILL IN {{FIELDS}}

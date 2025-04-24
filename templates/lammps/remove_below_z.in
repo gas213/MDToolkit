@@ -1,4 +1,5 @@
-### Lammps Input File - dump saline from Contact Angle on PTFE
+### LAMMPS Input File - Remove atoms below specific Z level
+# From MDToolkit template file: remove_below_z.in
 
 ## Configuration Variables
 # FILL IN {{FIELDS}}

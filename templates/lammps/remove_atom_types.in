@@ -1,4 +1,5 @@
-### Lammps Input File - dump saline from Contact Angle on PTFE
+### LAMMPS Input File - Remove specific atom types
+# From MDToolkit template file: remove_atom_types.in
 
 ## Configuration Variables
 # FILL IN {{FIELDS}}
