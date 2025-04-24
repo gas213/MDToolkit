@@ -1,0 +1,44 @@
+### LAMMPS Input File - Move atoms along the Z axis
+# From MDToolkit template file: move_along_z.in
+
+## Configuration Variables
+# FILL IN {{FIELDS}}
+
+# File name of the initial LAMMPS data file
+variable    START_DATA string {{"file"}}
+
+# Atom types to remove (space-separated integers, all inside quotes)
+variable    Z_OFFSET equal {{float}}
+
+## Initialization
+
+units           real
+atom_style      full
+boundary        p p p
+pair_style      lj/cut/coul/long 10 10
+pair_modify     mix arithmetic
+pair_modify     tail no
+special_bonds   amber
+bond_style      harmonic
+angle_style     harmonic
+dihedral_style  opls
+improper_style  none
+
+## Read initial data file
+
+read_data      	${START_DATA}
+
+## Neighbor parameters and force field coefficients
+
+neighbor        2.0 bin
+neigh_modify    delay 0
+kspace_style    pppm 1e-5
+kspace_modify   order 4 
+
+# Move atoms along the Z axis
+
+displace_atoms all move 0.0 0.0 $(v_Z_OFFSET) units box
+
+## Write resulting data file
+
+write_data	moved_along_z.data
