@@ -10,8 +10,8 @@ from md_readers.config_reader import ConfigReader
 # Maybe this would have more than one value if you have multiple time steps in a single dump file?
 frame = 0
 
-def read_header(config: ConfigReader) -> Header:
-    dataset = nc.Dataset(config.data_path, "r")
+def read_header(data_file: str) -> Header:
+    dataset = nc.Dataset(data_file, "r")
     atom_count = len(dataset.variables["id"][frame])
     cell_origin = dataset.variables["cell_origin"][frame] # Origin coordinates of the simulation box (x, y, z)
     cell_lengths = dataset.variables["cell_lengths"][frame] # Side lengths of the simulation box (x, y, z)
@@ -19,8 +19,8 @@ def read_header(config: ConfigReader) -> Header:
     box_hi = Vector3D(cell_origin[0] + cell_lengths[0], cell_origin[1] + cell_lengths[1], cell_origin[2] + cell_lengths[2])
     return Header(atom_count, Box(box_lo, box_hi))
 
-def read_atoms(config: ConfigReader) -> list[Atom]:
-    dataset = nc.Dataset(config.data_path, "r")
+def read_atoms(data_file: str) -> list[Atom]:
+    dataset = nc.Dataset(data_file, "r")
     ids = dataset.variables["id"][frame]
     types = dataset.variables["type"][frame]
     coords = dataset.variables["coordinates"][frame]

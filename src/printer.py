@@ -5,9 +5,13 @@ from md_dataclasses.atom import Atom
 from md_dataclasses.box import Box
 from md_dataclasses.density_profile import DensityProfile
 from md_dataclasses.header import Header
+from md_dataclasses.vector3d import Vector3D
+from md_readers.config_reader import ConfigReader
 
-def print_title(data_path: str) -> str:
-    return f"ANALYSIS OF FILE LOCATED AT: {data_path}\nPerformed: {datetime.datetime.now()}"
+def print_title(config: ConfigReader) -> str:
+    text = f"ANALYSIS OF FILE(S) LOCATED AT: {config.data_path} (steps {config.step_start} through {config.step_end})"
+    text += f"\nCompleted: {datetime.datetime.now()}"
+    return text
 
 def print_header(header: Header) -> str:
     return f"\n\nHeader data:\n{str(header)}"
@@ -30,11 +34,17 @@ def print_sanity_checks(header: Header, atom_extremes: Box, atoms: list[Atom], d
 def print_salt_concentration(salt_concentration: float) -> str:
     return f"\n\nSalt concentration:\n{salt_concentration * 100 :0.3f}%"
 
-def print_vapor_count(vapor_count: int) -> str:
+def print_vapor_count(vapor_count: float) -> str:
     return f"\n\nVapor count:\n{vapor_count}"
 
-def print_droplet_center(droplet_center: Box) -> str:
-    return f"\n\nDroplet center of mass:\n{droplet_center}"
+def print_droplet_center(droplet_com: Vector3D) -> str:
+    return f"\n\nDroplet center of mass:\n{droplet_com}"
+
+def print_files_used(data_files: list[str]) -> str:
+    text = f"\n\nSpecific data files used:"
+    for data_file in data_files:
+        text += f"\n{data_file}"
+    return text
 
 def print_density_profile(profile: DensityProfile) -> str:
     text = profile.description

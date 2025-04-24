@@ -18,7 +18,7 @@ regexes = {
     "atoms record": "^\d+ \d+ -?\d+\.?\d+ -?\d+\.?\d+ -?\d+\.?\d+$"
 }
 
-def read_header(config: ConfigReader) -> Header:    
+def read_header(data_file: str) -> Header:    
     results = {
         "atom_count": None,
         "box": {}
@@ -30,7 +30,7 @@ def read_header(config: ConfigReader) -> Header:
 
     atoms_flag = False
     box_flag = None
-    with open(config.data_path, "r") as data:
+    with open(data_file, "r") as data:
         for line in data:
             if atoms_flag:
                 results["atom_count"] = int(line)
@@ -62,9 +62,9 @@ def read_header(config: ConfigReader) -> Header:
                 else: return Header(results["atom_count"], Box(Vector3D(results["box"]["xlo"], results["box"]["ylo"], results["box"]["zlo"]),
                                                                Vector3D(results["box"]["xhi"], results["box"]["yhi"], results["box"]["zhi"])))
                 
-def read_atoms(config: ConfigReader) -> list[Atom]:
+def read_atoms(config: ConfigReader, data_file: str) -> list[Atom]:
     atoms = []
-    with open(config.data_path, "r") as data:
+    with open(data_file, "r") as data:
         atoms_section_reached = False
         for line in data:
             if not atoms_section_reached:

@@ -7,10 +7,10 @@ from md_dataclasses.header import Header
 from md_dataclasses.vector3d import Vector3D
 from md_readers.config_reader import ConfigReader
 
-def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Atom], droplet_center: Vector3D, atom_types: list[int], description: str) -> dict[str, DensityProfile]:
-    x_c = droplet_center.x
-    y_c = droplet_center.y
-    z_c = droplet_center.z
+def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Atom], droplet_com: Vector3D, atom_types: list[int], description: str) -> dict[str, DensityProfile]:
+    x_c = droplet_com.x
+    y_c = droplet_com.y
+    z_c = droplet_com.z
     x = dict()
     y = dict()
     z = dict()

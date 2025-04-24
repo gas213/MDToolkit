@@ -21,7 +21,7 @@ regexes = {
     "velocities header": "^Velocities.*$"
 }
 
-def read_header(config: ConfigReader) -> Header:    
+def read_header(data_file: str) -> Header:    
     results = {
         "atom_count": None,
         "box": {}
@@ -31,7 +31,7 @@ def read_header(config: ConfigReader) -> Header:
         results["box"][axis + "lo"] = None
         results["box"][axis + "hi"] = None
 
-    with open(config.data_path, "r") as data:
+    with open(data_file, "r") as data:
         for line in data:
             if re.search(regexes["atom count line"], line) is not None:
                 results["atom_count"] = int(line.split()[0])
@@ -60,9 +60,9 @@ def read_header(config: ConfigReader) -> Header:
                 else: return Header(results["atom_count"], Box(Vector3D(results["box"]["xlo"], results["box"]["ylo"], results["box"]["zlo"]),
                                                                Vector3D(results["box"]["xhi"], results["box"]["yhi"], results["box"]["zhi"])))
                 
-def read_atoms(config: ConfigReader) -> list[Atom]:
+def read_atoms(config: ConfigReader, data_file: str) -> list[Atom]:
     atoms = []
-    with open(config.data_path, "r") as data:
+    with open(data_file, "r") as data:
         atoms_section_reached = False
         for line in data:
             if not atoms_section_reached:
