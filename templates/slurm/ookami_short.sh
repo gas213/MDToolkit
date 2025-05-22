@@ -2,11 +2,12 @@
 
 # REPLACE THE {{FIELDS}}
 # Maximum run time on Ookami short is 4 hours
+# Max tasks per node is 48, but time stepping crashes if more than 36 tasks are used
 
 #SBATCH --partition=short
 #SBATCH --time={{d-hh:mm:ss}}
 #SBATCH --nodes={{num_nodes}}
-#SBATCH --ntasks-per-node=48
+#SBATCH --ntasks-per-node={{36, 48}}
 #SBATCH --job-name {{job_name}}
 #SBATCH --output="job.%j.%N.out"
 #SBATCH --mail-type=ALL
