@@ -1,5 +1,5 @@
 ### LAMMPS Input File - Merge data files together
-# From MDToolkit template file: merge_data.in
+# From MDToolkit template file: merge_saline_ptfe.in
 
 ## Configuration Variables
 # FILL IN {{FIELDS}}

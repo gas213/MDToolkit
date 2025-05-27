@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# From MDToolkit template file: sol_new.sh
+
 # REPLACE THE {{FIELDS}}
 # Maximum run time on rapids/hawkcpu is 3 days
 

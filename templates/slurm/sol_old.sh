@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# From MDToolkit template file: sol_old.sh
+
 # REPLACE THE {{FIELDS}}
 # Maximum run time on eng is 3 days
 
