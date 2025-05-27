@@ -27,6 +27,6 @@ module load lammps/20210310
 
 cd ${SLURM_SUBMIT_DIR}
 
-mpirun -np $SLURM_NTASKS `which lmp` -in {{in_file}}
+mpirun -np $SLURM_NTASKS `which lmp` -in {{file.in}}
  
 exit
