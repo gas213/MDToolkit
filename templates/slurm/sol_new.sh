@@ -10,7 +10,7 @@
 #SBATCH --time={{d-hh:mm:ss}}
 #SBATCH --nodes={{n}}
 #SBATCH --ntasks-per-node={{64, 50}}
-#SBATCH --job-name {{name}}
+#SBATCH --job-name={{name}}
 #SBATCH --output="job.%j.%N.out"
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user={{email}}
