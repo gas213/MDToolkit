@@ -5,7 +5,7 @@
 
 #SBATCH --partition={{rapids, hawkcpu}}
 #SBATCH --time={{d-hh:mm:ss}}
-#SBATCH --nodes={{num_nodes}}
+#SBATCH --nodes={{n}}
 #SBATCH --ntasks-per-node={{64, 50}}
 #SBATCH --job-name {{job_name}}
 #SBATCH --output="job.%j.%N.out"
