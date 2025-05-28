@@ -1,5 +1,5 @@
-### LAMMPS Input File - Coalescence of droplet on PTFE surface
-# From MDToolkit template file: droplet_on_ptfe.in
+### LAMMPS Input File - Simulation of droplet on PTFE surface
+# From MDToolkit template file: droplet_ptfe.in
 
 ## Configuration Variables
 # FILL IN {{FIELDS}}
