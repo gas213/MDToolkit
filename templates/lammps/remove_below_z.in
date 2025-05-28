@@ -7,7 +7,7 @@
 # File name of the initial LAMMPS data file
 variable    START_DATA string {{"file"}}
 
-# Atom types to remove (space-separated integers, all inside quotes)
+# Z coordinate threshold below which atoms will be removed
 variable    Z_THRESHOLD equal {{float}}
 
 # Reset atom IDs?
