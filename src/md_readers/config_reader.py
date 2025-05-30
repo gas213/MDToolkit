@@ -14,6 +14,7 @@ class ConfigReader:
         self._step_start = self.config["DEFAULT"]["StepStart"]
         self._step_end = self.config["DEFAULT"]["StepEnd"]
         self._data_type = self.config["DEFAULT"]["DataType"]
+        self._radial_profile_start_r = float(self.config["DEFAULT"]["RadialProfileStartR"])
         if self._data_type == "NetCDF":
             self._data_columns = {}
         else:
@@ -61,6 +62,10 @@ class ConfigReader:
     @property
     def data_type(self) -> str:
         return self._data_type
+    
+    @property
+    def radial_profile_start_r(self) -> float:
+        return self._radial_profile_start_r
     
     @property
     def data_columns(self) -> dict[str, int]:

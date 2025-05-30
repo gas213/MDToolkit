@@ -1,6 +1,6 @@
 import math
 
-from constants import min_radius_for_radial_profiles, four_thirds_pi
+from constants import four_thirds_pi
 from md_dataclasses.atom import Atom
 from md_dataclasses.density_profile import DensityProfile
 from md_dataclasses.header import Header
@@ -20,9 +20,10 @@ def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Ato
     for val in range(int(header.box.lo.x), int(header.box.hi.x) + 1): x[val] = 0
     for val in range(int(header.box.lo.y), int(header.box.hi.y) + 1): y[val] = 0
     for val in range(int(header.box.lo.z), int(header.box.hi.z) + 1): z[val] = 0
-    for val in range(min_radius_for_radial_profiles, int(config.approx_sphere["R"])): r_count[val] = 0
-    for val in range(min_radius_for_radial_profiles, int(config.approx_sphere["R"])): r_density[val] = 0
-    for val in range(min_radius_for_radial_profiles, int(config.approx_sphere["R"])): r_density_norm[val] = 0
+    # TODO: fix range, shouldn't be casting to int
+    for val in range(int(config.radial_profile_start_r), int(config.approx_sphere["R"])): r_count[val] = 0
+    for val in range(int(config.radial_profile_start_r), int(config.approx_sphere["R"])): r_density[val] = 0
+    for val in range(int(config.radial_profile_start_r), int(config.approx_sphere["R"])): r_density_norm[val] = 0
     
     for atom in atoms:
         if (atom_types == [0] or atom.type in atom_types):
@@ -37,8 +38,9 @@ def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Ato
     v_total = four_thirds_pi * float(config.approx_sphere["R"])**3
     norm_factor = 1 if r_count_total == 0 else v_total / r_count_total
 
-    v_inner = four_thirds_pi * float(min_radius_for_radial_profiles)**3
-    for r_inner in range(min_radius_for_radial_profiles, int(config.approx_sphere["R"])):
+    v_inner = four_thirds_pi * config.radial_profile_start_r**3
+    # TODO: fix range, shouldn't be casting to int
+    for r_inner in range(int(config.radial_profile_start_r), int(config.approx_sphere["R"])):
         v_outer = four_thirds_pi * float(r_inner + 1)**3
         r_density[r_inner] = float(r_count[r_inner]) / (v_outer - v_inner)
         r_density_norm[r_inner] = r_density[r_inner] * norm_factor
