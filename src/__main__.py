@@ -71,21 +71,22 @@ for data_file in config.data_files:
         avg_droplet_com = droplet_com
         avg_density_profiles = density_profiles
     elif file_counter > 1:
+        division_factor = 1.0 / float(file_counter)
         if atom_extremes.lo.x < overall_atom_extremes.lo.x: overall_atom_extremes.lo.x = atom_extremes.lo.x
         if atom_extremes.hi.x > overall_atom_extremes.hi.x: overall_atom_extremes.hi.x = atom_extremes.hi.x
         if atom_extremes.lo.y < overall_atom_extremes.lo.y: overall_atom_extremes.lo.y = atom_extremes.lo.y
         if atom_extremes.hi.y > overall_atom_extremes.hi.y: overall_atom_extremes.hi.y = atom_extremes.hi.y
         if atom_extremes.lo.z < overall_atom_extremes.lo.z: overall_atom_extremes.lo.z = atom_extremes.lo.z
         if atom_extremes.hi.z > overall_atom_extremes.hi.z: overall_atom_extremes.hi.z = atom_extremes.hi.z
-        avg_salt_concentration = (avg_salt_concentration * (file_counter - 1) + salt_concentration) / file_counter
-        avg_vapor_count = (avg_vapor_count * (file_counter - 1) + vapor_count) / file_counter
-        avg_droplet_com.x = (avg_droplet_com.x * (file_counter - 1) + droplet_com.x) / file_counter
-        avg_droplet_com.y = (avg_droplet_com.y * (file_counter - 1) + droplet_com.y) / file_counter
-        avg_droplet_com.z = (avg_droplet_com.z * (file_counter - 1) + droplet_com.z) / file_counter
+        avg_salt_concentration = (avg_salt_concentration * (file_counter - 1) + salt_concentration) * division_factor
+        avg_vapor_count = (avg_vapor_count * (file_counter - 1) + vapor_count) * division_factor
+        avg_droplet_com.x = (avg_droplet_com.x * (file_counter - 1) + droplet_com.x) * division_factor
+        avg_droplet_com.y = (avg_droplet_com.y * (file_counter - 1) + droplet_com.y) * division_factor
+        avg_droplet_com.z = (avg_droplet_com.z * (file_counter - 1) + droplet_com.z) * division_factor
         for group_name, profile_group in density_profiles.items():
             for profile_name, profile in profile_group.items():
                 for location, count in profile.data.items():
-                    avg_density_profiles[group_name][profile_name].data[location] = (avg_density_profiles[group_name][profile_name].data[location] * (file_counter - 1) + density_profiles[group_name][profile_name].data[location]) / file_counter
+                    avg_density_profiles[group_name][profile_name].data[location] = (avg_density_profiles[group_name][profile_name].data[location] * (file_counter - 1) + density_profiles[group_name][profile_name].data[location]) * division_factor
     
     print(f"Done processing data file {os.path.basename(data_file)}")
 
