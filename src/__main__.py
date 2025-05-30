@@ -50,18 +50,18 @@ for data_file in config.data_files:
     print("Building density profiles...")
     density_profiles: dict[str, dict[str, DensityProfile]] = {
         # Individual elements
-        "carbon": build_density_profiles(config, header, atoms, droplet_com, config.get_atom_type_ids(["C"]), "carbon"),
-        "chlorine": build_density_profiles(config, header, atoms, droplet_com, config.get_atom_type_ids(["Cl"]), "chlorine"),
-        "fluorine": build_density_profiles(config, header, atoms, droplet_com, config.get_atom_type_ids(["F"]), "fluorine"),
-        "hydrogen": build_density_profiles(config, header, atoms, droplet_com, config.get_atom_type_ids(["H"]), "hydrogen"),
-        "oxygen": build_density_profiles(config, header, atoms, droplet_com, config.get_atom_type_ids(["O"]), "oxygen"),
-        "sodium": build_density_profiles(config, header, atoms, droplet_com, config.get_atom_type_ids(["Na"]), "sodium"),
+        "carbon": build_density_profiles(config, header, filter(lambda atom: atom.type in config.get_atom_type_ids(["C"]), atoms), droplet_com, "carbon"),
+        "chlorine": build_density_profiles(config, header, filter(lambda atom: atom.type in config.get_atom_type_ids(["Cl"]), atoms), droplet_com, "chlorine"),
+        "fluorine": build_density_profiles(config, header, filter(lambda atom: atom.type in config.get_atom_type_ids(["F"]), atoms), droplet_com, "fluorine"),
+        "hydrogen": build_density_profiles(config, header, filter(lambda atom: atom.type in config.get_atom_type_ids(["H"]), atoms), droplet_com, "hydrogen"),
+        "oxygen": build_density_profiles(config, header, filter(lambda atom: atom.type in config.get_atom_type_ids(["O"]), atoms), droplet_com, "oxygen"),
+        "sodium": build_density_profiles(config, header, filter(lambda atom: atom.type in config.get_atom_type_ids(["Na"]), atoms), droplet_com, "sodium"),
         # Groups of elements
-        "all": build_density_profiles(config, header, atoms, droplet_com, [0], "all-element"),
-        "ptfe": build_density_profiles(config, header, atoms, droplet_com, config.get_atom_type_ids(["C", "F"]), "ptfe"),
-        "salt": build_density_profiles(config, header, atoms, droplet_com, config.get_atom_type_ids(["Cl", "Na"]), "salt"),
-        "saltwater": build_density_profiles(config, header, atoms, droplet_com, config.get_atom_type_ids(["Cl", "Na", "H", "O"]), "saltwater"),
-        "water": build_density_profiles(config, header, atoms, droplet_com, config.get_atom_type_ids(["H", "O"]), "water"),
+        "all": build_density_profiles(config, header, atoms, droplet_com, "all-element"),
+        "ptfe": build_density_profiles(config, header, filter(lambda atom: atom.type in config.get_atom_type_ids(["C", "F"]), atoms), droplet_com, "ptfe"),
+        "salt": build_density_profiles(config, header, filter(lambda atom: atom.type in config.get_atom_type_ids(["Cl", "Na"]), atoms), droplet_com, "salt"),
+        "saltwater": build_density_profiles(config, header, filter(lambda atom: atom.type in config.get_atom_type_ids(["Cl", "Na", "H", "O"]), atoms), droplet_com, "saltwater"),
+        "water": build_density_profiles(config, header, filter(lambda atom: atom.type in config.get_atom_type_ids(["H", "O"]), atoms), droplet_com, "water"),
     }
 
     if file_counter == 1:

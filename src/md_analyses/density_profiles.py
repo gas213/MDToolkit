@@ -7,7 +7,7 @@ from md_dataclasses.header import Header
 from md_dataclasses.vector3d import Vector3D
 from md_readers.config_reader import ConfigReader
 
-def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Atom], droplet_com: Vector3D, atom_types: list[int], description: str) -> dict[str, DensityProfile]:
+def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Atom], droplet_com: Vector3D, description: str) -> dict[str, DensityProfile]:
     x_c = droplet_com.x
     y_c = droplet_com.y
     z_c = droplet_com.z
@@ -26,13 +26,12 @@ def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Ato
     for val in range(int(config.radial_profile_start_r), int(config.approx_sphere["R"])): r_density_norm[val] = 0
     
     for atom in atoms:
-        if (atom_types == [0] or atom.type in atom_types):
-            x[int(atom.pos.x)] += 1
-            y[int(atom.pos.y)] += 1
-            z[int(atom.pos.z)] += 1
+        x[int(atom.pos.x)] += 1
+        y[int(atom.pos.y)] += 1
+        z[int(atom.pos.z)] += 1
 
-            r_atom = math.sqrt((atom.pos.x - x_c)**2 + (atom.pos.y - y_c)**2 + (atom.pos.z - z_c)**2)
-            if int(r_atom) in r_count: r_count[int(r_atom)] += 1
+        r_atom = math.sqrt((atom.pos.x - x_c)**2 + (atom.pos.y - y_c)**2 + (atom.pos.z - z_c)**2)
+        if int(r_atom) in r_count: r_count[int(r_atom)] += 1
 
     r_count_total = sum(r_count.values())
     v_total = four_thirds_pi * float(config.approx_sphere["R"])**3
