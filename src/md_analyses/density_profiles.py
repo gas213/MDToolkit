@@ -28,7 +28,7 @@ def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Ato
     z_c = droplet_com.z
 
     r_count, r_bins = build_histogram(int(config.radial_profile_start_r), int(config.approx_sphere["R"]), int(config.radial_profile_interval),
-                              [math.sqrt((atom.pos.x - x_c)**2 + (atom.pos.y - y_c)**2 + (atom.pos.z - z_c)**2) for atom in atoms])
+                                      [math.sqrt((atom.pos.x - x_c)**2 + (atom.pos.y - y_c)**2 + (atom.pos.z - z_c)**2) for atom in atoms])
 
     r_bin_volumes = [four_thirds_pi * (r_bins[i + 1]**3 - r_bins[i]**3) for i in range(len(r_bins) - 1)]
     r_density = {k: v for k, v in zip(r_count.keys(), [list(r_count.values())[i] / r_bin_volumes[i] for i in range(len(r_count))])}
