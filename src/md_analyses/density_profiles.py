@@ -51,10 +51,10 @@ def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Ato
         v_inner = v_outer
 
     return {
-        "x": DensityProfile(x, f"Histogram of {description} atom count in x:"),
-        "y": DensityProfile(y, f"Histogram of {description} atom count in y:"),
-        "z": DensityProfile(z, f"Histogram of {description} atom count in z:"),
-        "r_count": DensityProfile(r_count, f"Histogram of {description} atom count vs truncated radius, based on droplet center of mass:"),
+        "x": DensityProfile(x, f"Profile of {description} atom count in x:"),
+        "y": DensityProfile(y, f"Profile of {description} atom count in y:"),
+        "z": DensityProfile(z, f"Profile of {description} atom count in z:"),
+        "r_count": DensityProfile(r_count, f"Profile of {description} atom count vs truncated radius, based on droplet center of mass:"),
         "r_density": DensityProfile(r_density, f"Profile of {description} density (atoms/angstrom**3) vs truncated radius, based on droplet center of mass:"),
         "r_density_norm": DensityProfile(r_density_norm, f"Profile of {description} normalized density vs truncated radius, based on droplet center of mass:"),
     }
