@@ -12,8 +12,5 @@ def total_atom_count(header: Header, len_atoms: int) -> str:
     result = (header.atom_count == len_atoms)
     return f"Atom count in header matches number of atom records: {result}"
 
-def density_profile_atom_count(header: Header, x_profile: DensityProfile, y_profile: DensityProfile, z_profile: DensityProfile) -> str:
-    result = (header.atom_count == sum(x_profile.data.values()) and
-              header.atom_count == sum(y_profile.data.values()) and
-              header.atom_count == sum(z_profile.data.values()))
-    return f"Box-wise density profiles each include every atom: {result}"
+def density_profile_atom_count(header: Header, density_profile: DensityProfile, description: str) -> str:
+    return f"Number of atoms excluded from {description}-wise density profile (out of bounds): {header.atom_count - int(sum(density_profile.data.values()))}"

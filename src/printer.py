@@ -24,11 +24,11 @@ def print_sanity_checks(header: Header, atom_extremes: Box, atoms: list[Atom], d
     text += f"\n{atoms_within_box(header.box, atom_extremes)}"
     text += f"\n{total_atom_count(header, len(atoms))}"
 
-    # f-strings don't like square brackets
-    dens_x = density_profiles["x"]
-    dens_y = density_profiles["y"]
-    dens_z = density_profiles["z"]
-    text += f"\n{density_profile_atom_count(header, dens_x, dens_y, dens_z)}"
+    for axis in ["x", "y", "z"]:
+        # f-strings don't like square brackets
+        profile = density_profiles[axis]
+        text += f"\n{density_profile_atom_count(header, profile, axis)}"
+
     return text
 
 def print_salt_concentration(salt_concentration: float) -> str:
