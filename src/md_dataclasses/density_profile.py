@@ -2,5 +2,5 @@ from dataclasses import dataclass
 
 @dataclass
 class DensityProfile:
-    data: dict[int, float]
+    data: dict[str, float]
     description: str

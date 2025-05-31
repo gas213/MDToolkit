@@ -9,13 +9,27 @@ from md_dataclasses.vector3d import Vector3D
 from md_readers.config_reader import ConfigReader
 
 def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Atom], droplet_com: Vector3D, description: str) -> dict[str, DensityProfile]:
-    x_hist = np.histogram(a=[atom.pos.x for atom in atoms], bins=np.arange(int(header.box.lo.x), int(header.box.hi.x) + 2))
-    y_hist = np.histogram(a=[atom.pos.y for atom in atoms], bins=np.arange(int(header.box.lo.y), int(header.box.hi.y) + 2))
-    z_hist = np.histogram(a=[atom.pos.z for atom in atoms], bins=np.arange(int(header.box.lo.z), int(header.box.hi.z) + 2))
+    x_bins = np.arange(header.box.lo.x, header.box.hi.x, config.cartesian_profile_interval)
+    if header.box.hi.x > x_bins[-1]: x_bins = np.append(x_bins, header.box.hi.x)
+    y_bins = np.arange(header.box.lo.y, header.box.hi.y, config.cartesian_profile_interval)
+    if header.box.hi.y > y_bins[-1]: y_bins = np.append(y_bins, header.box.hi.y)
+    z_bins = np.arange(header.box.lo.z, header.box.hi.z, config.cartesian_profile_interval)
+    if header.box.hi.z > z_bins[-1]: z_bins = np.append(z_bins, header.box.hi.z)
 
-    x = {int(k): float(v) for (k, v) in zip(x_hist[1][:-1], x_hist[0])}
-    y = {int(k): float(v) for (k, v) in zip(y_hist[1][:-1], y_hist[0])}
-    z = {int(k): float(v) for (k, v) in zip(z_hist[1][:-1], z_hist[0])}
+    x_hist = np.histogram([atom.pos.x for atom in atoms], x_bins)
+    y_hist = np.histogram([atom.pos.y for atom in atoms], y_bins)
+    z_hist = np.histogram([atom.pos.z for atom in atoms], z_bins)
+
+    x_labels = [f"[{x_bins[i]}, {x_bins[i + 1]})" for i in range(len(x_bins) - 1)]
+    x_labels[-1] = x_labels[-1][:-1] + "]"  # The end of the last bin is inclusive
+    y_labels = [f"[{y_bins[i]}, {y_bins[i + 1]})" for i in range(len(y_bins) - 1)]
+    y_labels[-1] = y_labels[-1][:-1] + "]"  # The end of the last bin is inclusive
+    z_labels = [f"[{z_bins[i]}, {z_bins[i + 1]})" for i in range(len(z_bins) - 1)]
+    z_labels[-1] = z_labels[-1][:-1] + "]"  # The end of the last bin is inclusive
+
+    x = {k: v for (k, v) in zip(x_labels, x_hist[0])}
+    y = {k: v for (k, v) in zip(y_labels, y_hist[0])}
+    z = {k: v for (k, v) in zip(z_labels, z_hist[0])}
     
     x_c = droplet_com.x
     y_c = droplet_com.y
@@ -45,10 +59,10 @@ def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Ato
         v_inner = v_outer
 
     return {
-        "x": DensityProfile(x, f"Profile of {description} atom count vs truncated x coordinate:"),
-        "y": DensityProfile(y, f"Profile of {description} atom count vs truncated y coordinate:"),
-        "z": DensityProfile(z, f"Profile of {description} atom count vs truncated z coordinate:"),
-        "r_count": DensityProfile(r_count, f"Profile of {description} atom count vs truncated radius, based on droplet center of mass:"),
+        "x": DensityProfile(x, f"Histogram of {description} atom count in x:"),
+        "y": DensityProfile(y, f"Histogram of {description} atom count in y:"),
+        "z": DensityProfile(z, f"Histogram of {description} atom count in z:"),
+        "r_count": DensityProfile(r_count, f"Histogram of {description} atom count vs truncated radius, based on droplet center of mass:"),
         "r_density": DensityProfile(r_density, f"Profile of {description} density (atoms/angstrom**3) vs truncated radius, based on droplet center of mass:"),
         "r_density_norm": DensityProfile(r_density_norm, f"Profile of {description} normalized density vs truncated radius, based on droplet center of mass:"),
     }
