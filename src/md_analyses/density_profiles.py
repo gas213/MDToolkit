@@ -22,13 +22,9 @@ def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Ato
     x, _ = build_histogram(header.box.lo.x, header.box.hi.x, config.cartesian_profile_interval, [atom.pos.x for atom in atoms])
     y, _ = build_histogram(header.box.lo.y, header.box.hi.y, config.cartesian_profile_interval, [atom.pos.y for atom in atoms])
     z, _ = build_histogram(header.box.lo.z, header.box.hi.z, config.cartesian_profile_interval, [atom.pos.z for atom in atoms])
-    
-    x_c = droplet_com.x
-    y_c = droplet_com.y
-    z_c = droplet_com.z
 
-    r_count, r_bins = build_histogram(int(config.radial_profile_start_r), int(config.approx_sphere["R"]), int(config.radial_profile_interval),
-                                      [math.sqrt((atom.pos.x - x_c)**2 + (atom.pos.y - y_c)**2 + (atom.pos.z - z_c)**2) for atom in atoms])
+    r_count, r_bins = build_histogram(config.radial_profile_start_r, config.approx_sphere["R"], config.radial_profile_interval,
+                                      [math.sqrt((atom.pos.x - droplet_com.x)**2 + (atom.pos.y - droplet_com.y)**2 + (atom.pos.z - droplet_com.z)**2) for atom in atoms])
 
     r_bin_volumes = [four_thirds_pi * (r_bins[i + 1]**3 - r_bins[i]**3) for i in range(len(r_bins) - 1)]
     r_density = {k: v for k, v in zip(r_count.keys(), [list(r_count.values())[i] / r_bin_volumes[i] for i in range(len(r_count))])}
