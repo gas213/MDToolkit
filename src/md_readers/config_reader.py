@@ -15,6 +15,7 @@ class ConfigReader:
         self._step_end = self.config["DEFAULT"]["StepEnd"]
         self._data_type = self.config["DEFAULT"]["DataType"]
         self._cartesian_profile_interval = float(self.config["DEFAULT"]["CartesianProfileInterval"])
+        self._radial_profile_interval = float(self.config["DEFAULT"]["RadialProfileInterval"])
         self._radial_profile_start_r = float(self.config["DEFAULT"]["RadialProfileStartR"])
         if self._data_type == "NetCDF":
             self._data_columns = {}
@@ -67,6 +68,10 @@ class ConfigReader:
     @property
     def cartesian_profile_interval(self) -> float:
         return self._cartesian_profile_interval
+    
+    @property
+    def radial_profile_interval(self) -> float:
+        return self._radial_profile_interval
 
     @property
     def radial_profile_start_r(self) -> float:
