@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 from constants import four_thirds_pi
 from md_dataclasses.atom import Atom
@@ -8,28 +9,26 @@ from md_dataclasses.vector3d import Vector3D
 from md_readers.config_reader import ConfigReader
 
 def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Atom], droplet_com: Vector3D, description: str) -> dict[str, DensityProfile]:
+    x_hist = np.histogram(a=[atom.pos.x for atom in atoms], bins=np.arange(int(header.box.lo.x), int(header.box.hi.x) + 2))
+    y_hist = np.histogram(a=[atom.pos.y for atom in atoms], bins=np.arange(int(header.box.lo.y), int(header.box.hi.y) + 2))
+    z_hist = np.histogram(a=[atom.pos.z for atom in atoms], bins=np.arange(int(header.box.lo.z), int(header.box.hi.z) + 2))
+
+    x = {int(k): float(v) for (k, v) in zip(x_hist[1][:-1], x_hist[0])}
+    y = {int(k): float(v) for (k, v) in zip(y_hist[1][:-1], y_hist[0])}
+    z = {int(k): float(v) for (k, v) in zip(z_hist[1][:-1], z_hist[0])}
+    
     x_c = droplet_com.x
     y_c = droplet_com.y
     z_c = droplet_com.z
-    x = dict()
-    y = dict()
-    z = dict()
     r_count = dict()
     r_density = dict()
     r_density_norm = dict()
-    for val in range(int(header.box.lo.x), int(header.box.hi.x) + 1): x[val] = 0
-    for val in range(int(header.box.lo.y), int(header.box.hi.y) + 1): y[val] = 0
-    for val in range(int(header.box.lo.z), int(header.box.hi.z) + 1): z[val] = 0
     # TODO: fix range, shouldn't be casting to int
     for val in range(int(config.radial_profile_start_r), int(config.approx_sphere["R"])): r_count[val] = 0
     for val in range(int(config.radial_profile_start_r), int(config.approx_sphere["R"])): r_density[val] = 0
     for val in range(int(config.radial_profile_start_r), int(config.approx_sphere["R"])): r_density_norm[val] = 0
-    
-    for atom in atoms:
-        x[int(atom.pos.x)] += 1
-        y[int(atom.pos.y)] += 1
-        z[int(atom.pos.z)] += 1
 
+    for atom in atoms:
         r_atom = math.sqrt((atom.pos.x - x_c)**2 + (atom.pos.y - y_c)**2 + (atom.pos.z - z_c)**2)
         if int(r_atom) in r_count: r_count[int(r_atom)] += 1
 
