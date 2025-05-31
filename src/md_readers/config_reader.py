@@ -142,10 +142,10 @@ class ConfigReader:
     def make_directories(self):
         """
         Creates folder structure for outputting results.\n
-        Example using file named 69.data:\n
-        - {directory containing 69.data}/
+        Example for file named 123.data:\n
+        - {directory containing 123.data}/
         \t- analysis/
-        \t\t- 69/
+        \t\t- 123/
         \t\t\t- profiles/
         """
 

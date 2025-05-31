@@ -13,4 +13,4 @@ def total_atom_count(header: Header, len_atoms: int) -> str:
     return f"Atom count in header matches number of atom records: {result}"
 
 def density_profile_atom_count(header: Header, density_profile: DensityProfile, description: str) -> str:
-    return f"Number of atoms excluded from {description}-wise density profile (out of bounds): {header.atom_count - int(sum(density_profile.data.values()))}"
+    return f"Difference between header total atom count vs total count according to {description}-wise profile(s): {abs(float(header.atom_count) - sum(density_profile.data.values()))}"
