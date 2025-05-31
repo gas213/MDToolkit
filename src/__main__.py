@@ -1,6 +1,7 @@
 import os.path
 import sys
 
+from constants import element_sets
 from md_analyses.atom_extremes import find_atom_extremes
 from md_analyses.center_of_mass import calc_droplet_center
 from md_analyses.density_profiles import build_profiles_cartesian, build_profiles_spherical
@@ -27,8 +28,10 @@ atom_extremes_overall: Box = None
 salt_concentration_avg: float = 0.0
 vapor_count_avg: float = 0.0
 droplet_com_avg: Vector3D = Vector3D(0.0, 0.0, 0.0)
-profiles_cartesian_avg: dict[str, dict[str, DensityProfile]] = None
-profiles_spherical_avg: dict[str, dict[str, DensityProfile]] = None
+profiles_cartesian : dict[str, dict[str, DensityProfile]] = {}
+profiles_spherical : dict[str, dict[str, DensityProfile]] = {}
+profiles_cartesian_avg: dict[str, dict[str, DensityProfile]] = {}
+profiles_spherical_avg: dict[str, dict[str, DensityProfile]] = {}
 
 for data_file in config.data_files:
     file_counter += 1
@@ -37,69 +40,49 @@ for data_file in config.data_files:
     print("Reading atoms...")
     atoms = read_atoms(config, data_file)
 
-    print("Finding atom extremes...")
-    atom_extremes = find_atom_extremes(atoms)
+    if config.enable_atom_extremes:
+        print("Finding atom extremes...")
+        atom_extremes = find_atom_extremes(atoms)
+        atom_extremes_overall = update_atom_extremes(atom_extremes_overall, atom_extremes)
 
-    print("Calculating salt concentration...")
-    salt_concentration = calc_salt_concentration(config, atoms)
+    if config.enable_salt_concentration:
+        print("Calculating salt concentration...")
+        salt_concentration = calc_salt_concentration(config, atoms)
+        salt_concentration_avg = update_avg_scalar(salt_concentration_avg, salt_concentration, file_counter)
 
-    print("Counting vapor molecules...")
-    vapor_count = count_vapor_particles(config, atoms)
+    if config.enable_vapor_count:
+        print("Counting vapor molecules...")
+        vapor_count = count_vapor_particles(config, atoms)
+        vapor_count_avg = update_avg_scalar(vapor_count_avg, vapor_count, file_counter)
 
-    print("Calculating droplet center of mass...")
-    droplet_com = calc_droplet_center(config, atoms)
+    if config.enable_droplet_com:
+        print("Calculating droplet center of mass...")
+        droplet_com = calc_droplet_center(config, atoms)
+        droplet_com_avg.x = update_avg_scalar(droplet_com_avg.x, droplet_com.x, file_counter)
+        droplet_com_avg.y = update_avg_scalar(droplet_com_avg.y, droplet_com.y, file_counter)
+        droplet_com_avg.z = update_avg_scalar(droplet_com_avg.z, droplet_com.z, file_counter)
 
-    print("Building cartesian profiles...")
-    profiles_cartesian: dict[str, dict[str, DensityProfile]] = {
-        # Individual elements
-        "carbon": build_profiles_cartesian([atom for atom in atoms if atom.type in config.get_atom_type_ids(["C"])], config, header, "carbon"),
-        "chlorine": build_profiles_cartesian([atom for atom in atoms if atom.type in config.get_atom_type_ids(["Cl"])], config, header, "chlorine"),
-        "fluorine": build_profiles_cartesian([atom for atom in atoms if atom.type in config.get_atom_type_ids(["F"])], config, header, "fluorine"),
-        "hydrogen": build_profiles_cartesian([atom for atom in atoms if atom.type in config.get_atom_type_ids(["H"])], config, header, "hydrogen"),
-        "oxygen": build_profiles_cartesian([atom for atom in atoms if atom.type in config.get_atom_type_ids(["O"])], config, header, "oxygen"),
-        "sodium": build_profiles_cartesian([atom for atom in atoms if atom.type in config.get_atom_type_ids(["Na"])], config, header, "sodium"),
-        # Groups of elements
-        "all": build_profiles_cartesian(atoms, config, header, "all-element"), 
-        "ptfe": build_profiles_cartesian([atom for atom in atoms if atom.type in config.get_atom_type_ids(["C", "F"])], config, header, "ptfe"),
-        "salt": build_profiles_cartesian([atom for atom in atoms if atom.type in config.get_atom_type_ids(["Cl", "Na"])], config, header, "salt"),
-        "saltwater": build_profiles_cartesian([atom for atom in atoms if atom.type in config.get_atom_type_ids(["Cl", "Na", "H", "O"])], config, header, "saltwater"),
-        "water": build_profiles_cartesian([atom for atom in atoms if atom.type in config.get_atom_type_ids(["H", "O"])], config, header, "water"),
-    }
+    if config.enable_cartesian_profiles:
+        print("Building cartesian profiles...")
+        for element_name, elements in element_sets.items():
+            profiles_cartesian[element_name] = build_profiles_cartesian([atom for atom in atoms if atom.type in config.get_atom_type_ids(elements)], config, header, element_name)
+        if file_counter == 1:
+            profiles_cartesian_avg = profiles_cartesian.copy()
+        else:
+            for group_name, profile_group in profiles_cartesian.items():
+                for profile_name, profile in profile_group.items():
+                    profiles_cartesian_avg[group_name][profile_name].data = update_avg_profile(profiles_cartesian_avg[group_name][profile_name].data, profile.data, file_counter)
 
-    print("Building spherical profiles...")
-    profiles_spherical: dict[str, dict[str, DensityProfile]] = {
-        # Individual elements
-        "carbon": build_profiles_spherical([atom for atom in atoms if atom.type in config.get_atom_type_ids(["C"])], config, droplet_com, "carbon"),
-        "chlorine": build_profiles_spherical([atom for atom in atoms if atom.type in config.get_atom_type_ids(["Cl"])], config, droplet_com, "chlorine"),
-        "fluorine": build_profiles_spherical([atom for atom in atoms if atom.type in config.get_atom_type_ids(["F"])], config, droplet_com, "fluorine"),
-        "hydrogen": build_profiles_spherical([atom for atom in atoms if atom.type in config.get_atom_type_ids(["H"])], config, droplet_com, "hydrogen"),
-        "oxygen": build_profiles_spherical([atom for atom in atoms if atom.type in config.get_atom_type_ids(["O"])], config, droplet_com, "oxygen"),
-        "sodium": build_profiles_spherical([atom for atom in atoms if atom.type in config.get_atom_type_ids(["Na"])], config, droplet_com, "sodium"),
-        # Groups of elements
-        "all": build_profiles_spherical(atoms, config, droplet_com, "all-element"),
-        "ptfe": build_profiles_spherical([atom for atom in atoms if atom.type in config.get_atom_type_ids(["C", "F"])], config, droplet_com, "ptfe"),
-        "salt": build_profiles_spherical([atom for atom in atoms if atom.type in config.get_atom_type_ids(["Cl", "Na"])], config, droplet_com, "salt"),
-        "saltwater": build_profiles_spherical([atom for atom in atoms if atom.type in config.get_atom_type_ids(["Cl", "Na", "H", "O"])], config, droplet_com, "saltwater"),
-        "water": build_profiles_spherical([atom for atom in atoms if atom.type in config.get_atom_type_ids(["H", "O"])], config, droplet_com, "water"),
-    }
-
-    atom_extremes_overall = update_atom_extremes(atom_extremes_overall, atom_extremes)
-    salt_concentration_avg = update_avg_scalar(salt_concentration_avg, salt_concentration, file_counter)
-    vapor_count_avg = update_avg_scalar(vapor_count_avg, vapor_count, file_counter)
-    droplet_com_avg.x = update_avg_scalar(droplet_com_avg.x, droplet_com.x, file_counter)
-    droplet_com_avg.y = update_avg_scalar(droplet_com_avg.y, droplet_com.y, file_counter)
-    droplet_com_avg.z = update_avg_scalar(droplet_com_avg.z, droplet_com.z, file_counter)
-
-    if file_counter == 1:
-        profiles_cartesian_avg = profiles_cartesian.copy()
-        profiles_spherical_avg = profiles_spherical.copy()
-    else:
-        for group_name, profile_group in profiles_cartesian.items():
-            for profile_name, profile in profile_group.items():
-                profiles_cartesian_avg[group_name][profile_name].data = update_avg_profile(profiles_cartesian_avg[group_name][profile_name].data, profile.data, file_counter)
-        for group_name, profile_group in profiles_spherical.items():
-            for profile_name, profile in profile_group.items():
-                profiles_spherical_avg[group_name][profile_name].data = update_avg_profile(profiles_spherical_avg[group_name][profile_name].data, profile.data, file_counter)
+    if config.enable_spherical_profiles:
+        print("Building spherical profiles...")
+        for element_name, elements in element_sets.items():
+            profiles_spherical[element_name] = build_profiles_spherical([atom for atom in atoms if atom.type in config.get_atom_type_ids(elements)], config, droplet_com, element_name)
+        if file_counter == 1:
+            profiles_spherical_avg = profiles_spherical.copy()
+        else:
+            for group_name, profile_group in profiles_spherical.items():
+                for profile_name, profile in profile_group.items():
+                    profiles_spherical_avg[group_name][profile_name].data = update_avg_profile(profiles_spherical_avg[group_name][profile_name].data, profile.data, file_counter)
     
     print(f"Done processing data file {os.path.basename(data_file)}")
 
@@ -107,20 +90,25 @@ print("Writing output files...")
 summary = ""
 summary += printer.print_title(config)
 summary += printer.print_header(header)
-summary += printer.print_atom_extremes(atom_extremes_overall)
-summary += printer.print_sanity_checks(header, atom_extremes_overall, atoms, profiles_cartesian_avg["all"])
-summary += printer.print_salt_concentration(salt_concentration_avg)
-summary += printer.print_vapor_count(vapor_count_avg)
-summary += printer.print_droplet_center(droplet_com_avg)
+if config.enable_atom_extremes: summary += printer.print_atom_extremes(atom_extremes_overall)
+summary += printer.print_check_atoms_count(header, atoms)
+if config.enable_atom_extremes: summary += printer.print_check_atom_extremes(header, atom_extremes_overall)
+if config.enable_cartesian_profiles: summary += printer.print_check_cartesian_profiles(header, profiles_cartesian_avg["all_element"])
+if config.enable_salt_concentration: summary += printer.print_salt_concentration(salt_concentration_avg)
+if config.enable_vapor_count: summary += printer.print_vapor_count(vapor_count_avg)
+if config.enable_droplet_com: summary += printer.print_droplet_center(droplet_com_avg)
 summary += printer.print_files_used(config.data_files)
 with open(os.path.join(config.dir_results, "summary.txt"), "w") as analysis: analysis.write(summary)
 
-for group_name, profile_group in profiles_cartesian_avg.items():
-    dir_group = os.path.join(config.dir_results, f"profiles/{group_name}")
-    os.makedirs(dir_group)
-    for profile_name, profile in profile_group.items():
-        with open(os.path.join(dir_group, f"{profile_name}.txt"), "w") as out_file: out_file.write(printer.print_density_profile(profile))
-    for profile_name, profile in profiles_spherical_avg[group_name].items():
-        with open(os.path.join(dir_group, f"{profile_name}.txt"), "w") as out_file: out_file.write(printer.print_density_profile(profile))
+if config.enable_cartesian_profiles or config.enable_spherical_profiles:
+    for element_name in element_sets.keys():
+        dir_group = os.path.join(config.dir_results, f"profiles/{element_name}")
+        os.makedirs(dir_group)
+        if config.enable_cartesian_profiles:
+            for profile_name, profile in profiles_cartesian_avg[element_name].items():
+                with open(os.path.join(dir_group, f"{profile_name}.txt"), "w") as out_file: out_file.write(printer.print_density_profile(profile))
+        if config.enable_spherical_profiles:
+            for profile_name, profile in profiles_spherical_avg[element_name].items():
+                with open(os.path.join(dir_group, f"{profile_name}.txt"), "w") as out_file: out_file.write(printer.print_density_profile(profile))
 
 print("ANALYSIS COMPLETE")

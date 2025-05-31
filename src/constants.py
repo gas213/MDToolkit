@@ -10,5 +10,22 @@ masses = {
     "O": 15.9994,
 }
 
+# Sets of elements to build profiles for
+element_sets = {
+    # Individual elements
+    "carbon": ["C"],
+    "chlorine": ["Cl"],
+    "fluorine": ["F"],
+    "hydrogen": ["H"],
+    "oxygen": ["O"],
+    "sodium": ["Na"],
+    # Groups of elements
+    "all_element": ["All"],
+    "ptfe": ["C", "F"],
+    "salt": ["Cl", "Na"],
+    "saltwater": ["Cl", "Na", "H", "O"],
+    "water": ["H", "O"],
+}
+
 # For sphere volume calculation
 four_thirds_pi = 4.0 * math.pi / 3.0

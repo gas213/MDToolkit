@@ -19,16 +19,18 @@ def print_header(header: Header) -> str:
 def print_atom_extremes(atom_extremes: Box) -> str:
     return f"\n\nMost extreme atom coordinates:\n{atom_extremes}"
 
-def print_sanity_checks(header: Header, atom_extremes: Box, atoms: list[Atom], density_profiles: dict[str, DensityProfile]) -> str:
-    text = f"\n\nSanity checks:"
-    text += f"\n{atoms_within_box(header.box, atom_extremes)}"
-    text += f"\n{total_atom_count(header, len(atoms))}"
+def print_check_atoms_count(header: Header, atoms: list[Atom]) -> str:
+    return f"\n\nSanity Checks:\n{total_atom_count(header, len(atoms))}"
 
+def print_check_atom_extremes(header: Header, atom_extremes: Box) -> str:
+    return f"\n{atoms_within_box(header.box, atom_extremes)}"
+
+def print_check_cartesian_profiles(header: Header, density_profiles: dict[str, DensityProfile]) -> str:
+    text = ""
     for axis in ["x", "y", "z"]:
         # f-strings don't like square brackets
         profile = density_profiles[axis]
         text += f"\n{density_profile_atom_count(header, profile, axis)}"
-
     return text
 
 def print_salt_concentration(salt_concentration: float) -> str:

@@ -14,6 +14,12 @@ class ConfigReader:
         self._step_start = self.config["DEFAULT"]["StepStart"]
         self._step_end = self.config["DEFAULT"]["StepEnd"]
         self._data_type = self.config["DEFAULT"]["DataType"]
+        self._enable_atom_extremes = self.config["DEFAULT"].getboolean("EnableAtomExtremes")
+        self._enable_salt_concentration = self.config["DEFAULT"].getboolean("EnableSaltConcentration")
+        self._enable_vapor_count = self.config["DEFAULT"].getboolean("EnableVaporCount")
+        self._enable_droplet_com = self.config["DEFAULT"].getboolean("EnableDropletCOM")
+        self._enable_cartesian_profiles = self.config["DEFAULT"].getboolean("EnableCartesianProfiles")
+        self._enable_spherical_profiles = self.config["DEFAULT"].getboolean("EnableSphericalProfiles")
         self._cartesian_profile_step_xyz = float(self.config["DEFAULT"]["CartesianProfileStepXYZ"])
         self._spherical_profile_step_r = float(self.config["DEFAULT"]["SphericalProfileStepR"])
         self._spherical_profile_start_r = float(self.config["DEFAULT"]["SphericalProfileStartR"])
@@ -66,6 +72,30 @@ class ConfigReader:
         return self._data_type
     
     @property
+    def enable_atom_extremes(self) -> bool:
+        return self._enable_atom_extremes
+    
+    @property
+    def enable_salt_concentration(self) -> bool:
+        return self._enable_salt_concentration
+    
+    @property
+    def enable_vapor_count(self) -> bool:
+        return self._enable_vapor_count
+    
+    @property
+    def enable_droplet_com(self) -> bool:
+        return self._enable_droplet_com or self._enable_spherical_profiles
+    
+    @property
+    def enable_cartesian_profiles(self) -> bool:
+        return self._enable_cartesian_profiles
+    
+    @property
+    def enable_spherical_profiles(self) -> bool:
+        return self._enable_spherical_profiles
+    
+    @property
     def cartesian_profile_step_xyz(self) -> float:
         return self._cartesian_profile_step_xyz
     
@@ -98,6 +128,8 @@ class ConfigReader:
         return self._dir_results
     
     def get_atom_type_ids(self, elements: list[str]) -> list[int]:
+        if len(elements) == 1 and (elements[0] in ["All", "all", "ALL"]):
+            return list(self._atom_types.keys())
         type_ids = []
         for element in elements:
             if element not in self._atom_types.values():
