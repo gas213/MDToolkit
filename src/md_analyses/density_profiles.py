@@ -8,28 +8,20 @@ from md_dataclasses.header import Header
 from md_dataclasses.vector3d import Vector3D
 from md_readers.config_reader import ConfigReader
 
+def build_histogram(start: float, end: float, interval: float, data: list[float]) -> dict[str, float]:
+    bins = np.arange(start, end, interval)
+    if end > bins[-1]: bins = np.append(bins, end) # Append one last bin to cover the remainder (will likely be smaller than the other bins)
+    hist, _ = np.histogram(data, bins)
+    
+    labels = [f"[{bins[i]}, {bins[i + 1]})" for i in range(len(bins) - 1)]
+    labels[-1] = labels[-1][:-1] + "]"  # The end of the last bin is inclusive
+
+    return {k: v for k, v in zip(labels, hist)}
+    
 def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Atom], droplet_com: Vector3D, description: str) -> dict[str, DensityProfile]:
-    x_bins = np.arange(header.box.lo.x, header.box.hi.x, config.cartesian_profile_interval)
-    if header.box.hi.x > x_bins[-1]: x_bins = np.append(x_bins, header.box.hi.x)
-    y_bins = np.arange(header.box.lo.y, header.box.hi.y, config.cartesian_profile_interval)
-    if header.box.hi.y > y_bins[-1]: y_bins = np.append(y_bins, header.box.hi.y)
-    z_bins = np.arange(header.box.lo.z, header.box.hi.z, config.cartesian_profile_interval)
-    if header.box.hi.z > z_bins[-1]: z_bins = np.append(z_bins, header.box.hi.z)
-
-    x_hist = np.histogram([atom.pos.x for atom in atoms], x_bins)
-    y_hist = np.histogram([atom.pos.y for atom in atoms], y_bins)
-    z_hist = np.histogram([atom.pos.z for atom in atoms], z_bins)
-
-    x_labels = [f"[{x_bins[i]}, {x_bins[i + 1]})" for i in range(len(x_bins) - 1)]
-    x_labels[-1] = x_labels[-1][:-1] + "]"  # The end of the last bin is inclusive
-    y_labels = [f"[{y_bins[i]}, {y_bins[i + 1]})" for i in range(len(y_bins) - 1)]
-    y_labels[-1] = y_labels[-1][:-1] + "]"  # The end of the last bin is inclusive
-    z_labels = [f"[{z_bins[i]}, {z_bins[i + 1]})" for i in range(len(z_bins) - 1)]
-    z_labels[-1] = z_labels[-1][:-1] + "]"  # The end of the last bin is inclusive
-
-    x = {k: v for (k, v) in zip(x_labels, x_hist[0])}
-    y = {k: v for (k, v) in zip(y_labels, y_hist[0])}
-    z = {k: v for (k, v) in zip(z_labels, z_hist[0])}
+    x = build_histogram(header.box.lo.x, header.box.hi.x, config.cartesian_profile_interval, [atom.pos.x for atom in atoms])
+    y = build_histogram(header.box.lo.y, header.box.hi.y, config.cartesian_profile_interval, [atom.pos.y for atom in atoms])
+    z = build_histogram(header.box.lo.z, header.box.hi.z, config.cartesian_profile_interval, [atom.pos.z for atom in atoms])
     
     x_c = droplet_com.x
     y_c = droplet_com.y
