@@ -14,9 +14,9 @@ class ConfigReader:
         self._step_start = self.config["DEFAULT"]["StepStart"]
         self._step_end = self.config["DEFAULT"]["StepEnd"]
         self._data_type = self.config["DEFAULT"]["DataType"]
-        self._cartesian_profile_interval = float(self.config["DEFAULT"]["CartesianProfileInterval"])
-        self._radial_profile_interval = float(self.config["DEFAULT"]["RadialProfileInterval"])
-        self._radial_profile_start_r = float(self.config["DEFAULT"]["RadialProfileStartR"])
+        self._cartesian_profile_step_xyz = float(self.config["DEFAULT"]["CartesianProfileStepXYZ"])
+        self._spherical_profile_step_r = float(self.config["DEFAULT"]["SphericalProfileStepR"])
+        self._spherical_profile_start_r = float(self.config["DEFAULT"]["SphericalProfileStartR"])
         if self._data_type == "NetCDF":
             self._data_columns = {}
         else:
@@ -66,16 +66,16 @@ class ConfigReader:
         return self._data_type
     
     @property
-    def cartesian_profile_interval(self) -> float:
-        return self._cartesian_profile_interval
+    def cartesian_profile_step_xyz(self) -> float:
+        return self._cartesian_profile_step_xyz
     
     @property
-    def radial_profile_interval(self) -> float:
-        return self._radial_profile_interval
+    def spherical_profile_step_r(self) -> float:
+        return self._spherical_profile_step_r
 
     @property
-    def radial_profile_start_r(self) -> float:
-        return self._radial_profile_start_r
+    def spherical_profile_start_r(self) -> float:
+        return self._spherical_profile_start_r
     
     @property
     def data_columns(self) -> dict[str, int]:

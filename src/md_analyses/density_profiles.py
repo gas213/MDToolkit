@@ -8,9 +8,9 @@ from md_dataclasses.header import Header
 from md_dataclasses.vector3d import Vector3D
 from md_readers.config_reader import ConfigReader
 
-def build_histogram(start: float, end: float, interval: float, data: list[float]) -> dict[str, float]:
-    bins = np.arange(start, end, interval)
-    if end > bins[-1]: bins = np.append(bins, end) # Append one last bin to cover the remainder (will likely be smaller than the other bins)
+def build_histogram(start: float, stop: float, step: float, data: list[float]) -> dict[str, float]:
+    bins = np.arange(start, stop, step)
+    if stop > bins[-1]: bins = np.append(bins, stop) # Append one last bin to cover the remainder (will likely be smaller than the other bins)
     hist, _ = np.histogram(data, bins)
     
     labels = [f"[{bins[i]}, {bins[i + 1]})" for i in range(len(bins) - 1)]
@@ -19,11 +19,11 @@ def build_histogram(start: float, end: float, interval: float, data: list[float]
     return {k: v for k, v in zip(labels, hist)}, bins
     
 def build_density_profiles(config: ConfigReader, header: Header, atoms: list[Atom], droplet_com: Vector3D, description: str) -> dict[str, DensityProfile]:
-    x, _ = build_histogram(header.box.lo.x, header.box.hi.x, config.cartesian_profile_interval, [atom.pos.x for atom in atoms])
-    y, _ = build_histogram(header.box.lo.y, header.box.hi.y, config.cartesian_profile_interval, [atom.pos.y for atom in atoms])
-    z, _ = build_histogram(header.box.lo.z, header.box.hi.z, config.cartesian_profile_interval, [atom.pos.z for atom in atoms])
+    x, _ = build_histogram(header.box.lo.x, header.box.hi.x, config.cartesian_profile_step_xyz, [atom.pos.x for atom in atoms])
+    y, _ = build_histogram(header.box.lo.y, header.box.hi.y, config.cartesian_profile_step_xyz, [atom.pos.y for atom in atoms])
+    z, _ = build_histogram(header.box.lo.z, header.box.hi.z, config.cartesian_profile_step_xyz, [atom.pos.z for atom in atoms])
 
-    r_count, r_bins = build_histogram(config.radial_profile_start_r, config.approx_sphere["R"], config.radial_profile_interval,
+    r_count, r_bins = build_histogram(config.spherical_profile_start_r, config.approx_sphere["R"], config.spherical_profile_step_r,
                                       [math.sqrt((atom.pos.x - droplet_com.x)**2 + (atom.pos.y - droplet_com.y)**2 + (atom.pos.z - droplet_com.z)**2) for atom in atoms])
 
     r_bin_volumes = [four_thirds_pi * (r_bins[i + 1]**3 - r_bins[i]**3) for i in range(len(r_bins) - 1)]
