@@ -20,3 +20,6 @@ def write_profile_group(config: ConfigReader, name: str, profiles: dict[str, dic
         os.makedirs(path_element)
         for profile_name, profile in profiles[element_name].items():
             with open(os.path.join(path_element, f"{profile_name}.txt"), "w") as out_file: out_file.write(tp.print_density_profile(profile))
+
+def write_summary(config: ConfigReader, summary: str) -> None:
+    with open(os.path.join(config.path_results, "summary.txt"), "w") as analysis: analysis.write(summary)

@@ -2,7 +2,7 @@ import os.path
 import sys
 
 from constants import element_sets
-from file_writer import write_profile_group
+from file_writer import write_profile_group, write_summary
 from md_analyses.atom_extremes import find_atom_extremes
 from md_analyses.center_of_mass import calc_droplet_center
 from md_analyses.density_profiles import build_profiles_cartesian, build_profiles_spherical
@@ -99,8 +99,8 @@ if config.enable_salt_concentration: summary += tp.print_salt_concentration(salt
 if config.enable_vapor_count: summary += tp.print_vapor_count(vapor_count_avg)
 if config.enable_droplet_com: summary += tp.print_droplet_center(droplet_com_avg)
 summary += tp.print_files_used(config.data_files)
-with open(os.path.join(config.path_results, "summary.txt"), "w") as analysis: analysis.write(summary)
 
+write_summary(config, summary)
 write_profile_group(config, "cartesian", profiles_cartesian_avg)
 write_profile_group(config, "spherical", profiles_spherical_avg)
 
