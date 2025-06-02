@@ -53,7 +53,7 @@ class ConfigReader:
         for key, value in self._atom_types.items():
             self._mass_lookup[key] = masses[value]
         self.set_data_files()
-        self.make_directories()
+        self.make_initial_dirs()
 
     @property
     def data_path(self) -> str:
@@ -171,14 +171,13 @@ class ConfigReader:
 
         return
     
-    def make_directories(self):
+    def make_initial_dirs(self):
         """
-        Creates folder structure for outputting results.\n
+        Creates initial folder structure for outputting results.\n
         Example for file named 123.data:\n
         - {directory containing 123.data}/
         \t- analysis/
         \t\t- 123/
-        \t\t\t- profiles/
         """
 
         dir_root = os.path.dirname(self._data_path)
@@ -191,11 +190,9 @@ class ConfigReader:
         else:
             self._dir_results = os.path.join(dir_analysis, str.split(os.path.basename(self._data_path), ".")[0])
 
-        dir_profiles = os.path.join(self._dir_results, "profiles")
         if os.path.isdir(self._dir_results):
             raise Exception(f"Directory already exists: {self._dir_results}")
         else:
             os.makedirs(self._dir_results)
-            os.makedirs(dir_profiles)
 
         return

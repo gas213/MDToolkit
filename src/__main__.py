@@ -101,14 +101,22 @@ summary += printer.print_files_used(config.data_files)
 with open(os.path.join(config.dir_results, "summary.txt"), "w") as analysis: analysis.write(summary)
 
 if config.enable_cartesian_profiles or config.enable_spherical_profiles:
+    os.makedirs(os.path.join(config.dir_results, "profiles"))
+
+if config.enable_cartesian_profiles:
+    os.makedirs(os.path.join(config.dir_results, "profiles", "cartesian"))
     for element_name in element_sets.keys():
-        dir_group = os.path.join(config.dir_results, f"profiles/{element_name}")
-        os.makedirs(dir_group)
-        if config.enable_cartesian_profiles:
-            for profile_name, profile in profiles_cartesian_avg[element_name].items():
-                with open(os.path.join(dir_group, f"{profile_name}.txt"), "w") as out_file: out_file.write(printer.print_density_profile(profile))
-        if config.enable_spherical_profiles:
-            for profile_name, profile in profiles_spherical_avg[element_name].items():
-                with open(os.path.join(dir_group, f"{profile_name}.txt"), "w") as out_file: out_file.write(printer.print_density_profile(profile))
+        dir_element = os.path.join(config.dir_results, "profiles", "cartesian", element_name)
+        os.makedirs(dir_element)
+        for profile_name, profile in profiles_cartesian_avg[element_name].items():
+            with open(os.path.join(dir_element, f"{profile_name}.txt"), "w") as out_file: out_file.write(printer.print_density_profile(profile))
+
+if config.enable_spherical_profiles:
+    os.makedirs(os.path.join(config.dir_results, "profiles", "spherical"))
+    for element_name in element_sets.keys():
+        dir_element = os.path.join(config.dir_results, "profiles", "spherical", element_name)
+        os.makedirs(dir_element)
+        for profile_name, profile in profiles_spherical_avg[element_name].items():
+            with open(os.path.join(dir_element, f"{profile_name}.txt"), "w") as out_file: out_file.write(printer.print_density_profile(profile))
 
 print("ANALYSIS COMPLETE")
