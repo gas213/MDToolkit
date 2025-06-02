@@ -14,7 +14,7 @@ from md_dataclasses.vector3d import Vector3D
 from md_readers.argv_reader import read_config_path
 from md_readers.config_reader import ConfigReader
 from md_readers.data_reader_mediator import read_header, read_atoms
-import printer
+import text_printer as tp
 
 print("Reading config and making directories...")
 config = ConfigReader(read_config_path(sys.argv))
@@ -88,16 +88,16 @@ for data_file in config.data_files:
 
 print("Writing output files...")
 summary = ""
-summary += printer.print_title(config)
-summary += printer.print_header(header)
-if config.enable_atom_extremes: summary += printer.print_atom_extremes(atom_extremes_overall)
-summary += printer.print_check_atoms_count(header, atoms)
-if config.enable_atom_extremes: summary += printer.print_check_atom_extremes(header, atom_extremes_overall)
-if config.enable_cartesian_profiles: summary += printer.print_check_cartesian_profiles(header, profiles_cartesian_avg["all_element"])
-if config.enable_salt_concentration: summary += printer.print_salt_concentration(salt_concentration_avg)
-if config.enable_vapor_count: summary += printer.print_vapor_count(vapor_count_avg)
-if config.enable_droplet_com: summary += printer.print_droplet_center(droplet_com_avg)
-summary += printer.print_files_used(config.data_files)
+summary += tp.print_title(config)
+summary += tp.print_header(header)
+if config.enable_atom_extremes: summary += tp.print_atom_extremes(atom_extremes_overall)
+summary += tp.print_check_atoms_count(header, atoms)
+if config.enable_atom_extremes: summary += tp.print_check_atom_extremes(header, atom_extremes_overall)
+if config.enable_cartesian_profiles: summary += tp.print_check_cartesian_profiles(header, profiles_cartesian_avg["all_element"])
+if config.enable_salt_concentration: summary += tp.print_salt_concentration(salt_concentration_avg)
+if config.enable_vapor_count: summary += tp.print_vapor_count(vapor_count_avg)
+if config.enable_droplet_com: summary += tp.print_droplet_center(droplet_com_avg)
+summary += tp.print_files_used(config.data_files)
 with open(os.path.join(config.dir_results, "summary.txt"), "w") as analysis: analysis.write(summary)
 
 if config.enable_cartesian_profiles or config.enable_spherical_profiles:
@@ -109,7 +109,7 @@ if config.enable_cartesian_profiles:
         dir_element = os.path.join(config.dir_results, "profiles", "cartesian", element_name)
         os.makedirs(dir_element)
         for profile_name, profile in profiles_cartesian_avg[element_name].items():
-            with open(os.path.join(dir_element, f"{profile_name}.txt"), "w") as out_file: out_file.write(printer.print_density_profile(profile))
+            with open(os.path.join(dir_element, f"{profile_name}.txt"), "w") as out_file: out_file.write(tp.print_density_profile(profile))
 
 if config.enable_spherical_profiles:
     os.makedirs(os.path.join(config.dir_results, "profiles", "spherical"))
@@ -117,6 +117,6 @@ if config.enable_spherical_profiles:
         dir_element = os.path.join(config.dir_results, "profiles", "spherical", element_name)
         os.makedirs(dir_element)
         for profile_name, profile in profiles_spherical_avg[element_name].items():
-            with open(os.path.join(dir_element, f"{profile_name}.txt"), "w") as out_file: out_file.write(printer.print_density_profile(profile))
+            with open(os.path.join(dir_element, f"{profile_name}.txt"), "w") as out_file: out_file.write(tp.print_density_profile(profile))
 
 print("ANALYSIS COMPLETE")
