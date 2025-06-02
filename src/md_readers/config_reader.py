@@ -53,7 +53,10 @@ class ConfigReader:
         for key, value in self._atom_types.items():
             self._mass_lookup[key] = masses[value]
         self.set_data_files()
-        self.make_initial_dirs()
+
+    @property
+    def is_multi_file(self) -> bool:
+        return self._is_multi_file
 
     @property
     def data_path(self) -> str:
@@ -123,10 +126,6 @@ class ConfigReader:
     def data_files(self) -> list[str]:
         return self._data_files
     
-    @property
-    def path_results(self) -> str:
-        return self._path_results
-    
     def get_atom_type_ids(self, elements: list[str]) -> list[int]:
         if len(elements) == 1 and (elements[0] in ["All", "all", "ALL"]):
             return list(self._atom_types.keys())
@@ -168,31 +167,5 @@ class ConfigReader:
                     self._data_files.append(match)
         else:
             self._data_files.append(self._data_path)
-
-        return
-    
-    def make_initial_dirs(self):
-        """
-        Creates initial folder structure for outputting results.\n
-        Example for file named 123.data:\n
-        - {directory containing 123.data}/
-        \t- analysis/
-        \t\t- 123/
-        """
-
-        path_source = os.path.dirname(self._data_path)
-        path_analysis = os.path.join(path_source, "analysis")
-        if not os.path.isdir(path_analysis): os.makedirs(path_analysis)
-
-        if self._is_multi_file:
-            prefix = os.path.basename(self._data_path).split("*")[0]
-            self._path_results = os.path.join(path_analysis, f"{prefix}{self._step_start}_{self._step_end}")
-        else:
-            self._path_results = os.path.join(path_analysis, str.split(os.path.basename(self._data_path), ".")[0])
-
-        if os.path.isdir(self._path_results):
-            raise Exception(f"Directory already exists: {self._path_results}")
-        else:
-            os.makedirs(self._path_results)
 
         return

@@ -2,7 +2,7 @@ import os.path
 import sys
 
 from constants import element_sets
-from file_writer import write_profile_group, write_summary
+from file_writer import FileWriter
 from md_analyses.atom_extremes import find_atom_extremes
 from md_analyses.center_of_mass import calc_droplet_center
 from md_analyses.density_profiles import build_profiles_cartesian, build_profiles_spherical
@@ -21,6 +21,8 @@ print("Reading config and making directories...")
 config = ConfigReader(read_config_path(sys.argv))
 file_counter = 0
 file_count = len(config.data_files)
+file_writer = FileWriter(config)
+file_writer.mkdirs_initial()
 
 print("Reading header of first data file...")
 header = read_header(config, config.data_files[0])
@@ -100,8 +102,8 @@ if config.enable_vapor_count: summary += tp.print_vapor_count(vapor_count_avg)
 if config.enable_droplet_com: summary += tp.print_droplet_center(droplet_com_avg)
 summary += tp.print_files_used(config.data_files)
 
-write_summary(config, summary)
-write_profile_group(config, "cartesian", profiles_cartesian_avg)
-write_profile_group(config, "spherical", profiles_spherical_avg)
+file_writer.write_summary(summary)
+file_writer.write_profile_group("cartesian", profiles_cartesian_avg)
+file_writer.write_profile_group("spherical", profiles_spherical_avg)
 
 print("ANALYSIS COMPLETE")
