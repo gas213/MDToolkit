@@ -124,8 +124,8 @@ class ConfigReader:
         return self._data_files
     
     @property
-    def dir_results(self) -> str:
-        return self._dir_results
+    def path_results(self) -> str:
+        return self._path_results
     
     def get_atom_type_ids(self, elements: list[str]) -> list[int]:
         if len(elements) == 1 and (elements[0] in ["All", "all", "ALL"]):
@@ -180,19 +180,19 @@ class ConfigReader:
         \t\t- 123/
         """
 
-        dir_root = os.path.dirname(self._data_path)
-        dir_analysis = os.path.join(dir_root, "analysis")
-        if not os.path.isdir(dir_analysis): os.makedirs(dir_analysis)
+        path_source = os.path.dirname(self._data_path)
+        path_analysis = os.path.join(path_source, "analysis")
+        if not os.path.isdir(path_analysis): os.makedirs(path_analysis)
 
         if self._is_multi_file:
             prefix = os.path.basename(self._data_path).split("*")[0]
-            self._dir_results = os.path.join(dir_analysis, f"{prefix}{self._step_start}_{self._step_end}")
+            self._path_results = os.path.join(path_analysis, f"{prefix}{self._step_start}_{self._step_end}")
         else:
-            self._dir_results = os.path.join(dir_analysis, str.split(os.path.basename(self._data_path), ".")[0])
+            self._path_results = os.path.join(path_analysis, str.split(os.path.basename(self._data_path), ".")[0])
 
-        if os.path.isdir(self._dir_results):
-            raise Exception(f"Directory already exists: {self._dir_results}")
+        if os.path.isdir(self._path_results):
+            raise Exception(f"Directory already exists: {self._path_results}")
         else:
-            os.makedirs(self._dir_results)
+            os.makedirs(self._path_results)
 
         return

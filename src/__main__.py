@@ -2,6 +2,7 @@ import os.path
 import sys
 
 from constants import element_sets
+from file_writer import write_profile_group
 from md_analyses.atom_extremes import find_atom_extremes
 from md_analyses.center_of_mass import calc_droplet_center
 from md_analyses.density_profiles import build_profiles_cartesian, build_profiles_spherical
@@ -98,25 +99,9 @@ if config.enable_salt_concentration: summary += tp.print_salt_concentration(salt
 if config.enable_vapor_count: summary += tp.print_vapor_count(vapor_count_avg)
 if config.enable_droplet_com: summary += tp.print_droplet_center(droplet_com_avg)
 summary += tp.print_files_used(config.data_files)
-with open(os.path.join(config.dir_results, "summary.txt"), "w") as analysis: analysis.write(summary)
+with open(os.path.join(config.path_results, "summary.txt"), "w") as analysis: analysis.write(summary)
 
-if config.enable_cartesian_profiles or config.enable_spherical_profiles:
-    os.makedirs(os.path.join(config.dir_results, "profiles"))
-
-if config.enable_cartesian_profiles:
-    os.makedirs(os.path.join(config.dir_results, "profiles", "cartesian"))
-    for element_name in element_sets.keys():
-        dir_element = os.path.join(config.dir_results, "profiles", "cartesian", element_name)
-        os.makedirs(dir_element)
-        for profile_name, profile in profiles_cartesian_avg[element_name].items():
-            with open(os.path.join(dir_element, f"{profile_name}.txt"), "w") as out_file: out_file.write(tp.print_density_profile(profile))
-
-if config.enable_spherical_profiles:
-    os.makedirs(os.path.join(config.dir_results, "profiles", "spherical"))
-    for element_name in element_sets.keys():
-        dir_element = os.path.join(config.dir_results, "profiles", "spherical", element_name)
-        os.makedirs(dir_element)
-        for profile_name, profile in profiles_spherical_avg[element_name].items():
-            with open(os.path.join(dir_element, f"{profile_name}.txt"), "w") as out_file: out_file.write(tp.print_density_profile(profile))
+write_profile_group(config, "cartesian", profiles_cartesian_avg)
+write_profile_group(config, "spherical", profiles_spherical_avg)
 
 print("ANALYSIS COMPLETE")
