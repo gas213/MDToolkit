@@ -1,5 +1,5 @@
 ### LAMMPS Input File - Resize simulation box zhi
-# From MDToolkit template file: resize_zhi.in
+# From MDToolkit template file: resize_zhi_delta.in
 
 ## Configuration Variables
 # FILL IN {{FIELDS}}
@@ -35,7 +35,7 @@ neigh_modify    delay 0
 kspace_style    pppm 1e-5
 kspace_modify   order 4 
 
-# Move atoms along the Z axis
+# Resize box zhi
 
 change_box all z delta 0.0 $(v_ZHI_DELTA)
 
