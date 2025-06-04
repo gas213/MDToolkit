@@ -1,0 +1,38 @@
+### LAMMPS Input File - Write data file based on latest binary restart file
+# From MDToolkit template file: restart_to_data.in
+
+## Configuration Variables
+# FILL IN {{FIELDS}}
+
+# File name of the LAMMPS binary restart file
+# Using the * wildcard will find the largest-numbered restart file in the directory (ex: restart_*.rs)
+variable    RESTART_FILE string {{"file"}}
+
+## Initialization
+
+units           real
+atom_style      full
+boundary        p p p
+pair_style      lj/cut/coul/long 10 10
+pair_modify     mix arithmetic
+pair_modify     tail no
+special_bonds   amber
+bond_style      harmonic
+angle_style     harmonic
+dihedral_style  opls
+improper_style  none
+
+## Read initial data file
+
+read_restart    ${RESTART_FILE}
+
+## Neighbor parameters and force field coefficients
+
+neighbor        2.0 bin
+neigh_modify    delay 0
+kspace_style    pppm 1e-5
+kspace_modify   order 4 
+
+## Write resulting data file
+
+write_data	write_*.data
