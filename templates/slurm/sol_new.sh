@@ -4,12 +4,15 @@
 
 # REPLACE THE {{FIELDS}}
 
-# Maximum run time on rapids/hawkcpu is 3 days
+# Partitions info:
+# rapids: max 3 days, 64 CPUs per node
+# hawkcpu: max 3 days, 50 CPUs per node
+# rapids-express: max 2 hours, 6 CPUs total
 
-#SBATCH --partition={{rapids, hawkcpu}}
+#SBATCH --partition={{rapids, hawkcpu, rapids-express}}
 #SBATCH --time={{d-hh:mm:ss}}
 #SBATCH --nodes={{n}}
-#SBATCH --ntasks-per-node={{64, 50}}
+#SBATCH --ntasks-per-node={{64, 50, 6}}
 #SBATCH --job-name={{name}}
 #SBATCH --output="job.%j.%N.out"
 #SBATCH --mail-type=ALL
