@@ -12,8 +12,6 @@
 #SBATCH --ntasks-per-node=48
 #SBATCH --job-name {{name}}
 #SBATCH --output="job.%j.%N.out"
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user={{email}}
 
 module purge
 module load slurm
