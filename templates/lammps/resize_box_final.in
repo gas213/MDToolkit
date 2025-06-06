@@ -1,5 +1,5 @@
-### LAMMPS Input File - Resize simulation box
-# From MDToolkit template file: resize_box.in
+### LAMMPS Input File - Resize simulation box using absolute (final) dimensions
+# From MDToolkit template file: resize_box_final.in
 
 ## Configuration Variables
 # FILL IN {{FIELDS}}
