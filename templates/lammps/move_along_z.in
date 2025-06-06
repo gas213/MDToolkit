@@ -7,7 +7,7 @@
 # File name of the initial LAMMPS data file
 variable    START_DATA string {{"file"}}
 
-# Z offset to apply to all atoms (in box units aka Angstroms)
+# Z offset to apply to all atoms (in box units aka angstroms)
 variable    Z_OFFSET equal {{float}}
 
 ## Initialization
