@@ -20,6 +20,7 @@ class ConfigReader:
         self._enable_droplet_com = self.config["DEFAULT"].getboolean("EnableDropletCOM")
         self._enable_cartesian_profiles = self.config["DEFAULT"].getboolean("EnableCartesianProfiles")
         self._enable_spherical_profiles = self.config["DEFAULT"].getboolean("EnableSphericalProfiles")
+        self._vapor_threshold = self.config["DEFAULT"].getfloat("VaporThreshold")
         self._cartesian_profile_step_xyz = float(self.config["DEFAULT"]["CartesianProfileStepXYZ"])
         self._spherical_profile_step_r = float(self.config["DEFAULT"]["SphericalProfileStepR"])
         self._spherical_profile_start_r = float(self.config["DEFAULT"]["SphericalProfileStartR"])
@@ -97,6 +98,10 @@ class ConfigReader:
     @property
     def enable_spherical_profiles(self) -> bool:
         return self._enable_spherical_profiles
+    
+    @property
+    def vapor_threshold(self) -> float:
+        return self._vapor_threshold
     
     @property
     def cartesian_profile_step_xyz(self) -> float:

@@ -9,6 +9,7 @@ from md_analyses.density_profiles import build_profiles_cartesian, build_profile
 from md_analyses.salt_concentration import calc_salt_concentration
 from md_analyses.time_aggregator import update_atom_extremes, update_avg_scalar, update_avg_profile
 from md_analyses.vapor_count import count_vapor_particles
+from md_analyses.vapor_members import determine_vapor
 from md_dataclasses.box import Box
 from md_dataclasses.density_profile import DensityProfile
 from md_dataclasses.vector3d import Vector3D
@@ -42,6 +43,9 @@ for data_file in config.data_files:
 
     print("Reading atoms...")
     atoms = read_atoms(config, data_file)
+
+    if __name__ == "__main__": # Safety requirement for multiprocessing?
+        determine_vapor(config, header, atoms)
 
     if config.enable_atom_extremes:
         print("Finding atom extremes...")
