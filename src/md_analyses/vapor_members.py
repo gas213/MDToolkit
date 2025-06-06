@@ -1,17 +1,13 @@
 from dataclasses import dataclass
 from multiprocessing import Pool
 import numpy as np
-import os
 
-from constants import element_sets
+from constants import BIN_SIZE, element_sets, WORKER_COUNT
 from md_dataclasses.atom import Atom
 from md_dataclasses.box import Box
 from md_dataclasses.header import Header
 from md_dataclasses.vector3d import Vector3D
 from md_readers.config_reader import ConfigReader
-
-WORKER_COUNT: int = max(os.cpu_count() - 2, 1) # Number of workers to use in multiprocessing pool
-BIN_SIZE: float = 40.0 # Size of the x-y-z sampling bins, in angstroms
 
 @dataclass
 class ProcessBinArgs:
@@ -63,7 +59,7 @@ def determine_vapor(config: ConfigReader, header: Header, atoms: list[Atom]) -> 
     for result in results:
         for vapor_o_id in result:
             atoms_dict[vapor_o_id].is_vapor = True
-    print(f"Setting droplet members: oxygen... 100%")
+    print(f"Determining vapor atoms (oxygen)... 100%")
 
 def process_bin(args: ProcessBinArgs) -> set[int]:
     threshold2: float = args.threshold**2

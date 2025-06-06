@@ -19,11 +19,17 @@ class ConfigReader:
         self._enable_vapor_count = self.config["DEFAULT"].getboolean("EnableVaporCount")
         self._enable_droplet_com = self.config["DEFAULT"].getboolean("EnableDropletCOM")
         self._enable_cartesian_profiles = self.config["DEFAULT"].getboolean("EnableCartesianProfiles")
+        self._enable_cylindrical_profiles = self.config["DEFAULT"].getboolean("EnableCylindricalProfiles")
         self._enable_spherical_profiles = self.config["DEFAULT"].getboolean("EnableSphericalProfiles")
+        self._enable_wetted_area = self.config["DEFAULT"].getboolean("EnableWettedArea")
         self._vapor_threshold = self.config["DEFAULT"].getfloat("VaporThreshold")
-        self._cartesian_profile_step_xyz = float(self.config["DEFAULT"]["CartesianProfileStepXYZ"])
-        self._spherical_profile_step_r = float(self.config["DEFAULT"]["SphericalProfileStepR"])
-        self._spherical_profile_start_r = float(self.config["DEFAULT"]["SphericalProfileStartR"])
+        self._wetting_threshold = self.config["DEFAULT"].getfloat("WettingThreshold")
+        self._cartesian_profile_step_xyz = self.config["DEFAULT"].getfloat("CartesianProfileStepXYZ")
+        self._cylindrical_profile_start_r = self.config["DEFAULT"].getfloat("CylindricalProfileStartR")
+        self._cylindrical_profile_step_r = self.config["DEFAULT"].getfloat("CylindricalProfileStepR")
+        self._cylindrical_profile_step_z = self.config["DEFAULT"].getfloat("CylindricalProfileStepZ")
+        self._spherical_profile_step_r = self.config["DEFAULT"].getfloat("SphericalProfileStepR")
+        self._spherical_profile_start_r = self.config["DEFAULT"].getfloat("SphericalProfileStartR")
         if self._data_type == "NetCDF":
             self._data_columns = {}
         else:
@@ -94,18 +100,42 @@ class ConfigReader:
     @property
     def enable_cartesian_profiles(self) -> bool:
         return self._enable_cartesian_profiles
+
+    @property
+    def enable_cylindrical_profiles(self) -> bool:
+        return self._enable_cylindrical_profiles
     
     @property
     def enable_spherical_profiles(self) -> bool:
         return self._enable_spherical_profiles
     
     @property
+    def enable_wetted_area(self) -> bool:
+        return self._enable_wetted_area or self._enable_cylindrical_profiles
+    
+    @property
     def vapor_threshold(self) -> float:
         return self._vapor_threshold
     
     @property
+    def wetting_threshold(self) -> float:
+        return self._wetting_threshold
+    
+    @property
     def cartesian_profile_step_xyz(self) -> float:
         return self._cartesian_profile_step_xyz
+    
+    @property
+    def cylindrical_profile_start_r(self) -> float:
+        return self._cylindrical_profile_start_r
+    
+    @property
+    def cylindrical_profile_step_r(self) -> float:
+        return self._cylindrical_profile_step_r
+    
+    @property
+    def cylindrical_profile_step_z(self) -> float:
+        return self._cylindrical_profile_step_z
     
     @property
     def spherical_profile_step_r(self) -> float:

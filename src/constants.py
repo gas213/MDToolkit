@@ -1,4 +1,5 @@
 import math
+import os
 
 # Atomic masses lookup table (should match the masses in the LAMMPS data file)
 masses = {
@@ -29,3 +30,9 @@ element_sets = {
 
 # For sphere volume calculation
 four_thirds_pi = 4.0 * math.pi / 3.0
+
+# Number of workers to use in multiprocessing pool
+WORKER_COUNT: int = max(round(os.cpu_count() * 0.75), 1)
+
+# Size of the x-y-z sampling bins, in angstroms
+BIN_SIZE: float = 40.0
