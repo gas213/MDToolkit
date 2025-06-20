@@ -196,10 +196,15 @@ class ConfigReader:
             step_start = int(self._step_start)
             step_end = int(self._step_end)
             wildcard_matches = glob.glob(self._data_path)
+            valid_step_numbers: list[int] = []
+            # Order data files by step number
             for match in wildcard_matches:
                 step_str = match.replace(path_before_wildcard, "").replace(path_after_wildcard, "")
                 if step_str.isdigit() and int(step_str) >= step_start and int(step_str) <= step_end:
-                    self._data_files.append(match)
+                    valid_step_numbers.append(int(step_str))
+            valid_step_numbers.sort()
+            for step in valid_step_numbers:
+                self._data_files.append(path_before_wildcard + str(step) + path_after_wildcard)
         else:
             self._data_files.append(self._data_path)
 
