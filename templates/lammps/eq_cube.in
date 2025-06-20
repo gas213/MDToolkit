@@ -26,7 +26,7 @@ variable	VAPOR_COUNT_FREQ equal {{N}}
 variable	VAPOR_AVG_FREQ equal {{N}}
 # Frequency of creating dump files (every N steps); try 1000
 variable	DUMP_FREQ equal {{N}}
-# Frequency of writing thermo output to the LAMMPS log file (every N steps); try 1000
+# Frequency of writing thermo output to the LAMMPS log file (every N steps); try 100
 variable	THERMO_FREQ equal {{N}}
 # Frequency of writing restart files (every N steps); try ~2 restarts per day of wall time
 variable	RESTART_FREQ equal {{N}}
