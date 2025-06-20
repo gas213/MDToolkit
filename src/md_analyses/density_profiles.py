@@ -27,13 +27,8 @@ def build_profiles_cylindrical(atoms: list[Atom], config: ConfigReader, header: 
     r2_wet: float = r_wet**2
     height_z: float = header.box.hi.z - header.box.lo.z
     
-    # Filter atoms down to those that are actually within the full cylinder
-    x_min: float = x_wet - r_wet
-    x_max: float = x_wet + r_wet
-    y_min: float = y_wet - r_wet
-    y_max: float = y_wet + r_wet
-    # Rough filter first
-    atoms_cyl = [a for a in atoms if a.pos.x >= x_min and a.pos.x <= x_max and a.pos.y >= y_min and a.pos.y <= y_max]
+    # Filter atoms down to those that are actually within the full cylinder (rough filter first)
+    atoms_cyl = [a for a in atoms if a.pos.x >= (x_wet - r_wet) and a.pos.x <= (x_wet + r_wet) and a.pos.y >= (y_wet - r_wet) and a.pos.y <= (y_wet + r_wet)]
     atoms_cyl = [a for a in atoms_cyl if (a.pos.x - x_wet)**2 + (a.pos.y - y_wet)**2 <= r2_wet]
 
     r_bins = build_bins_radial(config.cylindrical_profile_start_r, r_wet, config.cylindrical_profile_step_r)
@@ -57,14 +52,33 @@ def build_profiles_cylindrical(atoms: list[Atom], config: ConfigReader, header: 
     norm_factor = 1.0 if z_count_total == 0 else v_characteristic / z_count_total
     z_density_norm = {k: v for k, v in zip(z_count.keys(), np.array(list(z_density.values())) * norm_factor)}
 
-    return {
-        "r_count": DensityProfile(r_count, f"Profile of {description} atom count vs truncated radius, based on center of wetted area:"),
-        "r_density": DensityProfile(r_density, f"Profile of {description} density (atoms/angstrom**3) vs truncated radius, based on center of wetted area:"),
-        "r_density_norm": DensityProfile(r_density_norm, f"Profile of {description} normalized density vs truncated radius, based on center of wetted area:"),
+    results: dict[str, DensityProfile] = {
+        "r_count": DensityProfile(r_count, f"Profile of {description} atom count vs radius, based on center of wetted area:"),
+        "r_density": DensityProfile(r_density, f"Profile of {description} density (atoms/angstrom**3) vs radius, based on center of wetted area:"),
+        "r_density_norm": DensityProfile(r_density_norm, f"Profile of {description} normalized density vs radius, based on center of wetted area:"),
         "z_count": DensityProfile(z_count, f"Profile of {description} atom count vs z:"),
         "z_density": DensityProfile(z_density, f"Profile of {description} density (atoms/angstrom**3) vs z, based on cylinder formed around wetted area:"),
         "z_density_norm": DensityProfile(z_density_norm, f"Profile of {description} normalized density vs z, based on cylinder formed around wetted area:"),
     }
+
+    for k in range(len(z_bins) - 1):
+        height_z_bin: float = z_bins[k + 1] - z_bins[k]
+        atoms_z_bin: list[Atom] = [a for a in atoms_cyl if a.pos.z >= z_bins[k] and a.pos.z < z_bins[k + 1]]
+        if k == len(z_bins) - 2: atoms_z_bin += [a for a in atoms_cyl if a.pos.z == z_bins[k + 1]]
+        r_count_z = build_profile([math.sqrt((a.pos.x - x_wet)**2 + (a.pos.y - y_wet)**2) for a in atoms_z_bin], r_bins)
+        r_bin_volumes_z = [math.pi * (r_bins[i + 1]**2 - r_bins[i]**2) * height_z_bin for i in range(len(r_bins) - 1)]
+        r_density_z = {k: v for k, v in zip(r_count_z.keys(), [list(r_count_z.values())[i] / r_bin_volumes_z[i] for i in range(len(r_count_z))])}
+        r_count_total_z = sum(r_count.values())
+        norm_factor_z: float = 1.0 if r_count_total_z == 0 else v_characteristic / r_count_total_z
+        r_density_norm_z = {k: v for k, v in zip(r_count_z.keys(), np.array(list(r_density_z.values())) * norm_factor_z)}
+        suffix_name: str = f"_{z_bins[k]}_{z_bins[k + 1]}"
+        # Can't use f-string for the line below because it mistakenly throws an error for an unclosed square bracket
+        suffix_description: str = ", in z-range of [" + str(z_bins[k]) + ", " + str(z_bins[k + 1]) + ("]" if k == len(z_bins) - 2 else ")")
+        results["r_count" + suffix_name] = DensityProfile(r_count_z, f"Profile of {description} atom count vs radius, based on droplet center of mass{suffix_description}:")
+        results["r_density" + suffix_name] = DensityProfile(r_density_z, f"Profile of {description} density (atoms/angstrom**3) vs radius, based on droplet center of mass{suffix_description}:")
+        results["r_density_norm" + suffix_name] = DensityProfile(r_density_norm_z, f"Profile of {description} normalized density vs radius, based on droplet center of mass{suffix_description}:")
+
+    return results
 
 def build_profiles_spherical(atoms: list[Atom], config: ConfigReader, droplet_com: Vector3D, description: str) -> dict[str, DensityProfile]:
     r_bins = build_bins_radial(config.spherical_profile_start_r, config.approx_sphere["R"], config.spherical_profile_step_r)
@@ -79,9 +93,9 @@ def build_profiles_spherical(atoms: list[Atom], config: ConfigReader, droplet_co
     r_density_norm = {k: v for k, v in zip(r_count.keys(), np.array(list(r_density.values())) * norm_factor)}
 
     return {
-        "r_count": DensityProfile(r_count, f"Profile of {description} atom count vs truncated radius, based on droplet center of mass:"),
-        "r_density": DensityProfile(r_density, f"Profile of {description} density (atoms/angstrom**3) vs truncated radius, based on droplet center of mass:"),
-        "r_density_norm": DensityProfile(r_density_norm, f"Profile of {description} normalized density vs truncated radius, based on droplet center of mass:"),
+        "r_count": DensityProfile(r_count, f"Profile of {description} atom count vs radius, based on droplet center of mass:"),
+        "r_density": DensityProfile(r_density, f"Profile of {description} density (atoms/angstrom**3) vs radius, based on droplet center of mass:"),
+        "r_density_norm": DensityProfile(r_density_norm, f"Profile of {description} normalized density vs radius, based on droplet center of mass:"),
     }
 
 def build_profile(data: list[float], bins: ndarray) -> dict[str, float]:
