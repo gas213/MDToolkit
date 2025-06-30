@@ -48,17 +48,17 @@ class ConfigReader:
         }
         atom_type_set = self.config["DEFAULT"]["AtomTypeSet"]
         self._atom_types = {
-            int(self.config[atom_type_set]["AtomTypeC1"]): "C",
-            int(self.config[atom_type_set]["AtomTypeC2"]): "C",
-            int(self.config[atom_type_set]["AtomTypeCl"]): "Cl",
-            int(self.config[atom_type_set]["AtomTypeF"]): "F",
-            int(self.config[atom_type_set]["AtomTypeH"]): "H",
-            int(self.config[atom_type_set]["AtomTypeNa"]): "Na",
-            int(self.config[atom_type_set]["AtomTypeO"]): "O",
+            "C": [int(self.config[atom_type_set]["AtomTypeC1"]), int(self.config[atom_type_set]["AtomTypeC2"])],
+            "Cl": [int(self.config[atom_type_set]["AtomTypeCl"])],
+            "F": [int(self.config[atom_type_set]["AtomTypeF"])],
+            "H": [int(self.config[atom_type_set]["AtomTypeH"])],
+            "Na": [int(self.config[atom_type_set]["AtomTypeNa"])],
+            "O": [int(self.config[atom_type_set]["AtomTypeO"])],
         }
         self._mass_lookup = {}
         for key, value in self._atom_types.items():
-            self._mass_lookup[key] = masses[value]
+            for type_id in value:
+                self._mass_lookup[type_id] = masses[key]
         self.set_data_files()
 
     @property
@@ -162,15 +162,17 @@ class ConfigReader:
         return self._data_files
     
     def get_atom_type_ids(self, elements: list[str]) -> list[int]:
-        if len(elements) == 1 and (elements[0] in ["All", "all", "ALL"]):
-            return list(self._atom_types.keys())
         type_ids = []
+        if len(elements) == 1 and (elements[0] in ["All", "all", "ALL"]):
+            for key, value in self._atom_types.items():
+                type_ids.extend(value)
+            return type_ids
         for element in elements:
-            if element not in self._atom_types.values():
+            if element not in self._atom_types.keys():
                 raise Exception(f"Element not found in config: {element}")
         for key, value in self._atom_types.items():
-            if value in elements:
-                type_ids.append(key)
+            if key in elements:
+                type_ids.extend(value)
         return type_ids
     
     def set_data_files(self):
