@@ -26,6 +26,12 @@ variable	THERMO_FREQ equal {{N}}
 # Frequency of writing restart files (every N steps); try ~2 restarts per day of wall time
 variable	RESTART_FREQ equal {{N}}
 
+# Approximate center coordinates and slightly oversized radius of the droplet (in box units)
+variable    DROP_X equal {{N}}
+variable    DROP_Y equal {{N}}
+variable    DROP_Z equal {{N}}
+variable    DROP_R equal {{N}}
+
 ## Initialization
 
 units           real
@@ -59,6 +65,11 @@ neigh_modify    delay 0
 kspace_style    pppm 1e-5
 kspace_modify   order 4
 
+## Define spherical region to approximate which atoms are part of the droplet and which atoms are vapor
+
+region      REGION_LIQUID sphere $(v_DROP_X) $(v_DROP_Y) $(v_DROP_Z) $(v_DROP_R) side in units box
+region		REGION_VAPOR sphere $(v_DROP_X) $(v_DROP_Y) $(v_DROP_Z) $(v_DROP_R) side out units box
+
 ## Define atom/molecule groups
 
 group           PTFE type 1 2 3
@@ -73,12 +84,23 @@ else &
     "group      H2O type 4 5" &
     "group      DROPLET type 4 5"
 
+## Define dynamic groups for distinguishing liquid from vapor
+
+group       LIQUID dynamic DROPLET region REGION_LIQUID every $(v_THERMO_FREQ) 
+group		VAPOR dynamic H2O region REGION_VAPOR every $(v_THERMO_FREQ)
+
+## Define computes for temperatures of specific groups
+
+compute     TEMP_PTFE PTFE temp
+compute     TEMP_LIQUID LIQUID temp
+compute     TEMP_VAPOR VAPOR temp
+
 ## Dump settings
 
 dump            DUMP_TEXT all custom $(v_DUMP_FREQ) dump_*.txt id type x y z
 dump_modify     DUMP_TEXT sort id
-dump            DUMP_NETCDF all netcdf $(v_DUMP_FREQ) dump_*.nc id type x y z
-dump_modify     DUMP_NETCDF sort id
+# dump            DUMP_NETCDF all netcdf $(v_DUMP_FREQ) dump_*.nc id type x y z
+# dump_modify     DUMP_NETCDF sort id
 
 ## Restart settings
 
@@ -102,7 +124,7 @@ if "${IS_SALTED}" then &
 ## Thermodynamic output settings
 
 thermo          $(v_THERMO_FREQ)
-thermo_style    custom step time temp pe ke etotal enthalpy press vol density lx ly lz pxx pyy pzz pxy pxz pyz
+thermo_style    custom step time temp pe ke etotal enthalpy press vol density lx ly lz pxx pyy pzz pxy pxz pyz c_TEMP_PTFE c_TEMP_LIQUID c_TEMP_VAPOR
 thermo_modify   lost ignore flush yes
 
 ## Run the simulation
