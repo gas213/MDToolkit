@@ -6,21 +6,30 @@
 # IF YOU ARE RESTARTING A RUN WITHIN THE SAME DIRECTORY, RENAME YOUR LOG FILES SO THEY DON'T GET OVERWRITTEN
 
 # Is this a restart? (true if starting from a binary restart file, false if starting from a data text file)
-variable    IS_RESTART equal {{true/false}}
+variable        IS_RESTART equal {{true/false}}
 # File name of the binary restart file or initial data text file
 # For restart files, using the * wildcard will find the largest-numbered restart file in the directory (ex: restart_*.rs)
-variable    START_DATA string {{"file"}}
+variable        START_DATA string {{"file"}}
+
+# Does droplet include salt ions? (true for saline, false for pure water)
+variable        IS_SALTED equal {{true/false}}
 
 # Size of each time step; in "real" units, this is in femtoseconds
-variable    TIMESTEP equal {{N}}
+variable        TIMESTEP equal {{N}}
 # Number of time steps to run; 500k steps == 1 ns if time step size is 2 fs
-variable	STEPS equal {{N}}
+variable        STEPS equal {{N}}
+# Frequency of writing non-averaged MSD diffusion to text file
+variable        MSD_RAW_FREQ equal {{N}}
+# "If the ave setting is window, then the values produced on time steps that are multiples of Nfreq are summed and averaged within a moving “window” of time, so that the last M values are used to produce the output.
+# For example, if M == 3 and N_freq == 1000, then the output on step 10000 will be the average of the individual values on steps 8000, 9000, and 10000.
+# Outputs on early steps will average over less than M values if they are not available."
+variable        MSD_WINDOW_M equal {{N}}
 # Frequency of creating dump files (every N steps); try 1000
-variable	DUMP_FREQ equal {{N}}
+variable        DUMP_FREQ equal {{N}}
 # Frequency of writing thermo output to the LAMMPS log file (every N steps); try 100
-variable	THERMO_FREQ equal {{N}}
+variable        THERMO_FREQ equal {{N}}
 # Frequency of writing restart files (every N steps); try ~2 restarts per day of wall time
-variable	RESTART_FREQ equal {{N}}
+variable        RESTART_FREQ equal {{N}}
 
 ## Initialization
 
@@ -50,12 +59,36 @@ neigh_modify    delay 0
 kspace_style    pppm 1e-5
 kspace_modify   order 4
 
+## Define atom/molecule groups
+
+# The pure water droplet data and the saline droplet data do not have the same atom type IDs
+if "${IS_SALTED}" then &
+    "group      CHLORINE type 4" &
+    "group      SODIUM type 5" &
+    "group      OXYGEN type 6" &
+else &
+    "group      OXYGEN type 4"
+
+## Compute and print MSD diffusion, both raw and averaged
+
+compute         MSD_CL CHLORINE msd com no average no
+compute         MSD_NA SODIUM msd com no average no
+compute         MSD_O OXYGEN msd com no average no
+
+# Note: the fix ave/time command does not use the group ID; it is ignored
+fix             MSD_RAW_CL all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_CL[4] ave one file msd_raw_cl.txt
+fix             MSD_RAW_NA all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_NA[4] ave one file msd_raw_na.txt
+fix             MSD_RAW_O all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_O[4] ave one file msd_raw_o.txt
+fix             MSD_WINDOW_CL all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_CL[4] ave window $(v_MSD_WINDOW_M) file msd_window_cl.txt
+fix             MSD_WINDOW_NA all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_NA[4] ave window $(v_MSD_WINDOW_M) file msd_window_na.txt
+fix             MSD_WINDOW_O all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_O[4] ave window $(v_MSD_WINDOW_M) file msd_window_o.txt
+
 ## Dump settings
 
 dump            DUMP_TEXT all custom $(v_DUMP_FREQ) dump_*.txt id type x y z
 dump_modify     DUMP_TEXT sort id
-dump            DUMP_NETCDF all netcdf $(v_DUMP_FREQ) dump_*.nc id type x y z
-dump_modify     DUMP_NETCDF sort id
+#dump            DUMP_NETCDF all netcdf $(v_DUMP_FREQ) dump_*.nc id type x y z
+#dump_modify     DUMP_NETCDF sort id
 
 ## Restart settings
 
