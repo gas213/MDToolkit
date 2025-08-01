@@ -37,7 +37,7 @@ neigh_modify    delay 0
 kspace_style    pppm 1e-5
 kspace_modify   order 4 
 
-# Replication
+## Replication
 
 replicate       $(v_SCALE_X) $(v_SCALE_Y) $(v_SCALE_Z)
 
