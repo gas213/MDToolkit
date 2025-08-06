@@ -1,0 +1,117 @@
+### LAMMPS Input File - Replace random water molecules with salt ions
+# From MDToolkit template file: water_to_salt.in
+
+## Configuration Variables
+# FILL IN {{FIELDS}}
+
+# File name of the initial LAMMPS data file to replicate
+variable        START_DATA string {{"file"}}
+
+# Desired salt concentration by mass (on a scale of 0.0 to 1.0)
+variable        CONC equal {{N}}
+
+# Seed for the random number generator
+variable        SEED equal {{N}}
+
+# Atom type values - make sure these match the data file
+variable        TYPE_CL equal 4
+variable        TYPE_NA equal 5
+variable        TYPE_O equal 6
+variable        TYPE_H equal 7
+
+## Initialization
+
+units           real
+atom_style      full
+boundary        p p p
+pair_style      lj/cut/coul/long 10 10
+pair_modify     mix arithmetic
+pair_modify     tail no
+special_bonds   amber
+bond_style      harmonic
+angle_style     harmonic
+dihedral_style  opls
+improper_style  none
+
+## Read initial data file
+
+read_data      	${START_DATA}
+
+## Variables with auto-calculated values
+
+# Number of NaCl *pairs* required for the desired concentration, if each Na or Cl ion replaces a water molecule
+# The number of water molecules being removed would be double this amount
+variable        N_SALT equal "round(18.015 * (atoms / 3) / ((1.0/v_CONC - 1.0) * 58.443 + 2 * 18.015))"
+print           "DEBUG N_SALT = ${N_SALT}" screen yes
+
+## Neighbor parameters and force field coefficients
+
+neighbor        2.0 bin
+neigh_modify    delay 0
+kspace_style    pppm 1e-5
+kspace_modify   order 4 
+
+## Replace randomly selected water molecules with salt ions
+# Some help from https://matsci.org/t/how-to-choose-a-random-atom-in-the-region-not-all/45082/4
+
+# Groups to populate with the randomly selected oxygen atoms that will be replaced by Na or Cl
+group           o_to_na empty
+group           o_to_cl empty
+# Variable to alternate between 0 and 1, used to swap between adding an oxygen to the Na group and adding to the Cl group
+variable        nacl_alternator equal 0
+
+# Total number of water molecules to replace is N_SALT * 2; run the loop this many times
+label LOOP_N
+variable n loop $(v_N_SALT * 2)
+    label REROLL
+    # Pick a random number to use as an index for accessing the atoms list
+    variable i equal $(floor(random(1, atoms + 1, 30197832)))
+    # If the randomly selected atom is not an oxygen, then go back and roll a new random number
+    if "$(type[v_i]) != $(v_TYPE_O)" then "jump SELF REROLL"
+    # Put the randomly selected oxygen in a group of its own, in order to do an intersect to see if the o_to_na or o_to_cl groups already contain this atom
+    group atom_rand id $(id[v_i])
+    group o_to_na_contains intersect o_to_na atom_rand
+    group o_to_cl_contains intersect o_to_cl atom_rand
+    # If the randomly selected oxygen is already in one of the groups, go back and roll a new random number
+    if "$(count(o_to_na_contains)) > 0 || $(count(o_to_cl_contains)) > 0" then &
+        "group atom_rand delete" &
+        "group o_to_na_contains delete" &
+        "group o_to_cl_contains delete" &
+        "jump SELF REROLL"
+    # At this point the oxygen is eligible for replacement, so use the alternator variable to determine which group to put it in
+    if "$(v_nacl_alternator) == 0" then &
+        "group o_to_na id $(id[v_i])" &
+        "print 'DEBUG atom ID $(id[v_i]) (type $(type[v_i])) added to o_to_na group' screen yes" &
+        "variable nacl_alternator equal 1" &
+    else &
+        "group o_to_cl id $(id[v_i])" &
+        "print 'DEBUG atom ID $(id[v_i]) (type $(type[v_i])) added to o_to_cl group' screen yes" &
+        "variable nacl_alternator equal 0"
+    # Clean up and move to the next iteration
+    group atom_rand delete
+    group o_to_na_contains delete
+    group o_to_cl_contains delete
+    variable i delete
+    next n
+jump SELF LOOP_N
+
+# Now that we know all the oxygens that will be replaced, find their corresponding hydrogens and delete them (along with bond/angle data)
+group water_to_remove union o_to_na o_to_cl
+group water_to_remove include molecule
+group hydrogen type $(v_TYPE_H)
+group hydrogen_to_remove intersect water_to_remove hydrogen
+delete_atoms group hydrogen_to_remove compress no bond yes
+group water_to_remove delete
+group hydrogen delete
+group hydrogen_to_remove delete
+
+# Replace the selected oxygens with Na or Cl by modifying their type and charge (Na has charge of 1.0, Cl has charge of -1.0)
+set group o_to_na type $(v_TYPE_NA)
+set group o_to_cl type $(v_TYPE_CL)
+set type $(v_TYPE_NA) charge 1.0
+set type $(v_TYPE_CL) charge -1.0
+
+## Reset atom IDs and write resulting data file
+
+reset_atoms     id sort yes
+write_data      salted.data
