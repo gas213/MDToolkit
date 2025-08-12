@@ -30,6 +30,7 @@ file_writer.mkdirs_initial()
 print("Reading header of first data file...")
 header = read_header(config, config.data_files[0])
 
+wetted_area: dict[str, float] = {}
 atom_extremes_overall: Box = None
 salt_concentration_avg: float = 0.0
 vapor_count_avg: float = 0.0
@@ -48,10 +49,11 @@ for data_file in config.data_files:
     print("Reading atoms...")
     atoms = read_atoms(config, data_file)
 
-    wetted_area: dict[str, float] = {}
     if __name__ == "__main__": # Safety requirement for multiprocessing?
-        determine_vapor(config, header, atoms)
-        if config.enable_wetted_area: wetted_area = calc_wetted_area(config, atoms)
+        if config.enable_wetted_area and file_counter == 1:
+            # Only calculate wetted area for the first file; this will be used to determine bins for cylindrical profiles
+            determine_vapor(config, header, atoms)
+            wetted_area = calc_wetted_area(config, atoms)
 
     if config.enable_atom_extremes:
         print("Finding atom extremes...")
