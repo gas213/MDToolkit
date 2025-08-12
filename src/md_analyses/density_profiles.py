@@ -23,7 +23,7 @@ def build_profiles_cartesian(atoms: list[Atom], config: ConfigReader, header: He
 def build_profiles_cylindrical(atoms: list[Atom], config: ConfigReader, header: Header, wetted_area: dict[str, float], description: str) -> dict[str, DensityProfile]:
     x_wet: float = wetted_area["x"]
     y_wet: float = wetted_area["y"]
-    r_wet: float = wetted_area["r"]
+    r_wet: float = wetted_area["r"] * 1.2 # TODO: constant value? Pull out into constants or config file? It is supposed to be a buffer to capture a little data outside the wetted area
     r2_wet: float = r_wet**2
     height_z: float = header.box.hi.z - header.box.lo.z
     
