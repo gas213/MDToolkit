@@ -84,11 +84,11 @@ if "${IS_SALT_PRESENT}" then &
 
 ## Dump settings
 
-dump            DUMP_TEXT all custom $(v_DUMP_FREQ) dump_*.txt id type x y z
+dump            DUMP_TEXT all custom $(v_DUMP_FREQ) dump_*.txt id mol type x y z
 dump_modify     DUMP_TEXT sort id
 
 # NetCDF is a binary dump format, only certain versions of LAMMPS support it
-# dump            DUMP_NETCDF all netcdf $(v_DUMP_FREQ) dump_*.nc id type x y z
+# dump            DUMP_NETCDF all netcdf $(v_DUMP_FREQ) dump_*.nc id mol type x y z
 # dump_modify     DUMP_NETCDF sort id
 
 ## Restart settings

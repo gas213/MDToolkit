@@ -112,9 +112,9 @@ fix		VAPOR_COUNT_AVG all ave/time $(v_VAPOR_COUNT_FREQ) $(v_VAPOR_AVG_FREQ/v_VAP
 
 ## Dump settings
 
-dump            DUMP_TEXT all custom $(v_DUMP_FREQ) dump_*.txt id type x y z
+dump            DUMP_TEXT all custom $(v_DUMP_FREQ) dump_*.txt id mol type x y z
 dump_modify     DUMP_TEXT sort id
-dump            DUMP_NETCDF all netcdf $(v_DUMP_FREQ) dump_*.nc id type x y z
+dump            DUMP_NETCDF all netcdf $(v_DUMP_FREQ) dump_*.nc id mol type x y z
 dump_modify     DUMP_NETCDF sort id
 
 ## Restart settings
