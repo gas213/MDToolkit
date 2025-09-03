@@ -8,9 +8,9 @@
 variable        START_DATA string {{"file"}}
 
 # Number of times to replicate the water molecule in each dimension
-variable        SCALE_X equal {{float}}
-variable        SCALE_Y equal {{float}}
-variable        SCALE_Z equal {{float}}
+variable        NX equal {{int}}
+variable        NY equal {{int}}
+variable        NZ equal {{int}}
 
 ## Initialization
 
@@ -39,7 +39,7 @@ kspace_modify   order 4
 
 ## Replication
 
-replicate       $(v_SCALE_X) $(v_SCALE_Y) $(v_SCALE_Z)
+replicate       $(v_NX) $(v_NY) $(v_NZ)
 
 ## Write resulting data file
 
