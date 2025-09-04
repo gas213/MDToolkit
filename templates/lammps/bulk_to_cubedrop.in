@@ -1,0 +1,125 @@
+### LAMMPS Input File - Convert periodic bulk into free-floating cube-shaped droplet
+# From MDToolkit template file: bulk_to_cubedrop.in
+
+## Configuration Variables
+# FILL IN {{FIELDS}}
+
+# File name of the initial LAMMPS data file
+variable    START_DATA string {{"file"}}
+
+# Does the box have periodic boundaries with some molecules currently straddling the boundaries?
+variable    DELETE_STRADDLERS equal {{true/false}}
+
+# If you are not deleting straddlers then this can be ignored (no need to reset atom IDs)
+# Set this to true if you are resetting atom IDs using a version of LAMMPS older than 22Dec2022
+variable    USE_OLD_RESET_COMMAND equal {{true/false}}
+
+# Desired final dimensions of the simulation box
+variable    XLO equal {{float}}
+variable    XHI equal {{float}}
+variable    YLO equal {{float}}
+variable    YHI equal {{float}}
+variable    ZLO equal {{float}}
+variable    ZHI equal {{float}}
+
+## Initialization
+
+units           real
+atom_style      full
+boundary        p p p
+pair_style      lj/cut/coul/long 10 10
+pair_modify     mix arithmetic
+pair_modify     tail no
+special_bonds   amber
+bond_style      harmonic
+angle_style     harmonic
+dihedral_style  opls
+improper_style  none
+
+## Read initial data file
+
+read_data      	${START_DATA}
+
+## Neighbor parameters and force field coefficients
+
+neighbor        2.0 bin
+neigh_modify    delay 0
+kspace_style    pppm 1e-5
+kspace_modify   order 4
+
+## Variables with auto-calculated values
+
+# Original size of the box
+variable LX0 equal $(lx)
+variable LY0 equal $(ly)
+variable LZ0 equal $(lz)
+print "DEBUG v_LX0 = $(v_LX0), v_LY0 = $(v_LY0), v_LZ0 = $(v_LZ0)" screen yes
+
+# Initial center of the box
+variable CX0 equal $(xlo + 0.5 * lx)
+variable CY0 equal $(ylo + 0.5 * ly)
+variable CZ0 equal $(zlo + 0.5 * lz)
+print "DEBUG v_CX0 = $(v_CX0), v_CY0 = $(v_CY0), v_CZ0 = $(v_CZ0)" screen yes
+
+# Final center of the box
+variable CX1 equal $(v_XLO + 0.5 * (v_XHI - v_XLO))
+variable CY1 equal $(v_YLO + 0.5 * (v_YHI - v_YLO))
+variable CZ1 equal $(v_ZLO + 0.5 * (v_ZHI - v_ZLO))
+print "DEBUG v_CX1 = $(v_CX1), v_CY1 = $(v_CY1), v_CZ1 = $(v_CZ1)" screen yes
+
+## Remove molecules that straddle the current boundaries (or skip ahead if not doing so)
+
+if "!$(v_DELETE_STRADDLERS)" then "jump SELF RESIZE"
+
+# Replicate the system in all directions (3 x 3 x 3); the central replicated section will possess full clones of all the original straddlers (without boundaries)
+replicate 3 3 3
+print "DEBUG after replication: xlo = $(xlo), xhi = $(xhi), ylo = $(ylo), yhi = $(yhi), zlo = $(zlo), zhi = $(zhi)" screen yes
+print "DEBUG (xlo + v_LX0) = $(xlo + v_LX0)" screen yes
+print "DEBUG (xhi - v_LX0) = $(xhi - v_LX0)" screen yes
+print "DEBUG (ylo + v_LY0) = $(ylo + v_LY0)" screen yes
+print "DEBUG (yhi - v_LY0) = $(yhi - v_LY0)" screen yes
+print "DEBUG (zlo + v_LZ0) = $(zlo + v_LZ0)" screen yes
+print "DEBUG (zhi - v_LZ0) = $(zhi - v_LZ0)" screen yes
+
+# Create a group of all the atoms to delete; this is everything outside of the central replicated section, plus straddling molecules
+region RGN_DELETE block $(xlo + v_LX0) $(xhi - v_LX0) $(ylo + v_LY0) $(yhi - v_LY0) $(zlo + v_LZ0) $(zhi - v_LZ0) side out units box
+group GRP_DELETE region RGN_DELETE
+group GRP_DELETE include molecule
+delete_atoms group GRP_DELETE
+
+# Now that all the straddling molecules (and atoms in other replicated sections) are deleted, displace the "keeper" atoms back to the area they originated from
+displace_atoms all move $(-v_LX0) $(-v_LY0) $(-v_LZ0) units box
+
+# Reset atom IDs now that deletion is done
+if "$(v_USE_OLD_RESET_COMMAND)" then "reset_atom_ids sort yes" &
+else "reset_atoms id sort yes"
+
+## Resize simulation box
+
+label RESIZE
+
+# Get dimensions of largest required box to temporarily use during final atom displacement
+if "$(xlo) < $(v_XLO)" then "variable XLO_MIN equal $(xlo)" else "variable XLO_MIN equal $(v_XLO)"
+if "$(xhi) > $(v_XHI)" then "variable XHI_MAX equal $(xhi)" else "variable XHI_MAX equal $(v_XHI)"
+if "$(ylo) < $(v_YLO)" then "variable YLO_MIN equal $(ylo)" else "variable YLO_MIN equal $(v_YLO)"
+if "$(yhi) > $(v_YHI)" then "variable YHI_MAX equal $(yhi)" else "variable YHI_MAX equal $(v_YHI)"
+if "$(zlo) < $(v_ZLO)" then "variable ZLO_MIN equal $(zlo)" else "variable ZLO_MIN equal $(v_ZLO)"
+if "$(zhi) > $(v_ZHI)" then "variable ZHI_MAX equal $(zhi)" else "variable ZHI_MAX equal $(v_ZHI)"
+print "DEBUG v_XLO_MIN = $(v_XLO_MIN), v_XHI_MAX = $(v_XHI_MAX), v_YLO_MIN = $(v_YLO_MIN), v_YHI_MAX = $(v_YHI_MAX), v_ZLO_MIN = $(v_ZLO_MIN), v_ZHI_MAX = $(v_ZHI_MAX)" screen yes
+
+# Temporarily supersize box (if necessary) to facilitate moving atoms from old position to new position
+change_box all x final $(v_XLO_MIN) $(v_XHI_MAX)
+change_box all y final $(v_YLO_MIN) $(v_YHI_MAX)
+change_box all z final $(v_ZLO_MIN) $(v_ZHI_MAX)
+
+# Displace atoms to final location (centered inside the final box)
+displace_atoms all move $(v_CX1 - v_CX0) $(v_CY1 - v_CY0) $(v_CZ1 - v_CZ0) units box
+
+# Resize simulation box to final size
+change_box all x final $(v_XLO) $(v_XHI)
+change_box all y final $(v_YLO) $(v_YHI)
+change_box all z final $(v_ZLO) $(v_ZHI)
+
+## Write resulting data file
+
+write_data	cubedrop.data
