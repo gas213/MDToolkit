@@ -1,5 +1,5 @@
-from md_commands.command_interface import Command
 from md_commands.command_helpers import parse_float, parse_int
+from md_commands.command_interface import Command
 from session_state import SessionState
 
 class AtomMassCommand(Command):
