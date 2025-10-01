@@ -4,7 +4,7 @@ import math
 from multiprocessing import Pool
 import numpy as np
 
-from constants import BIN_SIZE, element_sets, WORKER_COUNT
+from old_constants import BIN_SIZE, element_sets, WORKER_COUNT
 from md_dataclasses.atom import Atom
 from md_dataclasses.box import Box
 from md_dataclasses.vector3d import Vector3D

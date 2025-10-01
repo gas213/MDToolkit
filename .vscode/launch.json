@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "src/__main__.py",
             "console": "integratedTerminal",
-            "args": ["${workspaceFolder}/debug/mdtoolkit_config.ini"],
+            "args": ["${workspaceFolder}/debug/mdtoolkit_input.txt"],
         }
     ]
 }

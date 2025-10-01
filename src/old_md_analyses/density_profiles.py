@@ -2,7 +2,7 @@ import math
 import numpy as np
 from numpy import ndarray
 
-from constants import four_thirds_pi
+from old_constants import four_thirds_pi
 from md_dataclasses.atom import Atom
 from md_dataclasses.density_profile import DensityProfile
 from md_dataclasses.header import Header

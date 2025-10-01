@@ -2,7 +2,7 @@ import configparser
 import glob
 import os.path
 
-from constants import masses
+from old_constants import masses
 
 class ConfigReader:
     def __init__(self, config_path: str):

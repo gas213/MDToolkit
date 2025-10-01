@@ -1,9 +1,9 @@
 import os.path
 
-from constants import element_sets
+from old_constants import element_sets
 from md_dataclasses.density_profile import DensityProfile
 from md_readers.config_reader import ConfigReader
-import text_printer as tp
+import old_text_printer as tp
 
 """
 FULL FILE STRUCTURE:
