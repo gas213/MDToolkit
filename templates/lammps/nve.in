@@ -85,7 +85,7 @@ fix             MSD_WINDOW_O all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_O[4] ave w
 
 ## Dump settings
 
-dump            DUMP_TEXT all custom $(v_DUMP_FREQ) dump_*.txt id mol type x y z
+dump            DUMP_TEXT all custom $(v_DUMP_FREQ) dump_*.dump id mol type x y z
 dump_modify     DUMP_TEXT sort id
 #dump            DUMP_NETCDF all netcdf $(v_DUMP_FREQ) dump_*.nc id mol type x y z
 #dump_modify     DUMP_NETCDF sort id

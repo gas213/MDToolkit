@@ -97,7 +97,7 @@ compute     TEMP_VAPOR VAPOR temp
 
 ## Dump settings
 
-dump            DUMP_TEXT all custom $(v_DUMP_FREQ) dump_*.txt id mol type x y z
+dump            DUMP_TEXT all custom $(v_DUMP_FREQ) dump_*.dump id mol type x y z
 dump_modify     DUMP_TEXT sort id
 # dump            DUMP_NETCDF all netcdf $(v_DUMP_FREQ) dump_*.nc id mol type x y z
 # dump_modify     DUMP_NETCDF sort id
