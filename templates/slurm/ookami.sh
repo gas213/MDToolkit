@@ -4,7 +4,7 @@
 
 # REPLACE THE {{FIELDS}}
 
-# Ookami partitions: short (4h), medium (12h), long (2d), extended (14h)
+# Ookami partitions: short (4h), medium (12h), long (2d), extended (17d)
 
 #SBATCH --partition={{short, medium, long, extended}}
 #SBATCH --time={{d-hh:mm:ss}}
