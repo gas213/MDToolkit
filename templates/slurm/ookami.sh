@@ -25,7 +25,7 @@
 #SBATCH --output="job.%j.%N.out"
 
 # User's scratch space directory; must end with a forward slash /
-SCRATCH_DIR=/lustre/scratch/{{USER}}/
+SCRATCH_DIR=/lustre/scratch/$USER/
 
 
 
