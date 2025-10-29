@@ -6,15 +6,16 @@ from md_dataclasses.header import Header
 from md_dataclasses.vector3d import Vector3D
 
 # EXPLANATION OF REGEX COMPONENTS
-# \d+               Positive integer
-# -?\d+             Positive or negative integer
-# -?\d+\.?\d+       Positive or negative number that must have decimal digits
-# -?\d+(\.\d+)?     Positive or negative number that might have decimal digits
+# \d+                       Positive integer
+# -?\d+                     Positive or negative integer
+# -?\d+\.?\d+               Positive or negative number that must have decimal digits
+# -?\d+(\.\d+)?             Positive or negative number that might have decimal digits
+# (-?\d+(\.\d+)?(\s+|$))+   Any amount of positive or negative numbers that might have decimal digits, each followed by whitespace or the end of the string
 regexes = {
     "atom count label": "^ITEM: NUMBER OF ATOMS$",
     "box label": "^ITEM: BOX BOUNDS.*$",
     "atoms header": "^ITEM: ATOMS.*$",
-    "atoms record": "^\d+ \d+ -?\d+\.?\d+ -?\d+\.?\d+ -?\d+\.?\d+$"
+    "numeric record": "^(-?\d+(\.\d+)?(\s+|$))+"
 }
 
 def read_header(data_file: str) -> Header:    
@@ -71,7 +72,7 @@ def read_atoms(data_file: str, atom_data_columns: dict[str, int]) -> list[Atom]:
                     atoms_section_reached = True
                     continue
                 else: continue
-            elif re.search(regexes["atoms record"], line) is not None:
+            elif re.search(regexes["numeric record"], line) is not None:
                 row = line.split()
                 id: int = int(row[atom_data_columns["id"]]) if "id" in atom_data_columns else None
                 type: int = int(row[atom_data_columns["type"]]) if "type" in atom_data_columns else None
