@@ -1,0 +1,264 @@
+### LAMMPS Input File - Equilibration of free-floating droplet
+# From MDToolkit template file: droplet_free.in
+
+## Configuration Variables
+# FILL IN {{FIELDS}}
+# IF YOU ARE RESTARTING A RUN WITHIN THE SAME DIRECTORY, RENAME YOUR LOG FILES SO THEY DON'T GET OVERWRITTEN
+
+# Is this a restart? (true if starting from a binary restart file, false if starting from a data text file)
+variable IS_RESTART equal {{true/false}}
+# File name of the binary restart file or initial data text file
+# For restart files, using the * wildcard will find the largest-numbered restart file in the directory (ex: restart_*.rs)
+variable START_DATA string {{file}}
+
+# Does the data file have types defined for sodium and chlorine? (regardless of whether any sodium or chlorine ions are present)
+variable IS_SALT_DEFINED equal {{true/false}}
+# Does the data file actually contain any sodium and chlorine atoms?
+variable IS_SALT_PRESENT equal {{true/false}}
+
+# Thermostat temperature in degrees Celsius (25.0, 80.0)
+variable TEMP_C equal {{float}}
+
+# Number of time steps to run
+variable STEPS equal {{int}}
+# Frequency of creating dump files (every N steps); try 1000
+variable DUMP_FREQ equal {{int}}
+# Frequency of writing thermo output to the LAMMPS log file (every N steps); try 100
+variable THERMO_FREQ equal {{int}}
+# Frequency of writing restart files (every N steps); try ~2 restarts per day of wall time
+variable RESTART_FREQ equal {{int}}
+
+# Center-of-mass coordinates of droplet (if not yet known, then approximate)
+variable COM_X equal {{float}}
+variable COM_Y equal {{float}}
+variable COM_Z equal {{float}}
+# Slightly oversized radius of the droplet (in box units); used for roughly approximating vapor vs liquid
+variable COM_R equal {{float}}
+
+# Frequency of counting vapor particles (every N steps); try 100
+variable VAPOR_COUNT_FREQ equal {{int}}
+# Frequency of averaging the vapor counts (every N steps); try 10000
+# (Due to the way these variables are being used, VAPOR_AVG_FREQ must be a multiple of VAPOR_COUNT_FREQ)
+variable VAPOR_AVG_FREQ equal {{int}}
+
+# During MSD calculations, this is the radius used to define the "core" region of the droplet
+variable MSD_CORE_R equal {{float}}
+# Frequency of logging MSD calculation; try 500
+variable MSD_FREQ equal {{int}}
+
+# During RDF calculations, these are the inner radii of each sampling region
+variable RDF_R_INNER_1 equal {{float}}
+variable RDF_R_INNER_2 equal {{float}}
+variable RDF_R_INNER_3 equal {{float}}
+# Number of RDF bins; try 100
+variable RDF_NBINS equal {{int}}
+# RDF cutoff distance (box units); try 10.0
+variable RDF_CUTOFF equal {{float}}
+# Frequency of computing RDF (not averaging); try 1000
+variable RDF_COMP_FREQ equal {{int}}
+# Frequency of averaging the RDF compute (every N steps); try 20000 or more
+# (Due to the way these variables are being used, RDF_CALC_FREQ must be a multiple of RDF_AVG_FREQ)
+variable RDF_AVG_FREQ equal {{int}}
+
+# Seeds for random number generator (recommend random number between 0 and 99999999)
+variable RNG_1 equal {{int}}
+variable RNG_2 equal {{int}}
+variable RNG_3 equal {{int}}
+
+## Initialization
+
+units real
+atom_style full
+boundary p p p
+pair_style lj/cut/coul/long 10 10
+pair_modify mix arithmetic
+pair_modify tail no
+special_bonds amber
+bond_style harmonic
+angle_style harmonic
+dihedral_style opls
+improper_style none
+timestep 2 # femtoseconds
+
+## Read an initial data file or a restart file
+
+if "${IS_RESTART}" then &
+    "read_restart ${START_DATA}" &
+else &
+    "read_data ${START_DATA}"
+
+## Variables with auto-calculated values
+
+# Thermostat temperature in degrees Kelvin
+variable TEMP_K equal $(v_TEMP_C + 273.15)
+
+# Volume of the vapor sampling region (simulation box minus spherical droplet zone)
+variable VAPOR_VOLUME equal $(abs(xhi - xlo) * abs(yhi - ylo) * abs(zhi - zlo) - (4.0 / 3.0) * PI * v_COM_R^3)
+
+## Neighbor parameters and force field coefficients
+
+neighbor 2.0 bin
+neigh_modify delay 0
+kspace_style pppm 1e-5
+kspace_modify order 4
+
+## Define atom/molecule groups
+
+# The pure water droplet data and the saline droplet data do not have the same atom type IDs
+if "${IS_SALT_DEFINED}" then &
+    "group CHLORINE type 4" &
+    "group SODIUM type 5" &
+    "group OXYGEN type 6" &
+    "group NACL type 4 5" &
+    "group H2O type 6 7" &
+else &
+    "group OXYGEN type 4" &
+    "group H2O type 4 5"
+
+## Vapor counting
+
+# Define spherical exclusion zone for vapor sampling
+# Once the droplet reaches a round shape, this region should capture all of the vapor space (except for a slim margin near the surface of the droplet)
+region VAPOR_REGION sphere $(v_COM_X) $(v_COM_Y) $(v_COM_Z) $(v_COM_R) side out units box
+
+group VAPOR dynamic H2O region VAPOR_REGION every $(v_VAPOR_COUNT_FREQ)
+group VAPOR_OXYGEN dynamic OXYGEN region VAPOR_REGION every $(v_VAPOR_COUNT_FREQ)
+
+# Count the number of vapor molecules in the sampling region by counting oxygen atoms
+variable VAPOR_COUNT equal count(VAPOR_OXYGEN)
+
+# Compute and print time-averaged vapor (oxygen) count
+# Note: the fix ave/time command does not use the group ID; it is ignored
+fix VAPOR_COUNT_AVG all ave/time $(v_VAPOR_COUNT_FREQ) $(v_VAPOR_AVG_FREQ/v_VAPOR_COUNT_FREQ) $(v_VAPOR_AVG_FREQ) v_VAPOR_COUNT ave one file vapor_count.txt
+
+# Define compute to calculate vapor pressure (example from the compute stress/atom docs page)
+compute	JUNK1 VAPOR stress/atom NULL
+compute	JUNK2 VAPOR reduce sum c_JUNK1[1] c_JUNK1[2] c_JUNK1[3]
+variable VAPOR_PRESSURE equal -(c_JUNK2[1]+c_JUNK2[2]+c_JUNK2[3])/(3*v_VAPOR_VOLUME)
+
+## MSD calculations
+
+region DROP sphere $(v_COM_X) $(v_COM_Y) $(v_COM_Z) $(v_COM_R) side in units box
+region DROP_CORE sphere $(v_COM_X) $(v_COM_Y) $(v_COM_Z) $(v_MSD_CORE_R) side in units box
+region NOT_CORE sphere $(v_COM_X) $(v_COM_Y) $(v_COM_Z) $(v_MSD_CORE_R) side out units box
+region DROP_SHELL intersect 2 DROP NOT_CORE
+
+group CORE region DROP_CORE
+group SHELL region DROP_SHELL
+
+group H2O_CORE intersect H2O CORE
+group H2O_SHELL intersect H2O SHELL
+
+compute MSD_H2O_CORE H2O_CORE msd com yes
+compute MSD_H2O_SHELL H2O_SHELL msd com yes
+
+# The fix ave/time command does not actually use the group-ID parameter
+fix AVE_MSD_H2O_CORE all ave/time 1 1 $(v_MSD_FREQ) c_MSD_H2O_CORE[4] file msd_h2o_core.txt
+fix AVE_MSD_H2O_SHELL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_H2O_SHELL[4] file msd_h2o_shell.txt
+
+if "${IS_SALT_PRESENT}" then &
+    "group NA_CORE intersect SODIUM CORE" &
+    "group CL_CORE intersect CHLORINE CORE" &
+    "group NACL_CORE intersect NACL CORE" &
+    "group NA_SHELL intersect SODIUM SHELL" &
+    "group CL_SHELL intersect CHLORINE SHELL" &
+    "group NACL_SHELL intersect NACL SHELL" &
+    "compute MSD_NA_CORE NA_CORE msd com yes" &
+    "compute MSD_CL_CORE CL_CORE msd com yes" &
+    "compute MSD_NACL_CORE NACL_CORE msd com yes" &
+    "compute MSD_NA_SHELL NA_SHELL msd com yes" &
+    "compute MSD_CL_SHELL CL_SHELL msd com yes" &
+    "compute MSD_NACL_SHELL NACL_SHELL msd com yes" &
+    "fix AVE_MSD_NA_CORE all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NA_CORE[4] file msd_na_core.txt" &
+    "fix AVE_MSD_CL_CORE all ave/time 1 1 $(v_MSD_FREQ) c_MSD_CL_CORE[4] file msd_cl_core.txt" &
+    "fix AVE_MSD_NACL_CORE all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NACL_CORE[4] file msd_nacl_core.txt" &
+    "fix AVE_MSD_NA_SHELL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NA_SHELL[4] file msd_na_shell.txt" &
+    "fix AVE_MSD_CL_SHELL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_CL_SHELL[4] file msd_cl_shell.txt" &
+    "fix AVE_MSD_NACL_SHELL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NACL_SHELL[4] file msd_nacl_shell.txt"
+
+## RDF calculations
+
+region REGION_RDF_LOWER_1 sphere $(v_COM_X) $(v_COM_Y) $(v_COM_Z) $(v_RDF_R_INNER_1) side out units box
+region REGION_RDF_LOWER_2 sphere $(v_COM_X) $(v_COM_Y) $(v_COM_Z) $(v_RDF_R_INNER_2) side out units box
+region REGION_RDF_LOWER_3 sphere $(v_COM_X) $(v_COM_Y) $(v_COM_Z) $(v_RDF_R_INNER_3) side out units box
+region REGION_RDF_UPPER sphere $(v_COM_X) $(v_COM_Y) $(v_COM_Z) $(v_COM_R) side in units box
+
+region REGION_RDF_1 intersect 2 REGION_RDF_LOWER_1 REGION_RDF_UPPER
+region REGION_RDF_2 intersect 2 REGION_RDF_LOWER_2 REGION_RDF_UPPER
+region REGION_RDF_3 intersect 2 REGION_RDF_LOWER_3 REGION_RDF_UPPER
+
+group ALL_RDF_1 dynamic all region REGION_RDF_1 every $(v_RDF_COMP_FREQ)
+group ALL_RDF_2 dynamic all region REGION_RDF_2 every $(v_RDF_COMP_FREQ)
+group ALL_RDF_3 dynamic all region REGION_RDF_3 every $(v_RDF_COMP_FREQ)
+
+if "${IS_SALT_PRESENT}" then &
+    "compute CALC_RDF_1 ALL_RDF_1 rdf $(v_RDF_NBINS) 6 7 6 6 7 7 6 4 6 5 4 4 5 5 4 5 5 4 cutoff $(v_RDF_CUTOFF)" &
+    "compute CALC_RDF_2 ALL_RDF_2 rdf $(v_RDF_NBINS) 6 7 6 6 7 7 6 4 6 5 4 4 5 5 4 5 5 4 cutoff $(v_RDF_CUTOFF)" &
+    "compute CALC_RDF_3 ALL_RDF_3 rdf $(v_RDF_NBINS) 6 7 6 6 7 7 6 4 6 5 4 4 5 5 4 5 5 4 cutoff $(v_RDF_CUTOFF)" &
+else &
+    "compute CALC_RDF_1 ALL_RDF_1 rdf $(v_RDF_NBINS) 6 7 6 6 7 7 cutoff $(v_RDF_CUTOFF)" &
+    "compute CALC_RDF_2 ALL_RDF_2 rdf $(v_RDF_NBINS) 6 7 6 6 7 7 cutoff $(v_RDF_CUTOFF)" &
+    "compute CALC_RDF_3 ALL_RDF_3 rdf $(v_RDF_NBINS) 6 7 6 6 7 7 cutoff $(v_RDF_CUTOFF)"
+
+# The fix ave/time command does not actually use the group-ID parameter
+fix PRINT_RDF_1 all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ) c_CALC_RDF_1[*] file rdf_$(v_RDF_R_INNER_1)_$(v_COM_R).txt mode vector
+fix PRINT_RDF_2 all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ) c_CALC_RDF_2[*] file rdf_$(v_RDF_R_INNER_2)_$(v_COM_R).txt mode vector
+fix PRINT_RDF_3 all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ) c_CALC_RDF_3[*] file rdf_$(v_RDF_R_INNER_3)_$(v_COM_R).txt mode vector
+
+## Dump settings
+
+group H2O_RDF_1 dynamic H2O region REGION_RDF_1 every $(v_RDF_COMP_FREQ)
+group H2O_RDF_2 dynamic H2O region REGION_RDF_2 every $(v_RDF_COMP_FREQ)
+group H2O_RDF_3 dynamic H2O region REGION_RDF_3 every $(v_RDF_COMP_FREQ)
+
+dump DUMPTEXT_ALL all custom $(v_DUMP_FREQ) dump_*.dump id mol type x y z
+dump_modify DUMPTEXT_ALL sort id
+dump DUMPTEXT_H2O_RDF_1 H2O_RDF_1 custom $(v_DUMP_FREQ) h2o_rdf_$(v_RDF_R_INNER_1)_$(v_COM_R)_*.dump id mol type x y z
+dump_modify DUMPTEXT_H2O_RDF_1 sort id
+dump DUMPTEXT_H2O_RDF_2 H2O_RDF_2 custom $(v_DUMP_FREQ) h2o_rdf_$(v_RDF_R_INNER_2)_$(v_COM_R)_*.dump id mol type x y z
+dump_modify DUMPTEXT_H2O_RDF_2 sort id
+dump DUMPTEXT_H2O_RDF_3 H2O_RDF_3 custom $(v_DUMP_FREQ) h2o_rdf_$(v_RDF_R_INNER_3)_$(v_COM_R)_*.dump id mol type x y z
+dump_modify DUMPTEXT_H2O_RDF_3 sort id
+
+#dump DUMPNCDF_ALL all netcdf $(v_DUMP_FREQ) dump_*.nc id mol type x y z
+#dump_modify DUMPNCDF_ALL sort id
+#dump DUMPNCDF_H2O_RDF_1 H2O_RDF_1 netcdf $(v_DUMP_FREQ) h2o_rdf_$(v_RDF_R_INNER_1)_$(v_COM_R)_*.nc id mol type x y z
+#dump_modify DUMPNCDF_H2O_RDF_1 sort id
+#dump DUMPNCDF_H2O_RDF_2 H2O_RDF_2 netcdf $(v_DUMP_FREQ) h2o_rdf_$(v_RDF_R_INNER_2)_$(v_COM_R)_*.nc id mol type x y z
+#dump_modify DUMPNCDF_H2O_RDF_2 sort id
+#dump DUMPNCDF_H2O_RDF_3 H2O_RDF_3 netcdf $(v_DUMP_FREQ) h2o_rdf_$(v_RDF_R_INNER_3)_$(v_COM_R)_*.nc id mol type x y z
+#dump_modify DUMPNCDF_H2O_RDF_3 sort id
+
+## Restart settings
+
+restart	$(v_RESTART_FREQ) restart_*.rs
+
+## Constraint for bond lengths
+
+fix SHAKE all shake 1e-5 1000 0 m 1.0
+
+## Thermostatting
+
+# Tdamp of 100*dt recommended by this page: https://docs.lammps.org/fix_nh.html
+fix NVT_H2O H2O nvt temp $(v_TEMP_K) $(v_TEMP_K) $(100.0*dt)
+velocity H2O create $(v_TEMP_K) $(v_RNG_1) dist gaussian
+
+if "${IS_SALT_PRESENT}" then &
+    "fix NVT_CL CHLORINE nvt temp $(v_TEMP_K) $(v_TEMP_K) $(100.0*dt)" &
+    "fix NVT_NA SODIUM nvt temp $(v_TEMP_K) $(v_TEMP_K) $(100.0*dt)" &
+    "velocity CHLORINE create $(v_TEMP_K) $(v_RNG_2) dist gaussian" &
+    "velocity SODIUM create $(v_TEMP_K) $(v_RNG_3) dist gaussian"
+
+## Thermodynamic output settings
+
+thermo $(v_THERMO_FREQ)
+thermo_style custom step time temp pe ke etotal enthalpy press vol density lx ly lz pxx pyy pzz pxy pxz pyz v_VAPOR_PRESSURE
+thermo_modify lost ignore flush yes
+
+## Run the simulation
+
+run $(v_STEPS)
+
+## Write restart data
+
+write_data write_*.data
