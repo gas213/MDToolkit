@@ -1,0 +1,6 @@
+spack:
+  specs:
+  - lammps@20250722 +mpi +netcdf
+  view: true
+  concretizer:
+    unify: true
