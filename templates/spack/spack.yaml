@@ -1,4 +1,6 @@
 spack:
+  config:
+    install_missing_compilers: true
   specs:
   - lammps@20250722 +mpi +netcdf
   view: true
