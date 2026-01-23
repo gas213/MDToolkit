@@ -35,7 +35,7 @@
 ALLOCATION=ebw210_093025
 
 # User's scratch-like directory where dumps and restarts will be generated; must end with a forward slash /
-SCRATCH_DIR=$HOME/$ALLOCATION/$USER/{{dir}}/
+SCRATCH_DIR=$HOME/$ALLOCATION/$USER/_scratchlike/
 
 # Directory where the user's spack installation is located (the same directory where md_install_here.sh was executed from)
 SPACK_DIR=$HOME/$ALLOCATION/$USER/md_env/
