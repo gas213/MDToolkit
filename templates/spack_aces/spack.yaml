@@ -1,0 +1,17 @@
+spack:
+  config:
+    # Move as much as possible into scratch space, due to ACES file count limits
+    install_tree:
+      root: /scratch/user/${USER}/spack/install_tree
+    build_stage:
+    - /scratch/user/${USER}/spack/build_stage
+    test_stage: /scratch/user/${USER}/spack/test_stage
+    source_cache: /scratch/user/${USER}/spack/source_cache
+    misc_cache: /scratch/user/${USER}/spack/misc_cache
+  bootstrap:
+    root: /scratch/user/${USER}/spack/bootstrap
+  specs:
+  - lammps@20250722 +mpi +netcdf
+  view: true
+  concretizer:
+    unify: true
