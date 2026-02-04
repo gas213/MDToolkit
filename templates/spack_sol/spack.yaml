@@ -1,8 +1,20 @@
 spack:
   config:
-    install_missing_compilers: true
+    # Keep as much as possible in the shared directory, so other users can benefit from existing items
+    install_tree:
+      root: ~/ebw210_093025/shared/spack/install_tree
+    build_stage:
+    - ~/ebw210_093025/shared/spack/build_stage
+    test_stage: ~/ebw210_093025/shared/spack/test_stage
+    source_cache: ~/ebw210_093025/shared/spack/source_cache
+    misc_cache: ~/ebw210_093025/shared/spack/misc_cache
+  bootstrap:
+    root: ~/ebw210_093025/shared/spack/bootstrap
   specs:
   - lammps@20250722 +mpi +netcdf
   view: true
   concretizer:
     unify: true
+  packages:
+    all:
+      target: [x86_64]
