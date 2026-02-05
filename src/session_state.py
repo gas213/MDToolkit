@@ -7,6 +7,7 @@ class SessionState:
     step_start: int = None
     step_end: int = None
     data_path: str = None
+    results_path: str = None
     data_files: list[str] = []
     data_files_index: int = 0
     data_type: str = None
