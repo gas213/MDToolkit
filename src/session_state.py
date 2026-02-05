@@ -1,6 +1,7 @@
 from md_dataclasses.atom import Atom
 from md_dataclasses.header import Header
 from md_dataclasses.vector3d import Vector3D
+from md_filters.filter_interface import Filter
 
 class SessionState:
     step_start: int = None
@@ -14,4 +15,5 @@ class SessionState:
     header: Header = None
     atoms: list[Atom] = []
     center_of_mass: Vector3D = None
+    filters: dict[str, Filter] = {}
     radial_profile: dict[float, float] = {} # TODO: this is a workaround

@@ -49,7 +49,7 @@ class InputInterpreter:
         args = terms[1:] if len(terms) > 1 else []
         if current_command not in commands_map:
             raise Exception(f"Unsupported command: {current_command}")
-        command: Command = commands_map[current_command].from_args(args)
+        command = commands_map[current_command].from_args(args)
         command.execute(state)
         
         if current_command == "next_file" and state.data_files_index < len(state.data_files):
