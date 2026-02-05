@@ -49,6 +49,8 @@ class InputInterpreter:
         args = terms[1:] if len(terms) > 1 else []
         if current_command not in commands_map:
             raise Exception(f"Unsupported command: {current_command}")
+        else:
+            state.logger.debug(f"Interpreting command: {self._lines[self._index]}")
         command = commands_map[current_command].from_args(args)
         command.execute(state)
         

@@ -19,4 +19,5 @@ class DataPathCommand(Command):
     def execute(self, state: SessionState):
         state.data_files = get_data_files(self._path, state.step_start, state.step_end)
         state.data_path = self._path
-        state.results_path = make_initial_dirs(self._path, state.step_start, state.step_end)
+        results_path = make_initial_dirs(self._path, state.step_start, state.step_end)
+        state.set_results_path(results_path)

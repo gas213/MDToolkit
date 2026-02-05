@@ -20,4 +20,4 @@ interpreter.run(state)
 # with open(path_test, "w") as test_file:
 #     test_file.writelines([f"{k} {v}\n" for k, v in state.radial_profile.items()])
 
-print("ANALYSIS COMPLETE")
+state.logger.debug("ANALYSIS COMPLETE")
