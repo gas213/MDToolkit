@@ -26,14 +26,16 @@ class FilterCommand(Command):
 
     @classmethod
     def from_args(cls, args: list[str]):
-        expected_arg_count: int = 2
-        if len(args) != expected_arg_count:
-            raise Exception(f"filter command does not have the minimum number of args (expected {expected_arg_count}, got {len(args)})")
+        minimum_arg_count: int = 2
+        if len(args) <= minimum_arg_count:
+            raise Exception(f"filter command does not have the minimum number of args (expected at least {minimum_arg_count}, got {len(args)})")
+        if args[0].lower() == "all":
+            raise Exception("Filter name cannot be 'all' since this is a reserved keyword")
         filter_type = args[1].lower()
         if filter_type not in _supported_filters:
             raise Exception(f"Unsupported filter_type specified in configuration: '{filter_type}' (supported types are {list(_supported_filters)})")
         filter_params = args[2:] if len(args) > 2 else []
-        return cls(args[0].lower(), filter_type, filter_params)
+        return cls(args[0], filter_type, filter_params)
     
     def execute(self, state: SessionState):
         if self._filter_type == "and":

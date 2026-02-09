@@ -25,6 +25,8 @@ class SessionState:
     center_of_mass: Vector3D = None
     filters: dict[str, Filter] = {}
     radial_profile: dict[float, float] = {} # TODO: this is a workaround
+    cl_neighbors_histogram: dict[int, int] = {} # TODO: this is a workaround
+    na_neighbors_histogram: dict[int, int] = {} # TODO: this is a workaround
 
     def __init__(self):
         self.logger.setLevel(logging.DEBUG)

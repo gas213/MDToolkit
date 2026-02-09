@@ -5,10 +5,12 @@ from md_commands.center_of_mass_command import CenterOfMassCommand
 from md_commands.command_interface import Command
 from md_commands.data_path_command import DataPathCommand
 from md_commands.data_type_command import DataTypeCommand
+from md_commands.filter_command import FilterCommand
 from md_commands.next_file_command import NextFileCommand
 from md_commands.radial_density_profile_command import RadialDensityProfileCommand
 from md_commands.read_atoms_command import ReadAtomsCommand
 from md_commands.read_header_command import ReadHeaderCommand
+from md_commands.salt_histograms_command import SaltHistogramsCommand
 from md_commands.step_end_command import StepEndCommand
 from md_commands.step_start_command import StepStartCommand
 
@@ -18,10 +20,12 @@ commands_map: dict[str, Command] = {
     "center_of_mass": CenterOfMassCommand,
     "data_path": DataPathCommand,
     "data_type": DataTypeCommand,
+    "filter": FilterCommand,
     "next_file": NextFileCommand,
     "radial_density_profile": RadialDensityProfileCommand,
     "read_atoms": ReadAtomsCommand,
     "read_header": ReadHeaderCommand,
+    "salt_histograms": SaltHistogramsCommand,
     "step_end": StepEndCommand,
     "step_start": StepStartCommand,
 }
