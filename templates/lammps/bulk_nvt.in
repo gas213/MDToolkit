@@ -1,0 +1,161 @@
+### LAMMPS Input File - NVT equilibration of bulk liquid
+# From MDToolkit template file: bulk_nvt.in
+
+## Configuration Variables
+# FILL IN {{FIELDS}}
+# IF YOU ARE RESTARTING A RUN WITHIN THE SAME DIRECTORY, RENAME YOUR LOG FILES SO THEY DON'T GET OVERWRITTEN
+
+# Is this a restart? (true if starting from a binary restart file, false if starting from a data text file)
+variable IS_RESTART equal {{true/false}}
+# File name of the binary restart file or initial data text file
+# For restart files, using the * wildcard will find the largest-numbered restart file in the directory (ex: restart_*.rs)
+variable START_DATA string {{file}}
+
+# Does the data file have types defined for sodium and chlorine? (regardless of whether any sodium or chlorine ions are present)
+variable IS_SALT_DEFINED equal {{true/false}}
+# Does the data file actually contain any sodium and chlorine atoms?
+variable IS_SALT_PRESENT equal {{true/false}}
+
+# Thermostat temperature in degrees Celsius (25.0, 80.0)
+variable TEMP_C equal {{float}}
+
+# Number of time steps to run
+variable STEPS equal {{int}}
+# Frequency of creating dump files (every N steps); try 1000
+variable DUMP_FREQ equal {{int}}
+# Frequency of writing thermo output to the LAMMPS log file (every N steps); try 100
+variable THERMO_FREQ equal {{int}}
+# Frequency of writing restart files (every N steps); try ~2 restarts per day of wall time
+variable RESTART_FREQ equal {{int}}
+
+# Frequency of logging MSD calculation; try 500
+variable MSD_FREQ equal {{int}}
+
+# Number of RDF bins; try 100
+variable RDF_NBINS equal {{int}}
+# RDF cutoff distance (box units); try 10.0
+variable RDF_CUTOFF equal {{float}}
+# Frequency of computing RDF (not averaging); try 1000
+variable RDF_COMP_FREQ equal {{int}}
+# Frequency of averaging the RDF compute (every N steps); try 20000 or more
+# (Due to the way these variables are being used, RDF_CALC_FREQ must be a multiple of RDF_AVG_FREQ)
+variable RDF_AVG_FREQ equal {{int}}
+
+# Seeds for random number generator (recommend random number between 0 and 99999999)
+variable RNG_1 equal {{int}}
+variable RNG_2 equal {{int}}
+variable RNG_3 equal {{int}}
+
+## Initialization
+
+units real
+atom_style full
+boundary p p p
+pair_style lj/cut/coul/long 10 10
+pair_modify mix arithmetic
+pair_modify tail no
+special_bonds amber
+bond_style harmonic
+angle_style harmonic
+dihedral_style opls
+improper_style none
+timestep 2 # femtoseconds
+
+## Read an initial data file or a restart file
+
+if "${IS_RESTART}" then &
+    "read_restart ${START_DATA}" &
+else &
+    "read_data ${START_DATA}"
+
+## Variables with auto-calculated values
+
+# Thermostat temperature in degrees Kelvin
+variable TEMP_K equal $(v_TEMP_C + 273.15)
+
+## Neighbor parameters and force field coefficients
+
+neighbor 2.0 bin
+neigh_modify delay 0
+kspace_style pppm 1e-5
+kspace_modify order 4
+
+## Define atom/molecule groups
+
+# The pure water droplet data and the saline droplet data do not have the same atom type IDs
+if "${IS_SALT_DEFINED}" then &
+    "group CHLORINE type 4" &
+    "group SODIUM type 5" &
+    "group OXYGEN type 6" &
+    "group NACL type 4 5" &
+    "group H2O type 6 7" &
+else &
+    "group OXYGEN type 4" &
+    "group H2O type 4 5"
+
+## MSD calculations
+
+compute MSD_H2O H2O msd com yes
+
+# The fix ave/time command does not actually use the group-ID parameter
+fix AVE_MSD_H2O all ave/time 1 1 $(v_MSD_FREQ) c_MSD_H2O[4] file msd_h2o.txt
+
+if "${IS_SALT_PRESENT}" then &
+    "compute MSD_NA SODIUM msd com yes" &
+    "compute MSD_CL CHLORINE msd com yes" &
+    "compute MSD_NACL NACL msd com yes" &
+    "fix AVE_MSD_NA all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NA[4] file msd_na.txt" &
+    "fix AVE_MSD_CL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_CL[4] file msd_cl.txt" &
+    "fix AVE_MSD_NACL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NACL[4] file msd_nacl.txt"
+
+## RDF calculations
+
+if "${IS_SALT_PRESENT}" then &
+    "compute CALC_RDF all rdf $(v_RDF_NBINS) 6 7 6 6 7 7 6 4 6 5 4 4 5 5 4 5 5 4 cutoff $(v_RDF_CUTOFF)" &
+else &
+    "compute CALC_RDF all rdf $(v_RDF_NBINS) 6 7 6 6 7 7 cutoff $(v_RDF_CUTOFF)"
+
+# The fix ave/time command does not actually use the group-ID parameter
+fix PRINT_RDF all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ) c_CALC_RDF[*] file rdf.txt mode vector
+
+## Dump settings
+
+dump DUMPTEXT_ALL all custom $(v_DUMP_FREQ) dump_*.dump id mol type x y z
+dump_modify DUMPTEXT_ALL sort id
+
+#dump DUMPNCDF_ALL all netcdf $(v_DUMP_FREQ) dump_*.nc id mol type x y z
+#dump_modify DUMPNCDF_ALL sort id
+
+## Restart settings
+
+restart	$(v_RESTART_FREQ) restart_*.rs
+
+## Constraint for bond lengths
+
+fix SHAKE all shake 1e-5 1000 0 m 1.0
+
+## Thermostatting
+
+# Tdamp of 100*dt recommended by this page: https://docs.lammps.org/fix_nh.html
+fix NVT_H2O H2O nvt temp $(v_TEMP_K) $(v_TEMP_K) $(100.0*dt)
+velocity H2O create $(v_TEMP_K) $(v_RNG_1) dist gaussian
+
+if "${IS_SALT_PRESENT}" then &
+    "fix NVT_CL CHLORINE nvt temp $(v_TEMP_K) $(v_TEMP_K) $(100.0*dt)" &
+    "fix NVT_NA SODIUM nvt temp $(v_TEMP_K) $(v_TEMP_K) $(100.0*dt)" &
+    "velocity CHLORINE create $(v_TEMP_K) $(v_RNG_2) dist gaussian" &
+    "velocity SODIUM create $(v_TEMP_K) $(v_RNG_3) dist gaussian"
+
+## Thermodynamic output settings
+
+thermo $(v_THERMO_FREQ)
+thermo_style custom step time temp pe ke etotal enthalpy press vol density lx ly lz pxx pyy pzz pxy pxz pyz
+thermo_modify lost ignore flush yes
+
+## Run the simulation
+
+run $(v_STEPS)
+
+## Write restart data
+
+write_data write_*.data

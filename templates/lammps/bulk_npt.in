@@ -1,5 +1,5 @@
 ### LAMMPS Input File - NPT Equilibration of cube droplet (dynamic box)
-# From MDToolkit template file: npt.in
+# From MDToolkit template file: bulk_npt.in
 
 ## Configuration Variables
 # FILL IN {{FIELDS}}
@@ -22,8 +22,6 @@ variable	    TEMP_C equal {{T}}
 # Barostat pressure in atmospheres (1.0)
 variable        P_ATM equal {{P}}
 
-# Size of time step (in "real" units, this would be femtoseconds)
-variable        STEP_SIZE equal {{N}}
 # Number of time steps to run; 500k steps == 1 ns if time step size is 2 fs
 variable	    STEPS equal {{N}}
 # Frequency of creating dump files (every N steps); try 1000
@@ -120,7 +118,7 @@ thermo_modify   lost ignore flush yes
 ## Run the simulation
 
 # Time step size is in femtoseconds
-timestep        $(v_STEP_SIZE)
+timestep        2
 run             $(v_STEPS)
 
 ## Write restart data
