@@ -1,0 +1,20 @@
+spack:
+  config:
+    # Keep as much as possible in the projects directory, so other users can benefit from existing files/builds
+    install_tree:
+      root: ${PROJECT}/spack/install_tree
+    build_stage:
+    - ${PROJECT}/spack/build_stage
+    test_stage: ${PROJECT}/spack/test_stage
+    source_cache: ${PROJECT}/spack/source_cache
+    misc_cache: ${PROJECT}/spack/misc_cache
+  bootstrap:
+    root: ${PROJECT}/spack/bootstrap
+  specs:
+  - lammps@20250722 +mpi +netcdf
+  view: true
+  concretizer:
+    unify: true
+  packages:
+    all:
+      target: [x86_64]

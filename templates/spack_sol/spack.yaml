@@ -1,6 +1,6 @@
 spack:
   config:
-    # Keep as much as possible in the shared directory, so other users can benefit from existing items
+    # Keep as much as possible in the shared directory, so other users can benefit from existing files/builds
     install_tree:
       root: ~/ebw210_093025/shared/spack/install_tree
     build_stage:
