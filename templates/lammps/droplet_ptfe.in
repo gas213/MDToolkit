@@ -65,6 +65,10 @@ neigh_modify    delay 0
 kspace_style    pppm 1e-5
 kspace_modify   order 4
 
+## Load balancing
+
+balance 1.0 shift xyz 10 1.01
+
 ## Define spherical region to approximate which atoms are part of the droplet and which atoms are vapor
 
 region      REGION_LIQUID sphere $(v_DROP_X) $(v_DROP_Y) $(v_DROP_Z) $(v_DROP_R) side in units box

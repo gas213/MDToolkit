@@ -105,6 +105,10 @@ neigh_modify delay 0
 kspace_style pppm 1e-5
 kspace_modify order 4
 
+## Load balancing
+
+balance 1.0 shift xyz 10 1.01
+
 ## Define atom/molecule groups
 
 # The pure water droplet data and the saline droplet data do not have the same atom type IDs
