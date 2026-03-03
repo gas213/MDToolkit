@@ -1,15 +1,4 @@
 spack:
-  config:
-    # Keep as much as possible in the shared directory, so other users can benefit from existing files/builds
-    install_tree:
-      root: ~/ebw210_093025/shared/spack/install_tree
-    build_stage:
-    - ~/ebw210_093025/shared/spack/build_stage
-    test_stage: ~/ebw210_093025/shared/spack/test_stage
-    source_cache: ~/ebw210_093025/shared/spack/source_cache
-    misc_cache: ~/ebw210_093025/shared/spack/misc_cache
-  bootstrap:
-    root: ~/ebw210_093025/shared/spack/bootstrap
   specs:
   - lammps@20250722 +mpi +netcdf
   view: true

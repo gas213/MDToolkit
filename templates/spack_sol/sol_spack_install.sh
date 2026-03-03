@@ -19,8 +19,8 @@
 
 cd ${SLURM_SUBMIT_DIR}
 
-git clone -c feature.manyFiles=true --depth=2 --branch=releases/v1.1 https://github.com/spack/spack.git ~/ebw210_093025/shared/spack
-. ~/ebw210_093025/shared/spack/share/spack/setup-env.sh
+git clone -c feature.manyFiles=true --depth=2 --branch=releases/v1.1 https://github.com/spack/spack.git
+. spack/share/spack/setup-env.sh
 
 spack env activate .
 # Sol's curl package was causing build issues

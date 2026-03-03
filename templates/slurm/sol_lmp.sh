@@ -38,7 +38,7 @@ ALLOCATION=ebw210_093025
 SCRATCH_DIR=$HOME/$ALLOCATION/$USER/_scratchlike/
 
 # Absolute path to the Spack setup-env.sh file
-SPACK_SETUP_PATH=$HOME/$ALLOCATION/shared/spack/share/spack/setup-env.sh
+SPACK_SETUP_PATH=$HOME/$ALLOCATION/$USER/md_env/spack/share/spack/setup-env.sh
 
 # Directory where the user's spack environment view is located (the same directory where slurm_install_md.sh was executed from)
 SPACK_ENV_DIR=$HOME/$ALLOCATION/$USER/md_env/
