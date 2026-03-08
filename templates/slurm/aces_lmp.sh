@@ -37,6 +37,9 @@ SPACK_SETUP_PATH=/scratch/user/$USER/spack/share/spack/setup-env.sh
 # Directory where the user's spack environment view is located (the same directory where slurm_install_md.sh was executed from)
 SPACK_ENV_DIR=$HOME/md_env/
 
+# Path to the rng_seed_replace.py script, which replaces any RNG_* random seed values in the LAMMPS input script with new values
+RNG_SEED_REPLACE_PATH=$HOME/code/rng_seed_replace.py
+
 
 
 # ====================================
@@ -59,6 +62,9 @@ fi
 
 IN_PATH_HOME=$(find $RUN_DIR_HOME -maxdepth 1 -name "*.in")
 IN_PATH_RELATIVE=${IN_PATH_HOME##$RUN_DIR_HOME}
+
+# Run RNG replace script on the LAMMPS input file
+python3 $RNG_SEED_REPLACE_PATH $IN_PATH_HOME
 
 # Create identical run directory structure on the scratch space and copy LAMMPS input file there
 mkdir -p $RUN_DIR_SCRATCH
