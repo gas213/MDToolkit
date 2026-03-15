@@ -120,15 +120,15 @@ fix PRINT_RDF all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) 
 
 ## Dump settings
 
-dump DUMPTEXT_ALL all custom $(v_DUMP_FREQ) dump_*.dump id mol type x y z
+dump DUMPTEXT_ALL all custom $(v_DUMP_FREQ) dumps/dump_*.dump id mol type x y z
 dump_modify DUMPTEXT_ALL sort id
 
-#dump DUMPNCDF_ALL all netcdf $(v_DUMP_FREQ) dump_*.nc id mol type x y z
+#dump DUMPNCDF_ALL all netcdf $(v_DUMP_FREQ) dumps/dump_*.nc id mol type x y z
 #dump_modify DUMPNCDF_ALL sort id
 
 ## Restart settings
 
-restart	$(v_RESTART_FREQ) restart_*.rs
+restart	$(v_RESTART_FREQ) restarts/restart_*.rs
 
 ## Constraint for bond lengths
 

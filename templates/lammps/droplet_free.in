@@ -220,27 +220,27 @@ group H2O_RDF_1 dynamic H2O region REGION_RDF_1 every $(v_RDF_COMP_FREQ)
 group H2O_RDF_2 dynamic H2O region REGION_RDF_2 every $(v_RDF_COMP_FREQ)
 group H2O_RDF_3 dynamic H2O region REGION_RDF_3 every $(v_RDF_COMP_FREQ)
 
-dump DUMPTEXT_ALL all custom $(v_DUMP_FREQ) dump_*.dump id mol type x y z
+dump DUMPTEXT_ALL all custom $(v_DUMP_FREQ) dumps/dump_*.dump id mol type x y z
 dump_modify DUMPTEXT_ALL sort id
-dump DUMPTEXT_H2O_RDF_1 H2O_RDF_1 custom $(v_DUMP_FREQ) h2o_rdf_$(v_RDF_R_INNER_1)_$(v_COM_R)_*.dump id mol type x y z
+dump DUMPTEXT_H2O_RDF_1 H2O_RDF_1 custom $(v_DUMP_FREQ) dumps/h2o_rdf_$(v_RDF_R_INNER_1)_$(v_COM_R)_*.dump id mol type x y z
 dump_modify DUMPTEXT_H2O_RDF_1 sort id
-dump DUMPTEXT_H2O_RDF_2 H2O_RDF_2 custom $(v_DUMP_FREQ) h2o_rdf_$(v_RDF_R_INNER_2)_$(v_COM_R)_*.dump id mol type x y z
+dump DUMPTEXT_H2O_RDF_2 H2O_RDF_2 custom $(v_DUMP_FREQ) dumps/h2o_rdf_$(v_RDF_R_INNER_2)_$(v_COM_R)_*.dump id mol type x y z
 dump_modify DUMPTEXT_H2O_RDF_2 sort id
-dump DUMPTEXT_H2O_RDF_3 H2O_RDF_3 custom $(v_DUMP_FREQ) h2o_rdf_$(v_RDF_R_INNER_3)_$(v_COM_R)_*.dump id mol type x y z
+dump DUMPTEXT_H2O_RDF_3 H2O_RDF_3 custom $(v_DUMP_FREQ) dumps/h2o_rdf_$(v_RDF_R_INNER_3)_$(v_COM_R)_*.dump id mol type x y z
 dump_modify DUMPTEXT_H2O_RDF_3 sort id
 
-#dump DUMPNCDF_ALL all netcdf $(v_DUMP_FREQ) dump_*.nc id mol type x y z
+#dump DUMPNCDF_ALL all netcdf $(v_DUMP_FREQ) dumps/dump_*.nc id mol type x y z
 #dump_modify DUMPNCDF_ALL sort id
-#dump DUMPNCDF_H2O_RDF_1 H2O_RDF_1 netcdf $(v_DUMP_FREQ) h2o_rdf_$(v_RDF_R_INNER_1)_$(v_COM_R)_*.nc id mol type x y z
+#dump DUMPNCDF_H2O_RDF_1 H2O_RDF_1 netcdf $(v_DUMP_FREQ) dumps/h2o_rdf_$(v_RDF_R_INNER_1)_$(v_COM_R)_*.nc id mol type x y z
 #dump_modify DUMPNCDF_H2O_RDF_1 sort id
-#dump DUMPNCDF_H2O_RDF_2 H2O_RDF_2 netcdf $(v_DUMP_FREQ) h2o_rdf_$(v_RDF_R_INNER_2)_$(v_COM_R)_*.nc id mol type x y z
+#dump DUMPNCDF_H2O_RDF_2 H2O_RDF_2 netcdf $(v_DUMP_FREQ) dumps/h2o_rdf_$(v_RDF_R_INNER_2)_$(v_COM_R)_*.nc id mol type x y z
 #dump_modify DUMPNCDF_H2O_RDF_2 sort id
-#dump DUMPNCDF_H2O_RDF_3 H2O_RDF_3 netcdf $(v_DUMP_FREQ) h2o_rdf_$(v_RDF_R_INNER_3)_$(v_COM_R)_*.nc id mol type x y z
+#dump DUMPNCDF_H2O_RDF_3 H2O_RDF_3 netcdf $(v_DUMP_FREQ) dumps/h2o_rdf_$(v_RDF_R_INNER_3)_$(v_COM_R)_*.nc id mol type x y z
 #dump_modify DUMPNCDF_H2O_RDF_3 sort id
 
 ## Restart settings
 
-restart	$(v_RESTART_FREQ) restart_*.rs
+restart	$(v_RESTART_FREQ) restarts/restart_*.rs
 
 ## Constraint for bond lengths
 
