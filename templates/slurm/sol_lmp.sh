@@ -31,20 +31,20 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user={{email}}
 
-# The name of our group's ceph allocation directory
-ALLOCATION=ebw210_093025
+# The path of our team's shared ceph storage
+CEPH=/share/ceph/hawk/ebw210_093025
 
 # User's scratch-like directory where dumps and restarts will be generated; must end with a forward slash /
-SCRATCH_DIR=$HOME/$ALLOCATION/$USER/_scratchlike/
+SCRATCH_DIR=$CEPH/$USER/_scratchlike/
 
 # Absolute path to the Spack setup-env.sh file
-SPACK_SETUP_PATH=$HOME/$ALLOCATION/$USER/md_env/spack/share/spack/setup-env.sh
+SPACK_SETUP_PATH=$CEPH/$USER/md_env/spack/share/spack/setup-env.sh
 
 # Directory where the user's spack environment view is located (the same directory where slurm_install_md.sh was executed from)
-SPACK_ENV_DIR=$HOME/$ALLOCATION/$USER/md_env/
+SPACK_ENV_DIR=$CEPH/$USER/md_env/
 
 # Path to the rng_seed_replace.py script, which replaces any RNG_* random seed values in the LAMMPS input script with new values
-RNG_SEED_REPLACE_PATH=$HOME/$ALLOCATION/$USER/code/rng_seed_replace.py
+RNG_SEED_REPLACE_PATH=$CEPH/$USER/code/rng_seed_replace.py
 
 
 
@@ -52,8 +52,10 @@ RNG_SEED_REPLACE_PATH=$HOME/$ALLOCATION/$USER/code/rng_seed_replace.py
 # THE REST OF THIS SHOULD BE AUTOMATIC
 # ====================================
 
-RUN_DIR_HOME="$PWD/"
-RUN_DIR_RELATIVE="${PWD##$HOME/$ALLOCATION/$USER/}/"
+# Get the physical path to the current ceph folder to avoid symbolic link issue
+PWD_P="$(pwd -P)"
+RUN_DIR_HOME="$PWD_P/"
+RUN_DIR_RELATIVE="${PWD_P##$CEPH/$USER/}/"
 RUN_DIR_SCRATCH="$SCRATCH_DIR$RUN_DIR_RELATIVE"
 
 # Prevent overwriting an existing run by checking if there is already a directory in the scratch-like space with the same name
