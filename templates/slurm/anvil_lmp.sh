@@ -79,12 +79,6 @@ cp $IN_PATH_RELATIVE $RUN_DIR_SCRATCH
 shopt -s nullglob
 for data_restart_file in *.data *.restart *.rs; do
     cp $data_restart_file $RUN_DIR_SCRATCH
-    if cmp -s $data_restart_file "$RUN_DIR_SCRATCH$data_restart_file"; then
-        rm $data_restart_file
-    else
-        echo "ERROR failed to copy $data_restart_file into scratch space, or the file was copied but is not identical to the original."
-        exit 1
-    fi
 done
 
 # Activate spack environment
