@@ -113,7 +113,3 @@ thermo_modify   lost ignore flush yes
 # Time step size is in femtoseconds
 timestep        $(v_TIMESTEP)
 run             $(v_STEPS)
-
-## Write restart data
-
-write_data      write_*.data

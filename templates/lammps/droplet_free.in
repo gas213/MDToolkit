@@ -267,7 +267,3 @@ thermo_modify lost ignore flush yes
 ## Run the simulation
 
 run $(v_STEPS)
-
-## Write restart data
-
-write_data write_*.data
