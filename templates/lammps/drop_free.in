@@ -1,5 +1,5 @@
 ### LAMMPS Input File - Equilibration of free-floating droplet
-# From MDToolkit template file: droplet_free.in
+# From MDToolkit template file: drop_free.in
 
 ## Configuration Variables
 # FILL IN {{FIELDS}}
