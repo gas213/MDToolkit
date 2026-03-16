@@ -136,7 +136,7 @@ variable VAPOR_COUNT equal count(VAPOR_OXYGEN)
 
 # Compute and print time-averaged vapor (oxygen) count
 # Note: the fix ave/time command does not use the group ID; it is ignored
-fix VAPOR_COUNT_AVG all ave/time $(v_VAPOR_COUNT_FREQ) $(v_VAPOR_AVG_FREQ/v_VAPOR_COUNT_FREQ) $(v_VAPOR_AVG_FREQ) v_VAPOR_COUNT ave one file vapor_count.txt
+fix VAPOR_COUNT_AVG all ave/time $(v_VAPOR_COUNT_FREQ) $(v_VAPOR_AVG_FREQ/v_VAPOR_COUNT_FREQ) $(v_VAPOR_AVG_FREQ) v_VAPOR_COUNT ave one file results/vapor_count.txt
 
 # Define compute to calculate vapor pressure (example from the compute stress/atom docs page)
 compute	JUNK1 VAPOR stress/atom NULL
@@ -160,8 +160,8 @@ compute MSD_H2O_CORE H2O_CORE msd com yes
 compute MSD_H2O_SHELL H2O_SHELL msd com yes
 
 # The fix ave/time command does not actually use the group-ID parameter
-fix AVE_MSD_H2O_CORE all ave/time 1 1 $(v_MSD_FREQ) c_MSD_H2O_CORE[4] file msd_h2o_core.txt
-fix AVE_MSD_H2O_SHELL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_H2O_SHELL[4] file msd_h2o_shell.txt
+fix AVE_MSD_H2O_CORE all ave/time 1 1 $(v_MSD_FREQ) c_MSD_H2O_CORE[4] file results/msd_h2o_core.txt
+fix AVE_MSD_H2O_SHELL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_H2O_SHELL[4] file results/msd_h2o_shell.txt
 
 if "${IS_SALT_PRESENT}" then &
     "group NA_CORE intersect SODIUM CORE" &
@@ -176,12 +176,12 @@ if "${IS_SALT_PRESENT}" then &
     "compute MSD_NA_SHELL NA_SHELL msd com yes" &
     "compute MSD_CL_SHELL CL_SHELL msd com yes" &
     "compute MSD_NACL_SHELL NACL_SHELL msd com yes" &
-    "fix AVE_MSD_NA_CORE all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NA_CORE[4] file msd_na_core.txt" &
-    "fix AVE_MSD_CL_CORE all ave/time 1 1 $(v_MSD_FREQ) c_MSD_CL_CORE[4] file msd_cl_core.txt" &
-    "fix AVE_MSD_NACL_CORE all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NACL_CORE[4] file msd_nacl_core.txt" &
-    "fix AVE_MSD_NA_SHELL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NA_SHELL[4] file msd_na_shell.txt" &
-    "fix AVE_MSD_CL_SHELL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_CL_SHELL[4] file msd_cl_shell.txt" &
-    "fix AVE_MSD_NACL_SHELL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NACL_SHELL[4] file msd_nacl_shell.txt"
+    "fix AVE_MSD_NA_CORE all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NA_CORE[4] file results/msd_na_core.txt" &
+    "fix AVE_MSD_CL_CORE all ave/time 1 1 $(v_MSD_FREQ) c_MSD_CL_CORE[4] file results/msd_cl_core.txt" &
+    "fix AVE_MSD_NACL_CORE all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NACL_CORE[4] file results/msd_nacl_core.txt" &
+    "fix AVE_MSD_NA_SHELL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NA_SHELL[4] file results/msd_na_shell.txt" &
+    "fix AVE_MSD_CL_SHELL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_CL_SHELL[4] file results/msd_cl_shell.txt" &
+    "fix AVE_MSD_NACL_SHELL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NACL_SHELL[4] file results/msd_nacl_shell.txt"
 
 ## RDF calculations
 
@@ -210,9 +210,9 @@ else &
     "compute CALC_RDF_3 ALL_RDF_3 rdf $(v_RDF_NBINS) 6 7 6 6 7 7 cutoff $(v_RDF_CUTOFF)"
 
 # The fix ave/time command does not actually use the group-ID parameter
-fix PRINT_RDF_1 all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ) c_CALC_RDF_1[*] file rdf_$(v_RDF_R_INNER_1)_$(v_RDF_R_OUTER_1).txt mode vector
-fix PRINT_RDF_2 all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ) c_CALC_RDF_2[*] file rdf_$(v_RDF_R_INNER_2)_$(v_RDF_R_OUTER_2).txt mode vector
-fix PRINT_RDF_3 all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ) c_CALC_RDF_3[*] file rdf_$(v_RDF_R_INNER_3)_$(v_RDF_R_OUTER_3).txt mode vector
+fix PRINT_RDF_1 all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ) c_CALC_RDF_1[*] file results/rdf_$(v_RDF_R_INNER_1)_$(v_RDF_R_OUTER_1).txt mode vector
+fix PRINT_RDF_2 all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ) c_CALC_RDF_2[*] file results/rdf_$(v_RDF_R_INNER_2)_$(v_RDF_R_OUTER_2).txt mode vector
+fix PRINT_RDF_3 all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ) c_CALC_RDF_3[*] file results/rdf_$(v_RDF_R_INNER_3)_$(v_RDF_R_OUTER_3).txt mode vector
 
 ## Dump settings
 

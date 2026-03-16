@@ -98,15 +98,15 @@ else &
 compute MSD_H2O H2O msd com yes
 
 # The fix ave/time command does not actually use the group-ID parameter
-fix AVE_MSD_H2O all ave/time 1 1 $(v_MSD_FREQ) c_MSD_H2O[4] file msd_h2o.txt
+fix AVE_MSD_H2O all ave/time 1 1 $(v_MSD_FREQ) c_MSD_H2O[4] file results/msd_h2o.txt
 
 if "${IS_SALT_PRESENT}" then &
     "compute MSD_NA SODIUM msd com yes" &
     "compute MSD_CL CHLORINE msd com yes" &
     "compute MSD_NACL NACL msd com yes" &
-    "fix AVE_MSD_NA all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NA[4] file msd_na.txt" &
-    "fix AVE_MSD_CL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_CL[4] file msd_cl.txt" &
-    "fix AVE_MSD_NACL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NACL[4] file msd_nacl.txt"
+    "fix AVE_MSD_NA all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NA[4] file results/msd_na.txt" &
+    "fix AVE_MSD_CL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_CL[4] file results/msd_cl.txt" &
+    "fix AVE_MSD_NACL all ave/time 1 1 $(v_MSD_FREQ) c_MSD_NACL[4] file results/msd_nacl.txt"
 
 ## RDF calculations
 
@@ -116,7 +116,7 @@ else &
     "compute CALC_RDF all rdf $(v_RDF_NBINS) 6 7 6 6 7 7 cutoff $(v_RDF_CUTOFF)"
 
 # The fix ave/time command does not actually use the group-ID parameter
-fix PRINT_RDF all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ) c_CALC_RDF[*] file rdf.txt mode vector
+fix PRINT_RDF all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ) c_CALC_RDF[*] file results/rdf.txt mode vector
 
 ## Dump settings
 

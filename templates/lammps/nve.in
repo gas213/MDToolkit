@@ -76,12 +76,12 @@ compute         MSD_NA SODIUM msd com no average no
 compute         MSD_O OXYGEN msd com no average no
 
 # Note: the fix ave/time command does not use the group ID; it is ignored
-fix             MSD_RAW_CL all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_CL[4] ave one file msd_raw_cl.txt
-fix             MSD_RAW_NA all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_NA[4] ave one file msd_raw_na.txt
-fix             MSD_RAW_O all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_O[4] ave one file msd_raw_o.txt
-fix             MSD_WINDOW_CL all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_CL[4] ave window $(v_MSD_WINDOW_M) file msd_window_cl.txt
-fix             MSD_WINDOW_NA all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_NA[4] ave window $(v_MSD_WINDOW_M) file msd_window_na.txt
-fix             MSD_WINDOW_O all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_O[4] ave window $(v_MSD_WINDOW_M) file msd_window_o.txt
+fix             MSD_RAW_CL all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_CL[4] ave one file results/msd_raw_cl.txt
+fix             MSD_RAW_NA all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_NA[4] ave one file results/msd_raw_na.txt
+fix             MSD_RAW_O all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_O[4] ave one file results/msd_raw_o.txt
+fix             MSD_WINDOW_CL all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_CL[4] ave window $(v_MSD_WINDOW_M) file results/msd_window_cl.txt
+fix             MSD_WINDOW_NA all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_NA[4] ave window $(v_MSD_WINDOW_M) file results/msd_window_na.txt
+fix             MSD_WINDOW_O all ave/time 1 1 $(v_MSD_RAW_FREQ) c_MSD_O[4] ave window $(v_MSD_WINDOW_M) file results/msd_window_o.txt
 
 ## Dump settings
 
