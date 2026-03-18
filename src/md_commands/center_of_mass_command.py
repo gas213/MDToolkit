@@ -31,3 +31,5 @@ class CenterOfMassCommand(Command):
             state.center_of_mass.x = (n_previous * state.center_of_mass.x + com.x) / (n_previous + 1)
             state.center_of_mass.y = (n_previous * state.center_of_mass.y + com.y) / (n_previous + 1)
             state.center_of_mass.z = (n_previous * state.center_of_mass.z + com.z) / (n_previous + 1)
+
+        print(f"Center of mass: {state.center_of_mass.x} {state.center_of_mass.y} {state.center_of_mass.z}") # TODO: remove
