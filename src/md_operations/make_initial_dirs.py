@@ -1,11 +1,11 @@
 import os.path
 
-def make_initial_dirs(data_path: str, step_start: int, step_end: int) -> str:
+def make_initial_dirs(data_path: str, step_start: int | None, step_end: int | None) -> str:
     source_path = os.path.dirname(data_path)
     analysis_path = os.path.join(source_path, "analysis")
     if not os.path.isdir(analysis_path): os.makedirs(analysis_path)
 
-    if step_start != step_end:
+    if step_start is not None and step_end is not None and step_start != step_end:
         prefix = os.path.basename(data_path).split("*")[0]
         results_path = os.path.join(analysis_path, f"{prefix}{step_start}_{step_end}")
     else:

@@ -10,7 +10,7 @@ class CenterOfMassCommand(Command):
     def execute(self, state: SessionState):
         print("Calculating center of mass...")
         com = calc_center_of_mass(state.atoms, state.atom_masses)
-        if self._aggregation_type == AggregationType.NONE or state.data_files_index == 0:
+        if self._aggregation_type == AggregationType.NONE or state.center_of_mass is None:
             state.center_of_mass = com
         elif self._aggregation_type == AggregationType.AVERAGE:
             n_previous = state.data_files_index
