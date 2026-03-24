@@ -51,8 +51,6 @@ variable RDF_R_INNER_1 equal {{float}}
 variable RDF_R_OUTER_1 equal {{float}}
 variable RDF_R_INNER_2 equal {{float}}
 variable RDF_R_OUTER_2 equal {{float}}
-variable RDF_R_INNER_3 equal {{float}}
-variable RDF_R_OUTER_3 equal {{float}}
 # Number of RDF bins; try 100
 variable RDF_NBINS equal {{int}}
 # RDF cutoff distance (box units); try 10.0
@@ -187,38 +185,30 @@ if "${IS_SALT_PRESENT}" then &
 
 region REGION_RDF_LOWBOUND_1 sphere $(v_COM_X) $(v_COM_Y) $(v_COM_Z) $(v_RDF_R_INNER_1) side out units box
 region REGION_RDF_LOWBOUND_2 sphere $(v_COM_X) $(v_COM_Y) $(v_COM_Z) $(v_RDF_R_INNER_2) side out units box
-region REGION_RDF_LOWBOUND_3 sphere $(v_COM_X) $(v_COM_Y) $(v_COM_Z) $(v_RDF_R_INNER_3) side out units box
 region REGION_RDF_HIGHBOUND_1 sphere $(v_COM_X) $(v_COM_Y) $(v_COM_Z) $(v_RDF_R_OUTER_1) side in units box
 region REGION_RDF_HIGHBOUND_2 sphere $(v_COM_X) $(v_COM_Y) $(v_COM_Z) $(v_RDF_R_OUTER_2) side in units box
-region REGION_RDF_HIGHBOUND_3 sphere $(v_COM_X) $(v_COM_Y) $(v_COM_Z) $(v_RDF_R_OUTER_3) side in units box 
 
 region REGION_RDF_1 intersect 2 REGION_RDF_LOWBOUND_1 REGION_RDF_HIGHBOUND_1
 region REGION_RDF_2 intersect 2 REGION_RDF_LOWBOUND_2 REGION_RDF_HIGHBOUND_2
-region REGION_RDF_3 intersect 2 REGION_RDF_LOWBOUND_3 REGION_RDF_HIGHBOUND_3
 
 group ALL_RDF_1 dynamic all region REGION_RDF_1 every $(v_RDF_COMP_FREQ)
 group ALL_RDF_2 dynamic all region REGION_RDF_2 every $(v_RDF_COMP_FREQ)
-group ALL_RDF_3 dynamic all region REGION_RDF_3 every $(v_RDF_COMP_FREQ)
 
 if "${IS_SALT_PRESENT}" then &
     "compute CALC_RDF_1 ALL_RDF_1 rdf $(v_RDF_NBINS) 6 7 6 6 7 7 6 4 6 5 4 4 5 5 4 5 5 4 cutoff $(v_RDF_CUTOFF)" &
     "compute CALC_RDF_2 ALL_RDF_2 rdf $(v_RDF_NBINS) 6 7 6 6 7 7 6 4 6 5 4 4 5 5 4 5 5 4 cutoff $(v_RDF_CUTOFF)" &
-    "compute CALC_RDF_3 ALL_RDF_3 rdf $(v_RDF_NBINS) 6 7 6 6 7 7 6 4 6 5 4 4 5 5 4 5 5 4 cutoff $(v_RDF_CUTOFF)" &
 else &
     "compute CALC_RDF_1 ALL_RDF_1 rdf $(v_RDF_NBINS) 6 7 6 6 7 7 cutoff $(v_RDF_CUTOFF)" &
-    "compute CALC_RDF_2 ALL_RDF_2 rdf $(v_RDF_NBINS) 6 7 6 6 7 7 cutoff $(v_RDF_CUTOFF)" &
-    "compute CALC_RDF_3 ALL_RDF_3 rdf $(v_RDF_NBINS) 6 7 6 6 7 7 cutoff $(v_RDF_CUTOFF)"
+    "compute CALC_RDF_2 ALL_RDF_2 rdf $(v_RDF_NBINS) 6 7 6 6 7 7 cutoff $(v_RDF_CUTOFF)"
 
 # The fix ave/time command does not actually use the group-ID parameter
 fix PRINT_RDF_1 all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ) c_CALC_RDF_1[*] file results/rdf_$(v_RDF_R_INNER_1)_$(v_RDF_R_OUTER_1).txt mode vector
 fix PRINT_RDF_2 all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ) c_CALC_RDF_2[*] file results/rdf_$(v_RDF_R_INNER_2)_$(v_RDF_R_OUTER_2).txt mode vector
-fix PRINT_RDF_3 all ave/time $(v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ/v_RDF_COMP_FREQ) $(v_RDF_AVG_FREQ) c_CALC_RDF_3[*] file results/rdf_$(v_RDF_R_INNER_3)_$(v_RDF_R_OUTER_3).txt mode vector
 
 ## Dump settings
 
 group H2O_RDF_1 dynamic H2O region REGION_RDF_1 every $(v_RDF_COMP_FREQ)
 group H2O_RDF_2 dynamic H2O region REGION_RDF_2 every $(v_RDF_COMP_FREQ)
-group H2O_RDF_3 dynamic H2O region REGION_RDF_3 every $(v_RDF_COMP_FREQ)
 
 dump DUMPTEXT_ALL all custom $(v_DUMP_FREQ) dumps/dump_*.dump id mol type x y z
 dump_modify DUMPTEXT_ALL sort id
@@ -226,8 +216,6 @@ dump DUMPTEXT_H2O_RDF_1 H2O_RDF_1 custom $(v_DUMP_FREQ) dumps/h2o_rdf_$(v_RDF_R_
 dump_modify DUMPTEXT_H2O_RDF_1 sort id
 dump DUMPTEXT_H2O_RDF_2 H2O_RDF_2 custom $(v_DUMP_FREQ) dumps/h2o_rdf_$(v_RDF_R_INNER_2)_$(v_COM_R)_*.dump id mol type x y z
 dump_modify DUMPTEXT_H2O_RDF_2 sort id
-dump DUMPTEXT_H2O_RDF_3 H2O_RDF_3 custom $(v_DUMP_FREQ) dumps/h2o_rdf_$(v_RDF_R_INNER_3)_$(v_COM_R)_*.dump id mol type x y z
-dump_modify DUMPTEXT_H2O_RDF_3 sort id
 
 #dump DUMPNCDF_ALL all netcdf $(v_DUMP_FREQ) dumps/dump_*.nc id mol type x y z
 #dump_modify DUMPNCDF_ALL sort id
@@ -235,8 +223,6 @@ dump_modify DUMPTEXT_H2O_RDF_3 sort id
 #dump_modify DUMPNCDF_H2O_RDF_1 sort id
 #dump DUMPNCDF_H2O_RDF_2 H2O_RDF_2 netcdf $(v_DUMP_FREQ) dumps/h2o_rdf_$(v_RDF_R_INNER_2)_$(v_COM_R)_*.nc id mol type x y z
 #dump_modify DUMPNCDF_H2O_RDF_2 sort id
-#dump DUMPNCDF_H2O_RDF_3 H2O_RDF_3 netcdf $(v_DUMP_FREQ) dumps/h2o_rdf_$(v_RDF_R_INNER_3)_$(v_COM_R)_*.nc id mol type x y z
-#dump_modify DUMPNCDF_H2O_RDF_3 sort id
 
 ## Restart settings
 
