@@ -5,41 +5,39 @@ import sys
 from md_dataclasses.atom import Atom
 from md_dataclasses.header import Header
 from md_dataclasses.vector3d import Vector3D
+from md_enums.atom_data_column_type import AtomDataColumnType
+from md_enums.data_file_type import DataFileType
 from md_filters.filter_interface import Filter
 
 _formatter = logging.Formatter("%(asctime)s - %(message)s")
 
 class SessionState:
-    logger: logging.Logger = logging.getLogger("main")
-    step_start: int = None
-    step_end: int = None
-    data_path: str = None
-    results_path: str = None
-    data_files: list[str] = []
-    data_files_index: int = 0
-    data_type: str = None
-    atom_data_columns: dict[str, int] = {}
-    atom_masses: dict[int, float] = {}
-    header: Header = None
-    atoms: list[Atom] = []
-    center_of_mass: Vector3D = None
-    filters: dict[str, Filter] = {}
-    radial_profile: dict[float, float] = {} # TODO: this is a workaround
-    cl_neighbors_histogram: dict[int, int] = {} # TODO: this is a workaround
-    na_neighbors_histogram: dict[int, int] = {} # TODO: this is a workaround
-
     def __init__(self):
+        self.logger = logging.getLogger("main")
         self.logger.setLevel(logging.DEBUG)
-        self.logger.form="%(asctime)s [%(levelname)s] %(message)s"
-        self.logger.handlers = [
-            logging.StreamHandler(sys.stdout)
-        ]
+        sysout_handler = logging.StreamHandler(sys.stdout)
+        sysout_handler.setLevel(logging.DEBUG)
+        sysout_handler.setFormatter(_formatter)
+        self.logger.addHandler(sysout_handler)
+        self.step_start: int | None = None
+        self.step_end: int | None = None
+        self.data_path: str | None = None
+        self.results_path: str | None = None
+        self.data_files: list[str] = []
+        self.data_files_index: int = 0
+        self.data_file_type: DataFileType | None = None
+        self.atom_data_columns: dict[AtomDataColumnType, int] = {}
+        self.atom_masses: dict[int, float] = {}
+        self.header: Header | None = None
+        self.atoms: list[Atom] = []
+        self.center_of_mass: Vector3D | None = None
+        self.filters: dict[str, Filter] = {}
+        self.radial_profile: dict[float, float] = {} # TODO: this is a workaround
+        self.cl_neighbors_histogram: dict[int, float] = {} # TODO: this is a workaround
+        self.na_neighbors_histogram: dict[int, float] = {} # TODO: this is a workaround
 
     def set_results_path(self, results_path):
         self.results_path = results_path
         file_handler = logging.FileHandler(os.path.join(results_path, "log.txt"))
         file_handler.setFormatter(_formatter)
-        self.logger.handlers = [
-            logging.StreamHandler(sys.stdout),
-            file_handler,
-        ]
+        self.logger.addHandler(file_handler)

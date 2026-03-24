@@ -4,7 +4,7 @@ def parse_float(arg: str) -> float:
     except ValueError:
         raise Exception(f"Expected float instead of '{arg}'")
     
-def parse_float_or_none(arg: str) -> float:
+def parse_float_or_none(arg: str) -> float | None:
     if arg.lower() == "none":
         return None
     else:

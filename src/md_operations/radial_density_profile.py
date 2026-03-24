@@ -18,7 +18,7 @@ def build_radial_density_profile(atoms: list[Atom], origin: Vector3D, bin_start:
 
     return results
 
-def build_bins(start: float, stop: float, step: float) -> ndarray[float]:
+def build_bins(start: float, stop: float, step: float) -> ndarray:
     bins = np.append([0.0], np.arange(start, stop, step)) # First bin is the central "core"
     if stop > bins[-1]: bins = np.append(bins, stop) # Append one last bin to cover the remainder (may be smaller than the other bins)
     return bins

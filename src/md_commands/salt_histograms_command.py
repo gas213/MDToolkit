@@ -1,28 +1,14 @@
 from md_commands.command_interface import Command
+from md_enums.aggregation_type import AggregationType
 from md_operations.salt_histograms import build_cl_neighbors_histogram, build_na_neighbors_histogram
 from session_state import SessionState
 
 class SaltHistogramsCommand(Command):
-    _filter_name: str = None
-    _keep_average: bool = None
-
-    def __init__(self, filter_name: str, keep_average: bool):
+    def __init__(self, filter_name: str, aggregation_type: AggregationType):
         self._filter_name = filter_name
-        self._keep_average = keep_average
+        self._aggregation_type = aggregation_type
 
-    @classmethod
-    def from_args(cls, args: list[str]):
-        expected_arg_count: int = 2
-        if len(args) != expected_arg_count:
-            raise Exception(f"salt_histograms command does not have the right number of args (expected {expected_arg_count}, got {len(args)})")
-        averaging_arg = args[1].lower()
-        if averaging_arg == "overwrite":
-            return cls(args[0], False)
-        elif averaging_arg == "average":
-            return cls(args[0], True)
-        else:
-            raise Exception(f"salt_histograms command has invalid value for overwrite/average argument: {args[0]}")
-    
+    #TODO: Do parameter parsing and validation somewhere else, like in CommandFactory
     def execute(self, state: SessionState):
         if self._filter_name.lower() != "all" and self._filter_name not in state.filters:
             raise Exception(f"Filter name specified in salt_histograms command not found: {self._filter_name}")
@@ -33,10 +19,10 @@ class SaltHistogramsCommand(Command):
             filtered_atoms = state.filters[self._filter_name].apply(state.atoms)
         cl_neighbors_histogram = build_cl_neighbors_histogram(filtered_atoms)
         na_neighbors_histogram = build_na_neighbors_histogram(filtered_atoms)
-        if not self._keep_average or state.data_files_index == 0:
+        if self._aggregation_type == AggregationType.NONE or state.data_files_index == 0:
             state.cl_neighbors_histogram = cl_neighbors_histogram
             state.na_neighbors_histogram = na_neighbors_histogram
-        else:
+        elif self._aggregation_type == AggregationType.AVERAGE:
             n_previous = state.data_files_index
             for key in state.cl_neighbors_histogram.keys():
                 state.cl_neighbors_histogram[key] = (n_previous * state.cl_neighbors_histogram[key] + cl_neighbors_histogram[key]) / (n_previous + 1)

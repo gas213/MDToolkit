@@ -1,34 +1,5 @@
+from md_commands.command_factory import create_command
 from session_state import SessionState
-from md_commands.atom_data_column_command import AtomDataColumnCommand
-from md_commands.atom_mass_command import AtomMassCommand
-from md_commands.center_of_mass_command import CenterOfMassCommand
-from md_commands.command_interface import Command
-from md_commands.data_path_command import DataPathCommand
-from md_commands.data_type_command import DataTypeCommand
-from md_commands.filter_command import FilterCommand
-from md_commands.next_file_command import NextFileCommand
-from md_commands.radial_density_profile_command import RadialDensityProfileCommand
-from md_commands.read_atoms_command import ReadAtomsCommand
-from md_commands.read_header_command import ReadHeaderCommand
-from md_commands.salt_histograms_command import SaltHistogramsCommand
-from md_commands.step_end_command import StepEndCommand
-from md_commands.step_start_command import StepStartCommand
-
-commands_map: dict[str, Command] = {
-    "atom_data_column": AtomDataColumnCommand,
-    "atom_mass": AtomMassCommand,
-    "center_of_mass": CenterOfMassCommand,
-    "data_path": DataPathCommand,
-    "data_type": DataTypeCommand,
-    "filter": FilterCommand,
-    "next_file": NextFileCommand,
-    "radial_density_profile": RadialDensityProfileCommand,
-    "read_atoms": ReadAtomsCommand,
-    "read_header": ReadHeaderCommand,
-    "salt_histograms": SaltHistogramsCommand,
-    "step_end": StepEndCommand,
-    "step_start": StepStartCommand,
-}
 
 class InputInterpreter:
     _lines: list[str]
@@ -51,11 +22,8 @@ class InputInterpreter:
         terms = self._lines[self._index].split()
         current_command = terms[0].lower()
         args = terms[1:] if len(terms) > 1 else []
-        if current_command not in commands_map:
-            raise Exception(f"Unsupported command: {current_command}")
-        else:
-            state.logger.debug(f"Interpreting command: {self._lines[self._index]}")
-        command = commands_map[current_command].from_args(args)
+        state.logger.debug(f"Interpreting command: {self._lines[self._index]}")
+        command = create_command(current_command, args)
         command.execute(state)
         
         if current_command == "next_file" and state.data_files_index < len(state.data_files):

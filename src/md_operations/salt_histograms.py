@@ -4,7 +4,7 @@ R_THRESHOLD_2: float = 16.0 # Angstroms ^ 2
 CL_TYPE: int = 4 # TODO: hardcoded for now
 NA_TYPE: int = 5 # TODO: hardcoded for now
 
-def build_cl_neighbors_histogram(atoms: list[Atom]) -> dict[int, int]:
+def build_cl_neighbors_histogram(atoms: list[Atom]) -> dict[int, float]:
     # TODO: don't generate these atom lists more than necessary
     atoms_cl = [atom for atom in atoms if atom.type == CL_TYPE]
     atoms_na = [atom for atom in atoms if atom.type == NA_TYPE]
@@ -35,7 +35,7 @@ def build_cl_neighbors_histogram(atoms: list[Atom]) -> dict[int, int]:
 
     return histogram
 
-def build_na_neighbors_histogram(atoms: list[Atom]) -> dict[int, int]:
+def build_na_neighbors_histogram(atoms: list[Atom]) -> dict[int, float]:
     # TODO: don't generate these atom lists more than necessary
     atoms_cl = [atom for atom in atoms if atom.type == CL_TYPE]
     atoms_na = [atom for atom in atoms if atom.type == NA_TYPE]

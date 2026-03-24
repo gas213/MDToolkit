@@ -4,6 +4,7 @@ from md_dataclasses.atom import Atom
 from md_dataclasses.box import Box
 from md_dataclasses.header import Header
 from md_dataclasses.vector3d import Vector3D
+from md_enums.atom_data_column_type import AtomDataColumnType
 
 # EXPLANATION OF REGEX COMPONENTS
 # \d+               Positive integer
@@ -11,12 +12,12 @@ from md_dataclasses.vector3d import Vector3D
 # -?\d+\.?\d+       Positive or negative number that must have decimal digits
 # -?\d+(\.\d+)?     Positive or negative number that might have decimal digits
 regexes = {
-    "atom count line": "^\d+ atoms$",
-    "box x": "^-?\d+(\.\d+)? -?\d+(\.\d+)? xlo xhi$",
-    "box y": "^-?\d+(\.\d+)? -?\d+(\.\d+)? ylo yhi$",
-    "box z": "^-?\d+(\.\d+)? -?\d+(\.\d+)? zlo zhi$",
+    "atom count line": r"^\d+ atoms$",
+    "box x": r"^-?\d+(\.\d+)? -?\d+(\.\d+)? xlo xhi$",
+    "box y": r"^-?\d+(\.\d+)? -?\d+(\.\d+)? ylo yhi$",
+    "box z": r"^-?\d+(\.\d+)? -?\d+(\.\d+)? zlo zhi$",
     "atoms header": "^Atoms.*$",
-    "atoms record": "^\d+ \d+ \d+ -?\d+(\.\d+)? -?\d+(\.\d+)? -?\d+(\.\d+)? -?\d+(\.\d+)? -?\d+ -?\d+ -?\d+$",
+    "atoms record": r"^\d+ \d+ \d+ -?\d+(\.\d+)? -?\d+(\.\d+)? -?\d+(\.\d+)? -?\d+(\.\d+)? -?\d+ -?\d+ -?\d+$",
     "velocities header": "^Velocities.*$"
 }
 
@@ -58,8 +59,9 @@ def read_header(data_file: str) -> Header:
                     raise Exception(message)
                 else: return Header(results["atom_count"], Box(Vector3D(results["box"]["xlo"], results["box"]["ylo"], results["box"]["zlo"]),
                                                                Vector3D(results["box"]["xhi"], results["box"]["yhi"], results["box"]["zhi"])))
+    raise Exception("Failed to locate header in the following data file: " + data_file)
                 
-def read_atoms(data_file: str, atom_data_columns: dict[str, int]) -> list[Atom]:
+def read_atoms(data_file: str, atom_data_columns: dict[AtomDataColumnType, int]) -> list[Atom]:
     atoms = []
     with open(data_file, "r") as data:
         atoms_section_reached = False
@@ -71,11 +73,11 @@ def read_atoms(data_file: str, atom_data_columns: dict[str, int]) -> list[Atom]:
                 else: continue
             elif re.search(regexes["atoms record"], line) is not None:
                 row = line.split()
-                id: int = int(row[atom_data_columns["id"]]) if "id" in atom_data_columns else None
-                type: int = int(row[atom_data_columns["type"]]) if "type" in atom_data_columns else None
-                x: float = float(row[atom_data_columns["x"]]) if "x" in atom_data_columns else None
-                y: float = float(row[atom_data_columns["y"]]) if "y" in atom_data_columns else None
-                z: float = float(row[atom_data_columns["z"]]) if "z" in atom_data_columns else None
+                id: int = int(row[atom_data_columns[AtomDataColumnType.ID]])
+                type: int = int(row[atom_data_columns[AtomDataColumnType.TYPE]])
+                x: float = float(row[atom_data_columns[AtomDataColumnType.X]])
+                y: float = float(row[atom_data_columns[AtomDataColumnType.Y]])
+                z: float = float(row[atom_data_columns[AtomDataColumnType.Z]])
                 atoms.append(Atom(id, type, Vector3D(x, y, z)))
             elif re.search(regexes["velocities header"], line) is not None:
                 # We reached the end of the atoms section
