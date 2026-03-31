@@ -8,7 +8,7 @@ class CenterOfMassCommand(Command):
         self._aggregation_type = aggregation_type
 
     def execute(self, state: SessionState):
-        print("Calculating center of mass...")
+        state.md_logger.log("Calculating center of mass...")
         com = calc_center_of_mass(state.atoms, state.atom_masses)
         if self._aggregation_type == AggregationType.NONE or state.center_of_mass is None:
             state.center_of_mass = com
@@ -18,4 +18,4 @@ class CenterOfMassCommand(Command):
             state.center_of_mass.y = (n_previous * state.center_of_mass.y + com.y) / (n_previous + 1)
             state.center_of_mass.z = (n_previous * state.center_of_mass.z + com.z) / (n_previous + 1)
 
-        print(f"Center of mass: {state.center_of_mass.x} {state.center_of_mass.y} {state.center_of_mass.z}") # TODO: remove
+        state.md_logger.log(f"Center of mass: {state.center_of_mass.x} {state.center_of_mass.y} {state.center_of_mass.z}") # TODO: remove

@@ -1,24 +1,14 @@
-import logging
-import os.path
-import sys
-
 from md_dataclasses.atom import Atom
 from md_dataclasses.header import Header
 from md_dataclasses.vector3d import Vector3D
 from md_enums.atom_data_column_type import AtomDataColumnType
 from md_enums.data_file_type import DataFileType
 from md_filters.filter_interface import Filter
-
-_formatter = logging.Formatter("%(asctime)s - %(message)s")
+from md_logger import MDLogger
 
 class SessionState:
     def __init__(self):
-        self.logger = logging.getLogger("main")
-        self.logger.setLevel(logging.DEBUG)
-        sysout_handler = logging.StreamHandler(sys.stdout)
-        sysout_handler.setLevel(logging.DEBUG)
-        sysout_handler.setFormatter(_formatter)
-        self.logger.addHandler(sysout_handler)
+        self.md_logger = MDLogger()
         self.step_start: int | None = None
         self.step_end: int | None = None
         self.data_path: str | None = None
@@ -38,6 +28,4 @@ class SessionState:
 
     def set_results_path(self, results_path):
         self.results_path = results_path
-        file_handler = logging.FileHandler(os.path.join(results_path, "log.txt"))
-        file_handler.setFormatter(_formatter)
-        self.logger.addHandler(file_handler)
+        self.md_logger.set_file_handler(results_path)

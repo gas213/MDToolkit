@@ -12,7 +12,7 @@ class SaltHistogramsCommand(Command):
     def execute(self, state: SessionState):
         if self._filter_name.lower() != "all" and self._filter_name not in state.filters:
             raise Exception(f"Filter name specified in salt_histograms command not found: {self._filter_name}")
-        state.logger.debug("Building salt histograms...")
+        state.md_logger.log("Building salt histograms...")
         if self._filter_name.lower() == "all":
             filtered_atoms = state.atoms
         else:
@@ -29,7 +29,7 @@ class SaltHistogramsCommand(Command):
             for key in state.na_neighbors_histogram.keys():
                 state.na_neighbors_histogram[key] = (n_previous * state.na_neighbors_histogram[key] + na_neighbors_histogram[key]) / (n_previous + 1)
 
-        print("Cl neighbors histogram:\n" + str(state.cl_neighbors_histogram)) # TODO: remove
-        print("Na neighbors histogram:\n" + str(state.na_neighbors_histogram)) # TODO: remove
-        print("Cl neighbors values only:\n" + " ".join([str(val) for val in state.cl_neighbors_histogram.values()])) # TODO: remove
-        print("Na neighbors values only:\n" + " ".join([str(val) for val in state.na_neighbors_histogram.values()])) # TODO: remove
+        state.md_logger.log("Cl neighbors histogram:\n" + str(state.cl_neighbors_histogram)) # TODO: remove
+        state.md_logger.log("Na neighbors histogram:\n" + str(state.na_neighbors_histogram)) # TODO: remove
+        state.md_logger.log("Cl neighbors values only:\n" + " ".join([str(val) for val in state.cl_neighbors_histogram.values()])) # TODO: remove
+        state.md_logger.log("Na neighbors values only:\n" + " ".join([str(val) for val in state.na_neighbors_histogram.values()])) # TODO: remove

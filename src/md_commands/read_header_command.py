@@ -8,7 +8,7 @@ from session_state import SessionState
 class ReadHeaderCommand(Command):
     def execute(self, state: SessionState):
         data_file_name = state.data_files[0]
-        print(f"Reading header fields of data file {data_file_name}...")
+        state.md_logger.log(f"Reading header fields of data file {data_file_name}...")
         if state.data_file_type == DataFileType.DUMP_NETCDF: state.header = dumpnc.read_header(data_file_name)
         elif state.data_file_type == DataFileType.DUMP_TXT: state.header = dumptxt.read_header(data_file_name)
         elif state.data_file_type == DataFileType.WRITE_DATA: state.header = writedata.read_header(data_file_name)

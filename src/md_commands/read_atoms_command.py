@@ -9,7 +9,7 @@ from session_state import SessionState
 class ReadAtomsCommand(Command):
     def execute(self, state: SessionState):
         data_file_name = state.data_files[state.data_files_index]
-        print(f"Reading atoms from data file {data_file_name}...")
+        state.md_logger.log(f"Reading atoms from data file {data_file_name}...")
         if state.data_file_type == DataFileType.DUMP_NETCDF:
             state.atoms = dumpnc.read_atoms(data_file_name)
             return

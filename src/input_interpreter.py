@@ -22,7 +22,7 @@ class InputInterpreter:
         terms = self._lines[self._index].split()
         current_command = terms[0].lower()
         args = terms[1:] if len(terms) > 1 else []
-        state.logger.debug(f"Interpreting command: {self._lines[self._index]}")
+        state.md_logger.log(f"Interpreting command: {self._lines[self._index]}")
         command = create_command(current_command, args)
         command.execute(state)
         
