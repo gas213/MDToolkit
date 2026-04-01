@@ -52,6 +52,9 @@ if "${IS_RESTART}" then &
 else &
     "read_data      ${START_DATA}"
 
+## Make directories
+shell mkdir dumps restarts results
+
 ## Neighbor parameters and force field coefficients
 
 neighbor        2.0 bin
