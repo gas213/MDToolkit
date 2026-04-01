@@ -70,7 +70,7 @@ python3 $RNG_SEED_REPLACE_PATH $IN_PATH_HOME
 mkdir -p $RUN_DIR_SCRATCH
 cp $IN_PATH_RELATIVE $RUN_DIR_SCRATCH
 
-# Copy any data/restart files to the scratch destination
+# Copy any initial data/restart files to the scratch destination
 shopt -s nullglob
 for data_restart_file in *.data *.restart *.rs; do
     cp $data_restart_file $RUN_DIR_SCRATCH
