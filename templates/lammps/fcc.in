@@ -1,0 +1,98 @@
+### LAMMPS Input File - Make a charge-neutral FCC crystal surface
+# From MDToolkit template file: fcc.in
+
+## Configuration Variables
+# FILL IN {{FIELDS}}
+
+# Lattice scale factor; for "real" units, this is the unit cell edge length in Angstroms
+variable FCC_SCALE equal {{float}}
+# Number of unit cells in the x, y, and z directions
+variable CELLS_X equal {{int}}
+variable CELLS_Y equal {{int}}
+variable CELLS_Z equal {{int}}
+# How much empty space to add below/above the substrate, in box units
+variable MARGIN_Z_TOP equal {{float}}
+variable MARGIN_Z_BOTTOM equal {{float}}
+
+# Atomic mass and LJ parameters of the substrate atom type
+variable ATOM_MASS equal {{float}}
+variable LJ_EPSILON equal {{float}}
+variable LJ_SIGMA equal {{float}}
+
+# Temperature of the substrate in degrees C
+variable TEMP_C equal {{float}}
+
+# Number of time steps to run
+variable STEPS equal {{int}}
+# Frequency of thermo output, dumps, restarts, and velocity re-initialization
+variable THERMO_FREQ equal {{int}}
+variable DUMP_FREQ equal {{int}}
+variable RESTART_FREQ equal {{int}}
+variable VELOCITY_FREQ equal {{int}} # STEPS should be a multiple of VELOCITY_FREQ
+
+# Seed for random number generator (recommend random number between 0 and 99999999)
+variable RNG_SEED equal {{int}}
+
+## END CONFIGURATION
+
+# Make directories
+shell mkdir dumps restarts
+
+# Auto-calculated temperature in Kelvin
+variable TEMP_K equal $(v_TEMP_C + 273.15)
+
+# To be verified - If adding space below/above substrate, specify processor distribution Pz = 1 to split the domain/workload uniformly
+if "$(v_MARGIN_Z_TOP) > 0 || $(v_MARGIN_Z_BOTTOM) > 0" then "processors * * 1"
+
+units real
+atom_style full
+
+# "The scale argument determines how the size of the unit cell will be scaled when mapping it into the simulation box. I.e. it determines a multiplicative factor to apply to the unit cell, to convert it to a lattice of the desired size and distance units in the simulation box. The meaning of the scale argument depends on the units being used in your simulation."
+# "For unit style lj, the scale argument is the Lennard-Jones reduced density, typically written as rho*. LAMMPS converts this value into the multiplicative factor via the formula “factor^dim = rho/rho*”, where rho = N/V with V = the volume of the lattice unit cell and N = the number of basis atoms in the unit cell (described below), and dim = 2 or 3 for the dimensionality of the simulation. Effectively, this means that if LJ particles of size sigma = 1.0 are used in the simulation, the lattice of particles will be at the desired reduced density."
+lattice fcc $(v_FCC_SCALE)
+boundary p p p
+region RGN_BOX block 0 $(v_CELLS_X) 0 $(v_CELLS_Y) 0 $(v_CELLS_Z)
+create_box 1 RGN_BOX
+
+# Pair_coeff args for lj/cut/coul/long is [cutoff] [optional cutoff 2]
+# cutoff = global cutoff for LJ (and Coulombic if only 1 arg) (distance units)
+pair_style lj/cut 10.0
+pair_modify mix arithmetic
+pair_modify tail no
+
+neighbor 2.0 bin
+neigh_modify delay 0
+
+# Create copper atoms with atom type ID of 1
+create_atoms 1 box
+mass 1 $(v_ATOM_MASS)
+pair_coeff 1 1 $(v_LJ_EPSILON) $(v_LJ_SIGMA)
+
+# Center the atoms within the box
+displace_atoms all move 0.25 0.25 0.25 units lattice
+
+# Randomly displace atoms by a small amount
+displace_atoms all random 0.02 0.02 0.02 $(v_RNG_SEED) units lattice
+
+# Add empty space above/below the substrate
+if "$(v_MARGIN_Z_TOP) > 0 || $(v_MARGIN_Z_BOTTOM) > 0" then "change_box all z delta -$(v_MARGIN_Z_BOTTOM) $(v_MARGIN_Z_TOP) units box"
+
+# Tdamp of 100*dt recommended by this page: https://docs.lammps.org/fix_nh.html
+fix FIX_NVT all nvt temp $(v_TEMP_K) $(v_TEMP_K) $(100.0*dt)
+
+# Thermo, dumps, restarts
+thermo $(v_THERMO_FREQ)
+dump DUMP_TXT all custom $(v_DUMP_FREQ) dumps/dump_*.dump id mol type x y z
+dump_modify DUMP_TXT sort id
+restart $(v_RESTART_FREQ) restarts/restart_*.rs
+
+timestep 2 # femtoseconds
+
+# Run the desired number of steps, reinitializing velocities every VELOCITY_FREQ steps
+label loop
+variable i_loop loop $(v_STEPS / v_VELOCITY_FREQ)
+velocity all create $(v_TEMP_K) $(v_RNG_SEED) dist gaussian
+run $(v_VELOCITY_FREQ)
+next i_loop
+jump SELF loop
+variable i_loop delete
