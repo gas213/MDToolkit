@@ -9,8 +9,17 @@
 variable    RESTART_FILE string {{"file"}}
 
 ## Read restart file
+# Documentation includes lists of what is/isn't included in restart files:
+# https://docs.lammps.org/read_restart.html
 
 read_restart    ${RESTART_FILE}
+
+## Neighbor parameters and force field coefficients
+
+neighbor        2.0 bin
+neigh_modify    delay 0
+kspace_style    pppm 1e-5
+kspace_modify   order 4
 
 ## Write resulting data file
 
