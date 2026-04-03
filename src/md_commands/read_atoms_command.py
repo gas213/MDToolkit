@@ -1,4 +1,5 @@
 from md_commands.command_interface import Command
+from md_commands.command_validation_helper import CommandValidationHelper
 from md_data_readers import write_data_reader as writedata
 from md_data_readers import dump_nc_reader as dumpnc
 from md_data_readers import dump_txt_reader as dumptxt
@@ -7,6 +8,10 @@ from md_enums.data_file_type import DataFileType
 from session_state import SessionState
 
 class ReadAtomsCommand(Command):
+    def __init__(self, command_name: str, args: list[str]):
+        helper = CommandValidationHelper(command_name)
+        helper.check_for_exact_arg_count(args, 0)
+
     def execute(self, state: SessionState):
         data_file_name = state.data_files[state.data_files_index]
         state.md_logger.log(f"Reading atoms from data file {data_file_name}...")

@@ -1,12 +1,15 @@
 from md_commands.command_interface import Command
+from md_commands.command_validation_helper import CommandValidationHelper
 from md_enums.aggregation_type import AggregationType
 from md_operations.salt_histograms import build_cl_neighbors_histogram, build_na_neighbors_histogram
 from session_state import SessionState
 
 class SaltHistogramsCommand(Command):
-    def __init__(self, filter_name: str, aggregation_type: AggregationType):
-        self._filter_name = filter_name
-        self._aggregation_type = aggregation_type
+    def __init__(self, command_name: str, args: list[str]):
+        helper = CommandValidationHelper(command_name)
+        helper.check_for_exact_arg_count(args, 2)
+        self._filter_name = args[0]
+        self._aggregation_type = helper.check_categorical_arg(args[1].lower(), AggregationType)
 
     #TODO: Do parameter parsing and validation somewhere else, like in CommandFactory
     def execute(self, state: SessionState):

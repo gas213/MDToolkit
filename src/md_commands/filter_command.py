@@ -1,5 +1,5 @@
-from md_commands.command_helpers import parse_float, parse_float_or_none, parse_int
 from md_commands.command_interface import Command
+from md_commands.command_validation_helper import CommandValidationHelper
 from md_enums.filter_type import FilterType
 from md_filters.filter_interface import Filter
 from md_filters.and_filter import AndFilter
@@ -8,11 +8,15 @@ from md_filters.cartesian_filter import CartesianFilter
 from md_filters.radial_filter import RadialFilter
 from session_state import SessionState
 
-class FilterCommand(Command):    
-    def __init__(self, filter_name: str, filter_type: FilterType, filter_params: list[str]):
-        self._filter_name = filter_name
-        self._filter_type = filter_type
-        self._filter_params = filter_params
+class FilterCommand(Command):
+    def __init__(self, command_name: str, args: list[str]):
+        helper = CommandValidationHelper(command_name)
+        helper.check_for_min_arg_count(args, 2)
+        if args[0].lower() == "all":
+            raise Exception("Filter name cannot be 'all' because it is a reserved keyword")
+        self._filter_name = args[0]
+        self._filter_type = helper.check_categorical_arg(args[1].lower(), FilterType)
+        self._filter_params = args[2:] if len(args) > 2 else []
     
     #TODO: Do parameter parsing and validation somewhere else, like in CommandFactory
     def execute(self, state: SessionState):

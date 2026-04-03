@@ -1,11 +1,14 @@
 from md_commands.command_interface import Command
+from md_commands.command_validation_helper import CommandValidationHelper
 from md_enums.aggregation_type import AggregationType
 from md_operations.center_of_mass import calc_center_of_mass
 from session_state import SessionState
 
 class CenterOfMassCommand(Command):
-    def __init__(self, aggregation_type: AggregationType):
-        self._aggregation_type = aggregation_type
+    def __init__(self, command_name: str, args: list[str]):
+        helper = CommandValidationHelper(command_name)
+        helper.check_for_exact_arg_count(args, 1)
+        self._aggregation_type = helper.check_categorical_arg(args[0].lower(), AggregationType)
 
     def execute(self, state: SessionState):
         state.md_logger.log("Calculating center of mass...")
