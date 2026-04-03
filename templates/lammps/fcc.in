@@ -36,6 +36,7 @@ variable RNG_SEED equal {{int}}
 ## END CONFIGURATION
 
 # Make directories
+
 shell mkdir dumps restarts
 
 # Auto-calculated temperature in Kelvin
