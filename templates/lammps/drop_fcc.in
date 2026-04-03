@@ -1,0 +1,156 @@
+### LAMMPS Input File - Wetting of free-floating droplet on FCC crystal substrate
+# From MDToolkit template file: drop_fcc.in
+
+## Configuration Variables
+# FILL IN {{FIELDS}}
+# IF YOU ARE RESTARTING A RUN WITHIN THE SAME DIRECTORY, RENAME YOUR LOG FILES SO THEY DON'T GET OVERWRITTEN
+
+# Is this a restart? (true if starting from a binary restart file, false if starting from a data text file)
+variable IS_RESTART equal {{true/false}}
+# File name of the binary restart file or initial data text file
+# For restart files, using the * wildcard will find the largest-numbered restart file in the directory (ex: restart_*.rs)
+variable START_DATA string {{file}}
+
+# Does the data file have types defined for sodium and chlorine? (regardless of whether any sodium or chlorine ions are present)
+variable IS_SALT_DEFINED equal {{true/false}}
+# Does the data file actually contain any sodium and chlorine atoms?
+variable IS_SALT_PRESENT equal {{true/false}}
+
+# Thermostat temperature in degrees Celsius (25.0, 80.0)
+variable TEMP_C equal {{float}}
+
+# Number of time steps to run
+variable STEPS equal {{int}}
+# Frequency of creating dump files (every N steps); try 1000
+variable DUMP_FREQ equal {{int}}
+# Frequency of writing thermo output to the LAMMPS log file (every N steps); try 100
+variable THERMO_FREQ equal {{int}}
+# Frequency of writing restart files (every N steps); try ~2 restarts per day of wall time
+variable RESTART_FREQ equal {{int}}
+
+# LJ parameters between droplet and substrate (if there is no salt present, the chlorine and sodium parameters will not be used)
+variable EPSILON_CHLORINE_SUBSTRATE equal {{float}}
+variable SIGMA_CHLORINE_SUBSTRATE equal {{float}}
+variable EPSILON_SODIUM_SUBSTRATE equal {{float}}
+variable SIGMA_SODIUM_SUBSTRATE equal {{float}}
+variable EPSILON_OXYGEN_SUBSTRATE equal {{float}}
+variable SIGMA_OXYGEN_SUBSTRATE equal {{float}}
+
+# Z level below which the substrate will be frozen in place
+variable Z_FREEZE equal {{float}}
+
+# Seeds for random number generator (recommend random number between 0 and 99999999)
+variable RNG_1 equal {{int}}
+variable RNG_2 equal {{int}}
+variable RNG_3 equal {{int}}
+variable RNG_4 equal {{int}}
+
+## Initialization
+
+units real
+atom_style full
+boundary p p f
+pair_style lj/cut/coul/long 10 10
+pair_modify mix arithmetic
+pair_modify tail no
+special_bonds amber
+bond_style harmonic
+angle_style harmonic
+dihedral_style opls
+improper_style none
+timestep 2 # femtoseconds
+
+## Read an initial data file or a restart file
+
+if "${IS_RESTART}" then &
+    "read_restart ${START_DATA}" &
+else &
+    "read_data ${START_DATA}"
+
+## Make directories
+
+shell mkdir dumps restarts
+
+## Variables with auto-calculated values
+
+# Thermostat temperature in degrees Kelvin
+variable TEMP_K equal $(v_TEMP_C + 273.15)
+
+## Neighbor parameters and force field coefficients
+
+neighbor 2.0 bin
+neigh_modify delay 0
+kspace_style pppm 1e-5
+kspace_modify slab 3.0
+
+## Load balancing
+
+balance 1.0 shift xyz 10 1.01
+
+## Reflective walls at top and bottom of the simulation box
+
+fix FIX_ZWALLS all wall/reflect zlo EDGE zhi EDGE
+
+## Define atom/molecule groups
+
+# The pure water droplet data and the saline droplet data do not have the same atom type IDs
+if "${IS_SALT_DEFINED}" then &
+    "group CHLORINE type 4" &
+    "group SODIUM type 5" &
+    "group H2O type 6 7" &
+else &
+    "group H2O type 4 5"
+
+## Dump settings
+
+dump DUMPTEXT_ALL all custom $(v_DUMP_FREQ) dumps/dump_*.dump id mol type x y z
+dump_modify DUMPTEXT_ALL sort id
+#dump DUMPNCDF_ALL all netcdf $(v_DUMP_FREQ) dumps/dump_*.nc id mol type x y z
+#dump_modify DUMPNCDF_ALL sort id
+
+## Restart settings
+
+restart	$(v_RESTART_FREQ) restarts/restart_*.rs
+
+## Constraint for bond lengths
+
+fix SHAKE all shake 1e-5 1000 0 m 1.0
+
+## Thermostatting
+
+# Tdamp of 100*dt recommended by this page: https://docs.lammps.org/fix_nh.html
+fix NVT_H2O H2O nvt temp $(v_TEMP_K) $(v_TEMP_K) $(100.0*dt)
+velocity H2O create $(v_TEMP_K) $(v_RNG_1) dist gaussian
+
+if "${IS_SALT_PRESENT}" then &
+    "fix NVT_CL CHLORINE nvt temp $(v_TEMP_K) $(v_TEMP_K) $(100.0*dt)" &
+    "fix NVT_NA SODIUM nvt temp $(v_TEMP_K) $(v_TEMP_K) $(100.0*dt)" &
+    "velocity CHLORINE create $(v_TEMP_K) $(v_RNG_2) dist gaussian" &
+    "velocity SODIUM create $(v_TEMP_K) $(v_RNG_3) dist gaussian"
+
+## Substrate behavior
+
+if "${IS_SALT_PRESENT}" then &
+    "pair_coeff 4 8 $(v_EPSILON_CHLORINE_SUBSTRATE) $(v_SIGMA_CHLORINE_SUBSTRATE)" &
+    "pair_coeff 5 8 $(v_EPSILON_SODIUM_SUBSTRATE) $(v_SIGMA_SODIUM_SUBSTRATE)"
+pair_coeff 6 8 $(v_EPSILON_OXYGEN_SUBSTRATE) $(v_SIGMA_OXYGEN_SUBSTRATE)
+group GRP_SUBSTRATE type 8
+fix NVT_SUBSTRATE GRP_SUBSTRATE nvt temp $(v_TEMP_K) $(v_TEMP_K) $(100.0*dt)
+region RGN_FREEZE block INF INF INF INF INF $(v_Z_FREEZE) side in units box
+group GRP_FREEZE_TEMP region RGN_FREEZE
+group GRP_SUBSTRATE_FREEZE intersect GRP_SUBSTRATE GRP_FREEZE_TEMP
+group GRP_FREEZE_TEMP delete
+group GRP_SUBSTRATE_FREE subtract GRP_SUBSTRATE GRP_SUBSTRATE_FREEZE
+velocity GRP_SUBSTRATE_FREE create $(v_TEMP_K) $(v_RNG_4) dist gaussian
+velocity GRP_SUBSTRATE_FREEZE set 0 0 0
+fix FIX_FREEZE GRP_SUBSTRATE_FREEZE setforce 0 0 0
+
+## Thermodynamic output settings
+
+thermo $(v_THERMO_FREQ)
+thermo_style custom step time temp pe ke etotal enthalpy press vol density lx ly lz pxx pyy pzz pxy pxz pyz
+thermo_modify lost ignore flush yes
+
+## Run the simulation
+
+run $(v_STEPS)
