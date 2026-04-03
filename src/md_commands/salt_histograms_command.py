@@ -11,15 +11,9 @@ class SaltHistogramsCommand(Command):
         self._filter_name = args[0]
         self._aggregation_type = helper.check_categorical_arg(args[1].lower(), AggregationType)
 
-    #TODO: Do parameter parsing and validation somewhere else, like in CommandFactory
     def execute(self, state: SessionState):
-        if self._filter_name.lower() != "all" and self._filter_name not in state.filters:
-            raise Exception(f"Filter name specified in salt_histograms command not found: {self._filter_name}")
         state.md_logger.log("Building salt histograms...")
-        if self._filter_name.lower() == "all":
-            filtered_atoms = state.atoms
-        else:
-            filtered_atoms = state.filters[self._filter_name].apply(state.atoms)
+        filtered_atoms = state.get_filtered_atoms(self._filter_name)
         cl_neighbors_histogram = build_cl_neighbors_histogram(filtered_atoms)
         na_neighbors_histogram = build_na_neighbors_histogram(filtered_atoms)
         if self._aggregation_type == AggregationType.NONE or state.data_files_index == 0:

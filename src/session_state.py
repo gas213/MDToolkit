@@ -29,3 +29,11 @@ class SessionState:
     def set_results_path(self, results_path):
         self.results_path = results_path
         self.md_logger.set_file_handler(results_path)
+
+    def get_filtered_atoms(self, filter_name: str) -> list[Atom]:
+        if filter_name.lower() == "all":
+            return self.atoms
+        elif filter_name in self.filters:
+            return self.filters[filter_name].apply(self.atoms)
+        else:
+            raise Exception(f"Filter name not found: {filter_name}")
