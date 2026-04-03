@@ -17,47 +17,60 @@ class FilterCommand(Command):
         self._filter_name = args[0]
         self._filter_type = helper.check_categorical_arg(args[1].lower(), FilterType)
         self._filter_params = args[2:] if len(args) > 2 else []
-    
-    #TODO: Do parameter parsing and validation somewhere else, like in CommandFactory
-    def execute(self, state: SessionState):
+
+        # Do some basic validation of filter parameters now; the rest will be done during execution
         if self._filter_type == FilterType.AND:
             # "And" filter takes two or more filter names as parameters
             if len(self._filter_params) < 2:
                 raise Exception("'and' filter requires at least two filter names as parameters")
-            filters: list[Filter] = []
-            for filter_name in self._filter_params:
-                if filter_name not in state.filters:
-                    raise Exception(f"'and' filter parameter '{filter_name}' does not correspond to a previously defined filter")
-                filters.append(state.filters[filter_name])
-            state.filters[self._filter_name] = AndFilter(filters)
         elif self._filter_type == FilterType.ATOM_TYPE:
             # Atom type filter takes a list of atom types (integers) as parameters
             if len(self._filter_params) == 0:
                 raise Exception("'atom_type' filter requires at least one atom type as a parameter")
-            atom_types: set[int] = set()
-            for filter_name in self._filter_params:
-                atom_types.add(parse_int(filter_name))
-            state.filters[self._filter_name] = AtomTypeFilter(atom_types)
+            for atom_type in self._filter_params:
+                helper.parse_int(atom_type)
         elif self._filter_type == FilterType.CARTESIAN:
             # Cartesian filter takes 6 parameters: x_min, x_max, y_min, y_max, z_min, z_max
             if len(self._filter_params) != 6:
                 raise Exception("'cartesian' filter requires exactly six parameters: x_min (float or 'none'), x_max (float or 'none'), y_min (float or 'none'), y_max (float or 'none'), z_min (float or 'none'), z_max (float or 'none')")
-            x_min = parse_float_or_none(self._filter_params[0])
-            x_max = parse_float_or_none(self._filter_params[1])
-            y_min = parse_float_or_none(self._filter_params[2])
-            y_max = parse_float_or_none(self._filter_params[3])
-            z_min = parse_float_or_none(self._filter_params[4])
-            z_max = parse_float_or_none(self._filter_params[5])
-            state.filters[self._filter_name] = CartesianFilter(x_min, x_max, y_min, y_max, z_min, z_max)
+            for param in self._filter_params:
+                helper.parse_float_or_none(param)
         elif self._filter_type == FilterType.RADIAL:
             # Radial filter takes 5 parameters: x, y, z, r_min, r_max
             if len(self._filter_params) != 5:
                 raise Exception("'radial' filter requires exactly five parameters: x, y, z, r_min (float or 'none'), r_max (float or 'none')")
-            x = parse_float(self._filter_params[0])
-            y = parse_float(self._filter_params[1])
-            z = parse_float(self._filter_params[2])
-            r_min = parse_float_or_none(self._filter_params[3])
-            r_max = parse_float_or_none(self._filter_params[4])
-            state.filters[self._filter_name] = RadialFilter(x, y, z, r_min, r_max)
+            for param in self._filter_params[:3]:
+                helper.parse_float(param)
+            for param in self._filter_params[3:]:
+                helper.parse_float_or_none(param)
         else:
             raise Exception(f"Unsupported filter_type specified in configuration: '{self._filter_type}' (supported types are {[item.value for item in FilterType]})")
+
+    def execute(self, state: SessionState):
+        if self._filter_type == FilterType.AND:
+            filters: list[Filter] = []
+            for filter_name in self._filter_params:
+                if filter_name not in state.filters:
+                    raise Exception(f"'and' filter parameter '{filter_name}' is not the name of an existing filter")
+                filters.append(state.filters[filter_name])
+            state.filters[self._filter_name] = AndFilter(filters)
+        elif self._filter_type == FilterType.ATOM_TYPE:
+            atom_types: set[int] = set()
+            for atom_type in self._filter_params:
+                atom_types.add(int(atom_type))
+            state.filters[self._filter_name] = AtomTypeFilter(atom_types)
+        elif self._filter_type == FilterType.CARTESIAN:
+            x_min = None if self._filter_params[0].lower() == "none" else float(self._filter_params[0])
+            x_max = None if self._filter_params[1].lower() == "none" else float(self._filter_params[1])
+            y_min = None if self._filter_params[2].lower() == "none" else float(self._filter_params[2])
+            y_max = None if self._filter_params[3].lower() == "none" else float(self._filter_params[3])
+            z_min = None if self._filter_params[4].lower() == "none" else float(self._filter_params[4])
+            z_max = None if self._filter_params[5].lower() == "none" else float(self._filter_params[5])
+            state.filters[self._filter_name] = CartesianFilter(x_min, x_max, y_min, y_max, z_min, z_max)
+        elif self._filter_type == FilterType.RADIAL:
+            x = float(self._filter_params[0])
+            y = float(self._filter_params[1])
+            z = float(self._filter_params[2])
+            r_min = None if self._filter_params[3].lower() == "none" else float(self._filter_params[3])
+            r_max = None if self._filter_params[4].lower() == "none" else float(self._filter_params[4])
+            state.filters[self._filter_name] = RadialFilter(x, y, z, r_min, r_max)
