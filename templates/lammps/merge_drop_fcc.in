@@ -1,0 +1,92 @@
+### LAMMPS Input File - Merge droplet and FCC substrate data files
+# From MDToolkit template file: merge_drop_fcc.in
+
+## Configuration Variables
+# FILL IN {{FIELDS}}
+
+# Droplet and substrate data files
+variable DROP_DATA string {{file}}
+variable SUBSTRATE_DATA string {{file}}
+
+# Offset by which to increase the atom type IDs in the substrate data when it is read in
+# (Should just be equal to the number of types defined in the droplet file)
+variable TYPE_OFFSET equal 7
+
+# Dimensions of the substrate box
+# X and Y spans are assumed to be equal and at least a little smaller than the droplet box
+variable SUBSTRATE_SPAN_XY equal {{float}}
+variable SUBSTRATE_XLO equal {{float}}
+variable SUBSTRATE_YLO equal {{float}}
+variable SUBSTRATE_ZHI equal {{float}}
+
+# Droplet Z level to shift the substrate box's ZHI to
+# It is assumed that the substrate data includes a small amount of empty space above the surface
+# Hence, this value will also be used as the threshold for vapor removal
+variable Z_MERGE equal {{float}}
+
+# Set this to true if you are resetting atom IDs using a version of LAMMPS older than 22Dec2022
+variable USE_OLD_RESET_COMMAND equal {{true/false}}
+
+## Initialization
+
+units real
+atom_style full
+boundary p p f
+pair_style      lj/cut/coul/long 10 10
+pair_modify     mix arithmetic
+pair_modify     tail no
+special_bonds   amber
+bond_style      harmonic
+angle_style     harmonic
+dihedral_style  opls
+improper_style  none
+
+## Read droplet data file
+
+read_data ${DROP_DATA} extra/atom/types 1
+
+## Neighbor parameters and force field coefficients
+
+neighbor        2.0 bin
+neigh_modify    delay 0
+kspace_style    pppm 1e-5
+kspace_modify   slab 3.0
+
+## Variables with auto-calculated values
+
+variable XLO_NEW equal $(xlo + 0.5 * (xhi - xlo - v_SUBSTRATE_SPAN_XY))
+variable XHI_NEW equal $(xhi - 0.5 * (xhi - xlo - v_SUBSTRATE_SPAN_XY))
+variable YLO_NEW equal $(ylo + 0.5 * (yhi - ylo - v_SUBSTRATE_SPAN_XY))
+variable YHI_NEW equal $(yhi - 0.5 * (yhi - ylo - v_SUBSTRATE_SPAN_XY))
+
+print "DEBUG XLO_NEW = ${XLO_NEW}" screen yes
+print "DEBUG XHI_NEW = ${XHI_NEW}" screen yes
+print "DEBUG YLO_NEW = ${YLO_NEW}" screen yes
+print "DEBUG YHI_NEW = ${YHI_NEW}" screen yes
+
+## Remove any vapor molecules that would at least partially be out of bounds in the new box, and any that would be too close to the substrate
+
+region RGN_DELETE_A block $(v_XLO_NEW) $(v_XHI_NEW) $(v_YLO_NEW) $(v_YHI_NEW) INF INF side out units box
+region RGN_DELETE_B block INF INF INF INF INF $(v_Z_MERGE) side in units box
+region RGN_DELETE union 2 RGN_DELETE_A RGN_DELETE_B
+group GRP_DELETE region RGN_DELETE
+group GRP_DELETE include molecule
+delete_atoms group GRP_DELETE
+
+## Shrink box in X and Y to match the substrate's XY span
+
+change_box all x final $(v_XLO_NEW) $(v_XHI_NEW)
+change_box all y final $(v_YLO_NEW) $(v_YHI_NEW)
+
+## Bring in substrate data
+
+read_data ${SUBSTRATE_DATA} add append offset $(v_TYPE_OFFSET) 0 0 0 0 shift $(v_XLO_NEW - v_SUBSTRATE_XLO) $(v_YLO_NEW - v_SUBSTRATE_YLO) $(v_Z_MERGE - v_SUBSTRATE_ZHI)
+
+## Reset atom IDs
+
+if "${USE_OLD_RESET_COMMAND}" then "reset_atom_ids sort yes" &
+else "reset_atoms id sort yes"
+
+## Write resulting data file
+
+write_data merged.data
