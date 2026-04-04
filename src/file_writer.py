@@ -5,6 +5,7 @@ from session_state import SessionState
 def write_histogram(state: SessionState, write_path_relative: str, append_flag: bool):
     check_results_path(state)
     write_path_full: str = os.path.join(str(state.results_path), write_path_relative)
+    os.makedirs(os.path.dirname(write_path_full), exist_ok=True)
     write_mode: str = "a" if append_flag else "w"
     is_appending: bool = append_flag and os.path.isfile(write_path_full)
 

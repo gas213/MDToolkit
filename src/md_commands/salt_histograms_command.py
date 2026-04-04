@@ -1,4 +1,4 @@
-from analysis_writer import write_histogram
+from file_writer import write_histogram
 from md_commands.command_interface import Command
 from md_commands.command_validation_helper import CommandValidationHelper
 from md_enums.aggregation_type import AggregationType
