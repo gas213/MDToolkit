@@ -13,7 +13,7 @@ class ReadAtomsCommand(Command):
         helper.check_for_exact_arg_count(args, 0)
 
     def execute(self, state: SessionState):
-        data_file_name = list(state.data_files.values())[state.data_files_index]
+        data_file_name = state.data_files[state.step_current]
         state.md_logger.log(f"Reading atoms from data file {data_file_name}...")
         if state.data_file_type == DataFileType.DUMP_NETCDF:
             state.atoms = dumpnc.read_atoms(data_file_name)

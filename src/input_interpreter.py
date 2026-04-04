@@ -26,7 +26,7 @@ class InputInterpreter:
         command = create_command(current_command, args)
         command.execute(state)
         
-        if current_command == "next_file" and state.data_files_index < len(state.data_files):
+        if current_command == "next_file" and not state.is_finished:
             # Navigate back to the most recent read_atoms command if there are still more files to process
             while self._index >= 0:
                 self._index -= 1

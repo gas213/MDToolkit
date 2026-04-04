@@ -8,4 +8,8 @@ class NextFileCommand(Command):
         helper.check_for_exact_arg_count(args, 0)
 
     def execute(self, state: SessionState):
-        state.data_files_index += 1
+        current_index: int = state.get_data_file_index()
+        if current_index < len(state.data_files) - 1:
+            state.step_current = list(state.data_files)[current_index + 1]
+        else:
+            state.is_finished = True

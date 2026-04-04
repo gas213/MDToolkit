@@ -15,7 +15,8 @@ class SessionState:
         self.data_path: str | None = None
         self.results_path: str | None = None
         self.data_files: dict[int, str] = {}
-        self.data_files_index: int = 0
+        self.step_current: int = 0
+        self.is_finished: bool = False
         self.data_file_type: DataFileType | None = None
         self.atom_data_columns: dict[AtomDataColumnType, int] = {}
         self.atom_masses: dict[int, float] = {}
@@ -30,6 +31,9 @@ class SessionState:
     def set_results_path(self, results_path):
         self.results_path = results_path
         self.md_logger.set_file_handler(results_path)
+
+    def get_data_file_index(self) -> int:
+        return list(self.data_files).index(self.step_current)
 
     def get_filtered_atoms(self, filter_name: str) -> list[Atom]:
         if filter_name.lower() == "all":
