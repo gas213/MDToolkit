@@ -1,5 +1,6 @@
 from md_domain.atom import Atom
 from md_domain.header import Header
+from md_domain.salt_histogram import SaltHistogram
 from md_domain.vector3d import Vector3D
 from md_enums.atom_data_column_type import AtomDataColumnType
 from md_enums.data_file_type import DataFileType
@@ -23,8 +24,8 @@ class SessionState:
         self.center_of_mass: Vector3D | None = None
         self.filters: dict[str, Filter] = {}
         self.radial_profile: dict[float, float] = {} # TODO: this is a workaround
-        self.cl_neighbors_histogram: dict[int, float] = {} # TODO: this is a workaround
-        self.na_neighbors_histogram: dict[int, float] = {} # TODO: this is a workaround
+        self.histogram_na_centric: SaltHistogram | None = None # TODO: this is a workaround
+        self.histogram_cl_centric: SaltHistogram | None = None # TODO: this is a workaround
 
     def set_results_path(self, results_path):
         self.results_path = results_path
