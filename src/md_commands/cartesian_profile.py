@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import ndarray
 
-from md_dataclasses.atom import Atom
+from md_domain.atom import Atom
 
 def build_profiles_cartesian(atoms: list[Atom], config: ConfigReader, header: Header, description: str) -> dict[str, DensityProfile]:
     x = build_profile([atom.pos.x for atom in atoms], build_bins_cartesian(header.box.lo.x, header.box.hi.x, config.cartesian_profile_step_xyz))

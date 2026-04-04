@@ -1,6 +1,6 @@
-from md_dataclasses.box import Box
-from md_dataclasses.density_profile import DensityProfile
-from md_dataclasses.header import Header
+from md_domain.box import Box
+from md_domain.density_profile import DensityProfile
+from md_domain.header import Header
 
 def atoms_within_box(box: Box, atom_extremes: Box) -> str:
     result = (box.lo.x <= atom_extremes.lo.x and box.hi.x >= atom_extremes.hi.x and

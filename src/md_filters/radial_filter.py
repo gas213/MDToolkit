@@ -1,4 +1,4 @@
-from md_dataclasses.atom import Atom
+from md_domain.atom import Atom
 from md_filters.filter_interface import Filter
 
 class RadialFilter(Filter):

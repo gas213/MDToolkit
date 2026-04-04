@@ -1,11 +1,11 @@
 import datetime
 
 from md_analyses.sanity_checks import atoms_within_box, total_atom_count, density_profile_atom_count
-from md_dataclasses.atom import Atom
-from md_dataclasses.box import Box
-from md_dataclasses.density_profile import DensityProfile
-from md_dataclasses.header import Header
-from md_dataclasses.vector3d import Vector3D
+from md_domain.atom import Atom
+from md_domain.box import Box
+from md_domain.density_profile import DensityProfile
+from md_domain.header import Header
+from md_domain.vector3d import Vector3D
 from md_readers.config_reader import ConfigReader
 
 def print_title(config: ConfigReader) -> str:

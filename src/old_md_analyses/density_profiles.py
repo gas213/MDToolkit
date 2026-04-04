@@ -3,10 +3,10 @@ import numpy as np
 from numpy import ndarray
 
 from old_constants import four_thirds_pi
-from md_dataclasses.atom import Atom
-from md_dataclasses.density_profile import DensityProfile
-from md_dataclasses.header import Header
-from md_dataclasses.vector3d import Vector3D
+from md_domain.atom import Atom
+from md_domain.density_profile import DensityProfile
+from md_domain.header import Header
+from md_domain.vector3d import Vector3D
 from md_readers.config_reader import ConfigReader
 
 def build_profiles_cartesian(atoms: list[Atom], config: ConfigReader, header: Header, description: str) -> dict[str, DensityProfile]:

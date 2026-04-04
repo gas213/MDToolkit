@@ -1,5 +1,5 @@
-from md_dataclasses.box import Box
-from md_dataclasses.vector3d import Vector3D
+from md_domain.box import Box
+from md_domain.vector3d import Vector3D
 
 def update_atom_extremes(overall_extremes: Box, new_extremes: Box) -> Box:
     return new_extremes if overall_extremes is None else Box(

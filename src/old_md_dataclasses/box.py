@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from md_dataclasses.vector3d import Vector3D
+from md_domain.vector3d import Vector3D
 
 @dataclass
 class Box:

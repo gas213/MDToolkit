@@ -5,9 +5,9 @@ from multiprocessing import Pool
 import numpy as np
 
 from old_constants import BIN_SIZE, element_sets, WORKER_COUNT
-from md_dataclasses.atom import Atom
-from md_dataclasses.box import Box
-from md_dataclasses.vector3d import Vector3D
+from md_domain.atom import Atom
+from md_domain.box import Box
+from md_domain.vector3d import Vector3D
 from md_readers.config_reader import ConfigReader
 
 @dataclass

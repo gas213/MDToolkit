@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from md_dataclasses.atom import Atom
+from md_domain.atom import Atom
 
 class Filter(ABC):
     @abstractmethod

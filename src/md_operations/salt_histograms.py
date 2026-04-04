@@ -1,4 +1,4 @@
-from md_dataclasses.atom import Atom
+from md_domain.atom import Atom
 
 R_THRESHOLD_2: float = 16.0 # Angstroms ^ 2
 CL_TYPE: int = 4 # TODO: hardcoded for now

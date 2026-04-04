@@ -1,5 +1,5 @@
-from md_dataclasses.atom import Atom
-from md_dataclasses.vector3d import Vector3D
+from md_domain.atom import Atom
+from md_domain.vector3d import Vector3D
 
 def calc_center_of_mass(atoms: list[Atom], atom_masses: dict[int, float]) -> Vector3D:
     sum_by_type_x: dict[int, float] = {}

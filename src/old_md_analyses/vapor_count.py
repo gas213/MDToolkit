@@ -1,4 +1,4 @@
-from md_dataclasses.atom import Atom
+from md_domain.atom import Atom
 from md_readers.config_reader import ConfigReader
 
 def count_vapor_particles(config: ConfigReader, atoms: list[Atom]) -> int:

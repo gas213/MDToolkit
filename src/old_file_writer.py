@@ -1,7 +1,7 @@
 import os.path
 
 from old_constants import element_sets
-from md_dataclasses.density_profile import DensityProfile
+from md_domain.density_profile import DensityProfile
 from md_readers.config_reader import ConfigReader
 import old_text_printer as tp
 

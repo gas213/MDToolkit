@@ -1,5 +1,5 @@
-from md_dataclasses.atom import Atom
-from md_dataclasses.vector3d import Vector3D
+from md_domain.atom import Atom
+from md_domain.vector3d import Vector3D
 from md_readers.config_reader import ConfigReader
 
 def calc_droplet_center(config: ConfigReader, atoms: list[Atom]) -> Vector3D:

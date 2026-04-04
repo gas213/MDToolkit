@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from md_dataclasses.box import Box
+from md_domain.box import Box
 
 @dataclass
 class Header:

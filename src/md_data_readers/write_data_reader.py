@@ -1,9 +1,9 @@
 import re
 
-from md_dataclasses.atom import Atom
-from md_dataclasses.box import Box
-from md_dataclasses.header import Header
-from md_dataclasses.vector3d import Vector3D
+from md_domain.atom import Atom
+from md_domain.box import Box
+from md_domain.header import Header
+from md_domain.vector3d import Vector3D
 from md_enums.atom_data_column_type import AtomDataColumnType
 
 # EXPLANATION OF REGEX COMPONENTS

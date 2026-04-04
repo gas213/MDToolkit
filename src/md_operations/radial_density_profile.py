@@ -1,8 +1,8 @@
 import numpy as np
 from numpy import ndarray
 
-from md_dataclasses.atom import Atom
-from md_dataclasses.vector3d import Vector3D
+from md_domain.atom import Atom
+from md_domain.vector3d import Vector3D
 
 def build_radial_density_profile(atoms: list[Atom], origin: Vector3D, bin_start: float, bin_stop: float, bin_step: float) -> dict[float, float]:
     atoms_r2: list[float] = [(atom.pos.x - origin.x)**2 + (atom.pos.y - origin.y)**2 + (atom.pos.z - origin.z)**2 for atom in atoms]

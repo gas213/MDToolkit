@@ -12,9 +12,9 @@ from md_analyses.time_aggregator import update_atom_extremes, update_avg_scalar,
 from md_analyses.vapor_count import count_vapor_particles
 from md_analyses.vapor_members import determine_vapor
 from md_analyses.wetted_area import calc_wetted_area
-from md_dataclasses.box import Box
-from md_dataclasses.density_profile import DensityProfile
-from md_dataclasses.vector3d import Vector3D
+from md_domain.box import Box
+from md_domain.density_profile import DensityProfile
+from md_domain.vector3d import Vector3D
 from md_readers.argv_reader import read_config_path
 from md_readers.config_reader import ConfigReader
 from md_readers.data_reader_mediator import read_header, read_atoms
