@@ -14,7 +14,7 @@ class SessionState:
         self.step_end: int | None = None
         self.data_path: str | None = None
         self.results_path: str | None = None
-        self.data_files: list[str] = []
+        self.data_files: dict[int, str] = {}
         self.data_files_index: int = 0
         self.data_file_type: DataFileType | None = None
         self.atom_data_columns: dict[AtomDataColumnType, int] = {}

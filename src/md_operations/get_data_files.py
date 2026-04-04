@@ -1,8 +1,8 @@
 import glob
 import os.path
 
-def get_data_files(data_path: str, step_start: int | None, step_end: int | None) -> list[str]:
-    data_files: list[str] = []
+def get_data_files(data_path: str, step_start: int | None, step_end: int | None) -> dict[int, str]:
+    data_files: dict[int, str] = {}
     filename_stripped = os.path.splitext(os.path.basename(data_path))[0]
     if ("*" in filename_stripped):
         if step_start is None:
@@ -26,10 +26,11 @@ def get_data_files(data_path: str, step_start: int | None, step_end: int | None)
         if len(valid_step_numbers) == 0:
             raise Exception(f"No data files were found matching the specified pattern of {data_path} while having a step number in the range of {step_start} through {step_end}")
         for step in valid_step_numbers:
-            data_files.append(path_before_wildcard + str(step) + path_after_wildcard)
+            data_files[step] = path_before_wildcard + str(step) + path_after_wildcard
     elif not os.path.isfile(data_path):
         raise Exception(f"No data file was found at the specified path: {data_path}")        
     else:
-        data_files.append(data_path)
+        # If only reading in a single data/dump file, just assign it a step number of 0
+        data_files[0] = data_path
 
     return data_files
