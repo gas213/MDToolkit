@@ -5,11 +5,11 @@ from md_commands.command_interface import Command
 from md_commands.data_path_command import DataPathCommand
 from md_commands.data_type_command import DataTypeCommand
 from md_commands.filter_command import FilterCommand
+from md_commands.first_neighbor_histogram_command import FirstNeighborHistogramCommand
 from md_commands.next_file_command import NextFileCommand
 from md_commands.radial_density_profile_command import RadialDensityProfileCommand
 from md_commands.read_atoms_command import ReadAtomsCommand
 from md_commands.read_header_command import ReadHeaderCommand
-from md_commands.salt_histograms_command import SaltHistogramsCommand
 from md_commands.step_end_command import StepEndCommand
 from md_commands.step_start_command import StepStartCommand
 
@@ -27,6 +27,8 @@ def create_command(command_name: str, args: list[str]) -> Command:
             return DataTypeCommand(command_name, args)
         case "filter":
             return FilterCommand(command_name, args)
+        case "first_neighbor_histogram":
+            return FirstNeighborHistogramCommand(command_name, args)
         case "next_file":
             return NextFileCommand(command_name, args)
         case "radial_density_profile":
@@ -35,8 +37,6 @@ def create_command(command_name: str, args: list[str]) -> Command:
             return ReadAtomsCommand(command_name, args)
         case "read_header":
             return ReadHeaderCommand(command_name, args)
-        case "salt_histograms":
-            return SaltHistogramsCommand(command_name, args)
         case "step_end":
             return StepEndCommand(command_name, args)
         case "step_start":

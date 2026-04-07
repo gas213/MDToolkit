@@ -1,6 +1,8 @@
+import os.path
+
+from md_domain.analysis import Analysis
 from md_domain.atom import Atom
 from md_domain.header import Header
-from md_domain.salt_histogram import SaltHistogram
 from md_domain.vector3d import Vector3D
 from md_enums.atom_data_column_type import AtomDataColumnType
 from md_enums.data_file_type import DataFileType
@@ -22,11 +24,10 @@ class SessionState:
         self.atom_masses: dict[int, float] = {}
         self.header: Header | None = None
         self.atoms: list[Atom] = []
+        self.analyses: dict[str, Analysis] = {}
         self.center_of_mass: Vector3D | None = None
         self.filters: dict[str, Filter] = {}
         self.radial_profile: dict[float, float] = {} # TODO: this is a workaround
-        self.histogram_na_centric: SaltHistogram | None = None # TODO: this is a workaround
-        self.histogram_cl_centric: SaltHistogram | None = None # TODO: this is a workaround
 
     def set_results_path(self, results_path):
         self.results_path = results_path
@@ -42,3 +43,12 @@ class SessionState:
             return self.filters[filter_name].apply(self.atoms)
         else:
             raise Exception(f"Filter name not found: {filter_name}")
+        
+    def write_analyses_files(self):
+        if self.results_path is None or not os.path.isdir(self.results_path):
+            raise Exception("Cannot write analysis files before results path has been set.")
+        for path_relative, analysis in self.analyses.items():
+            write_path_full: str = os.path.join(str(self.results_path), path_relative)
+            os.makedirs(os.path.dirname(write_path_full), exist_ok=True)
+            with open(write_path_full, "w") as file:
+                file.write(analysis.get_printable())

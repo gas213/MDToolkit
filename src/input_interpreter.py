@@ -17,6 +17,7 @@ class InputInterpreter:
     def run(self, state: SessionState):
         while self._index < len(self._lines):
             self.interpret_next(state)
+        state.write_analyses_files()
 
     def interpret_next(self, state: SessionState):
         terms = self._lines[self._index].split()
