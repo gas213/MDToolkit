@@ -1,5 +1,6 @@
 from md_commands.command_interface import Command
 from md_commands.command_validation_helper import CommandValidationHelper
+from md_domain.radial_density_profile import RadialDensityProfile
 from md_enums.aggregation_type import AggregationType
 from md_operations.radial_density_profile import build_radial_density_profile
 from session_state import SessionState
@@ -7,19 +8,28 @@ from session_state import SessionState
 class RadialDensityProfileCommand(Command):
     def __init__(self, command_name: str, args: list[str]):
         helper = CommandValidationHelper(command_name)
-        helper.check_for_exact_arg_count(args, 4)
-        self._aggregation_type = helper.check_categorical_arg(args[0].lower(), AggregationType)
-        self._bin_start = helper.parse_float(args[1])
-        self._bin_stop = helper.parse_float(args[2])
-        self._bin_step = helper.parse_float(args[3])
+        helper.check_for_exact_arg_count(args, 7)
+        self._filter_name = args[0]
+        self._aggregation_type = helper.check_categorical_arg(args[1].lower(), AggregationType)
+        self._bin_start = helper.parse_float(args[2])
+        self._bin_stop = helper.parse_float(args[3])
+        self._bin_step = helper.parse_float(args[4])
+        self._normalization_density = helper.parse_float(args[5])
+        self._write_path_relative = args[6]
 
     def execute(self, state: SessionState):
         if state.center_of_mass is None: raise Exception("Center of mass must be calculated before building radial density profile")
         state.md_logger.log("Building radial density profile...")
-        profile = build_radial_density_profile(state.atoms, state.center_of_mass, self._bin_start, self._bin_stop, self._bin_step)
-        if self._aggregation_type == AggregationType.NONE or state.get_data_file_index() == 0:
-            state.radial_profile = profile
-        elif self._aggregation_type == AggregationType.AVERAGE:
-            n_previous = state.get_data_file_index()
-            for key in state.radial_profile.keys():
-                state.radial_profile[key] = (n_previous * state.radial_profile[key] + profile[key]) / (n_previous + 1)
+        atoms = state.get_filtered_atoms(self._filter_name)
+        if len(atoms) == 0:
+            raise Exception(f"radial_density_profile command: filter group '{self._filter_name}' contains no atoms.")
+        
+        if self._write_path_relative not in state.analyses:
+            radial_density_profile = RadialDensityProfile(self._aggregation_type)
+            state.analyses[self._write_path_relative] = radial_density_profile
+        else:
+            radial_density_profile = state.analyses[self._write_path_relative]
+            if not isinstance(radial_density_profile, RadialDensityProfile):
+                raise Exception(f"Analysis with name '{self._write_path_relative}' already exists but is not a RadialDensityProfile, cannot add data to it.")
+        
+        radial_density_profile.add_data(state.step_current, build_radial_density_profile(atoms, state.center_of_mass, self._bin_start, self._bin_stop, self._bin_step, state.atom_masses, self._normalization_density))

@@ -13,14 +13,14 @@ class FirstNeighborHistogram(Analysis):
             pass
         elif self.aggregation_type == AggregationType.AVERAGE:
             hist_average: dict[int, float] = {}
-            normalizer: float = 1.0 / len(self.data)
+            fraction: float = 1.0 / len(self.data)
             for histogram in self.data.values():
-                for key, value in histogram.items():
+                for key, val in histogram.items():
                     if key not in hist_average:
                         hist_average[key] = 0.0
-                    hist_average[key] += value
+                    hist_average[key] += val
             for key in hist_average:
-                hist_average[key] *= normalizer
+                hist_average[key] *= fraction
             output = " ".join([str(val) for val in hist_average.values()])
         else:
             output = "\n".join([str(step) + " " + " ".join([str(val) for val in histogram.values()]) for step, histogram in self.data.items()])

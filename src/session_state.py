@@ -27,7 +27,6 @@ class SessionState:
         self.analyses: dict[str, Analysis] = {}
         self.center_of_mass: Vector3D | None = None
         self.filters: dict[str, Filter] = {}
-        self.radial_profile: dict[float, float] = {} # TODO: this is a workaround
 
     def set_results_path(self, results_path):
         self.results_path = results_path

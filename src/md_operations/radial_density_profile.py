@@ -4,16 +4,23 @@ from numpy import ndarray
 from md_domain.atom import Atom
 from md_domain.vector3d import Vector3D
 
-def build_radial_density_profile(atoms: list[Atom], origin: Vector3D, bin_start: float, bin_stop: float, bin_step: float) -> dict[float, float]:
+# ASSUMPTIONS:
+# - Atom data is in LAMMPS 'real' units (atomic mass, Angstrom distances)
+# - Normalization argument value is in g/cm^3
+UNIT_CONVERSION: float = 1.66054 # Conversion factor from amu/A^3 to g/cm^3
+
+def build_radial_density_profile(atoms: list[Atom], origin: Vector3D, bin_start: float, bin_stop: float, bin_step: float, atom_masses: dict[int, float], normalization_density: float) -> dict[float, float]:
     atoms_r2: list[float] = [(atom.pos.x - origin.x)**2 + (atom.pos.y - origin.y)**2 + (atom.pos.z - origin.z)**2 for atom in atoms]
     bins_r = build_bins(bin_start, bin_stop, bin_step)
     bins_r2 = np.array([bin_r**2 for bin_r in bins_r])
     bin_volumes = [4.0 / 3.0 * np.pi * (bins_r[i + 1]**3 - bins_r[i]**3) for i in range(len(bins_r) - 1)]
-    hist, _ = np.histogram(atoms_r2, bins_r2)
-    
+    weights: list[float] = [atom_masses[atom.type] for atom in atoms]
+    hist, _ = np.histogram(atoms_r2, bins_r2, weights=weights)
+
+    factor: float = UNIT_CONVERSION / normalization_density
     results: dict[float, float] = {}
     for i in range(len(bins_r) - 1):
-        density = hist[i] / bin_volumes[i]
+        density = hist[i] / bin_volumes[i] * factor
         results[bins_r[i]] = density
 
     return results
