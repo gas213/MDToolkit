@@ -1,6 +1,6 @@
 from md_commands.command_interface import Command
 from md_commands.command_validation_helper import CommandValidationHelper
-from md_domain.radial_density_profile import RadialDensityProfile
+from md_domain.radial_density_profile import DensityProfile
 from md_enums.aggregation_type import AggregationType
 from md_operations.radial_density_profile import build_radial_density_profile
 from session_state import SessionState
@@ -25,11 +25,11 @@ class RadialDensityProfileCommand(Command):
             raise Exception(f"radial_density_profile command: filter group '{self._filter_name}' contains no atoms.")
         
         if self._write_path_relative not in state.analyses:
-            radial_density_profile = RadialDensityProfile(self._aggregation_type)
-            state.analyses[self._write_path_relative] = radial_density_profile
+            density_profile = DensityProfile(self._aggregation_type)
+            state.analyses[self._write_path_relative] = density_profile
         else:
-            radial_density_profile = state.analyses[self._write_path_relative]
-            if not isinstance(radial_density_profile, RadialDensityProfile):
-                raise Exception(f"Analysis with name '{self._write_path_relative}' already exists but is not a RadialDensityProfile, cannot add data to it.")
+            density_profile = state.analyses[self._write_path_relative]
+            if not isinstance(density_profile, DensityProfile):
+                raise Exception(f"Analysis with name '{self._write_path_relative}' already exists but is not a density profile, cannot add data to it.")
         
-        radial_density_profile.add_data(state.step_current, build_radial_density_profile(atoms, state.center_of_mass, self._bin_start, self._bin_stop, self._bin_step, state.atom_masses, self._normalization_density))
+        density_profile.add_data(state.step_current, build_radial_density_profile(atoms, state.center_of_mass, self._bin_start, self._bin_stop, self._bin_step, state.atom_masses, self._normalization_density))
