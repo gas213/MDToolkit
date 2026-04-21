@@ -1,6 +1,6 @@
 from md_commands.command_interface import Command
 from md_commands.command_validation_helper import CommandValidationHelper
-from md_domain.radial_density_profile import DensityProfile
+from md_domain.density_profile import DensityProfile
 from md_enums.aggregation_type import AggregationType
 from md_operations.radial_density_profile import build_radial_density_profile
 from session_state import SessionState
