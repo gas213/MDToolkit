@@ -1,5 +1,6 @@
 from md_commands.atom_data_column_command import AtomDataColumnCommand
 from md_commands.atom_mass_command import AtomMassCommand
+from md_commands.cartesian_density_profile_command import CartesianDensityProfileCommand
 from md_commands.center_of_mass_command import CenterOfMassCommand
 from md_commands.command_interface import Command
 from md_commands.data_path_command import DataPathCommand
@@ -19,6 +20,8 @@ def create_command(command_name: str, args: list[str]) -> Command:
             return AtomDataColumnCommand(command_name, args)
         case "atom_mass":
             return AtomMassCommand(command_name, args)
+        case "cartesian_density_profile":
+            return CartesianDensityProfileCommand(command_name, args)
         case "center_of_mass":
             return CenterOfMassCommand(command_name, args)
         case "data_path":

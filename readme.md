@@ -63,6 +63,29 @@ Call this once per atom type present in the simulation.
 
 ---
 
+### `cartesian_density_profile`
+
+Calculates the number density of atoms as a function of position along a cartesian axis. Results are written to a file.
+
+```
+cartesian_density_profile <filter_name> <aggregation_type> <axis> <bin_start> <bin_stop> <bin_step> <normalization_density> <write_path_relative>
+```
+
+| Argument                | Type         | Description                                                          |
+|-------------------------|--------------|----------------------------------------------------------------------|
+| `filter_name`           | string       | Name of a defined filter selecting the atoms to include              |
+| `aggregation_type`      | string       | `none` or `average` — how to combine results across timesteps        |
+| `axis`                  | string       | `x`, `y`, or `z` — axis along which to compute the density profile   |
+| `bin_start`             | float / none | Start of the position range; `none` uses the simulation box boundary |
+| `bin_stop`              | float / none | End of the position range; `none` uses the simulation box boundary   |
+| `bin_step`              | float        | Width of each position bin                                           |
+| `normalization_density` | float        | Reference bulk density used to normalize the profile                 |
+| `write_path_relative`   | string       | Output file path relative to the results directory                   |
+
+Requires `read_header` to have been called. Uses atom masses and the cross-sectional area perpendicular to the chosen axis for density calculations.
+
+---
+
 ### `center_of_mass`
 
 Calculates the center of mass of all loaded atoms for the current timestep.
