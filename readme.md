@@ -271,7 +271,7 @@ Requires `center_of_mass` to have been calculated. Uses atom masses for weighted
 
 ### `read_file`
 
-Reads atomic coordinates and properties from the current data file into session state. Must be called each iteration before any analysis commands.
+Reads header information as well as atomic coordinates and properties from the current data file into session state. Must be called each iteration before any analysis commands.
 
 ```
 read_file
