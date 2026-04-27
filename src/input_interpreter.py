@@ -28,10 +28,10 @@ class InputInterpreter:
         command.execute(state)
         
         if current_command == "next_file" and not state.is_finished:
-            # Navigate back to the most recent read_atoms command if there are still more files to process
+            # Navigate back to the most recent read_file command if there are still more files to process
             while self._index >= 0:
                 self._index -= 1
-                if self._lines[self._index].split()[0].lower() == "read_atoms": break
-            if self._index < 0: raise Exception("next_file command did not find a read_atoms command to navigate back to")
+                if self._lines[self._index].split()[0].lower() == "read_file": break
+            if self._index < 0: raise Exception("next_file command did not find a read_file command to navigate back to")
         else:
             self._index += 1

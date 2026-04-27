@@ -17,11 +17,10 @@ data_path
 data_type
 [atom_data_column commands]
 [atom_mass commands]
-read_header
 
 # Analysis Loop
 
-read_atoms
+read_file
 [filter definitions]
 [one or more analysis commands]
 next_file
@@ -82,7 +81,7 @@ cartesian_density_profile <filter_name> <aggregation_type> <axis> <bin_start> <b
 | `normalization_density` | float        | Reference bulk density used to normalize the profile                 |
 | `write_path_relative`   | string       | Output file path relative to the results directory                   |
 
-Requires `read_header` to have been called. Uses atom masses and the cross-sectional area perpendicular to the chosen axis for density calculations.
+Uses atom masses and the cross-sectional area perpendicular to the chosen axis for density calculations.
 
 ---
 
@@ -270,27 +269,15 @@ Requires `center_of_mass` to have been calculated. Uses atom masses for weighted
 
 ---
 
-### `read_atoms`
+### `read_file`
 
 Reads atomic coordinates and properties from the current data file into session state. Must be called each iteration before any analysis commands.
 
 ```
-read_atoms
+read_file
 ```
 
 No arguments. Requires `data_path`, `data_type`, and (for text formats) `atom_data_column` definitions.
-
----
-
-### `read_header`
-
-Reads metadata (box dimensions, etc.) from the first data file. Typically called once before the main processing loop.
-
-```
-read_header
-```
-
-No arguments. Requires `data_path` and `data_type` to be set.
 
 ---
 

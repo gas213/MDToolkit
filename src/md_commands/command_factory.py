@@ -9,8 +9,7 @@ from md_commands.filter_command import FilterCommand
 from md_commands.first_neighbor_histogram_command import FirstNeighborHistogramCommand
 from md_commands.next_file_command import NextFileCommand
 from md_commands.radial_density_profile_command import RadialDensityProfileCommand
-from md_commands.read_atoms_command import ReadAtomsCommand
-from md_commands.read_header_command import ReadHeaderCommand
+from md_commands.read_file_command import ReadFileCommand
 from md_commands.step_end_command import StepEndCommand
 from md_commands.step_start_command import StepStartCommand
 
@@ -36,10 +35,8 @@ def create_command(command_name: str, args: list[str]) -> Command:
             return NextFileCommand(command_name, args)
         case "radial_density_profile":
             return RadialDensityProfileCommand(command_name, args)
-        case "read_atoms":
-            return ReadAtomsCommand(command_name, args)
-        case "read_header":
-            return ReadHeaderCommand(command_name, args)
+        case "read_file":
+            return ReadFileCommand(command_name, args)
         case "step_end":
             return StepEndCommand(command_name, args)
         case "step_start":
