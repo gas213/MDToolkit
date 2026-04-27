@@ -12,6 +12,7 @@ from md_commands.radial_density_profile_command import RadialDensityProfileComma
 from md_commands.read_file_command import ReadFileCommand
 from md_commands.step_end_command import StepEndCommand
 from md_commands.step_start_command import StepStartCommand
+from md_commands.write_dump_command import WriteDumpCommand
 
 def create_command(command_name: str, args: list[str]) -> Command:
     match command_name:
@@ -41,5 +42,7 @@ def create_command(command_name: str, args: list[str]) -> Command:
             return StepEndCommand(command_name, args)
         case "step_start":
             return StepStartCommand(command_name, args)
+        case "write_dump":
+            return WriteDumpCommand(command_name, args)
         case _:
             raise Exception(f"Unsupported command: {command_name}")

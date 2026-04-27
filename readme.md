@@ -309,6 +309,21 @@ step_start <step>
 
 ---
 
+### `write_dump`
+
+Writes a new dump file given a filtered list of atoms, using the time step number of the data file currently read into memory.
+
+```
+write_dump <filter_name> <write_path_relative>
+```
+
+| Argument                | Type   | Description                                                   |
+|-------------------------|--------|---------------------------------------------------------------|
+| `filter_name`           | string | Name of a defined filter selecting the atoms to include       |
+| `write_path_relative`   | string | Output file path relative to the results directory            |
+
+---
+
 ## Aggregation Types
 
 | Value     | Behavior                                                        |
