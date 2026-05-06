@@ -2,9 +2,9 @@ from md_commands.command_interface import Command
 from md_commands.command_validation_helper import CommandValidationHelper
 from md_enums.filter_type import FilterType
 from md_filters.filter_interface import Filter
-from md_filters.and_filter import AndFilter
 from md_filters.atom_type_filter import AtomTypeFilter
 from md_filters.cartesian_filter import CartesianFilter
+from md_filters.intersect_filter import IntersectFilter
 from md_filters.radial_filter import RadialFilter
 from session_state import SessionState
 
@@ -19,11 +19,7 @@ class FilterCommand(Command):
         self._filter_params = args[2:] if len(args) > 2 else []
 
         # Do some basic validation of filter parameters now; the rest will be done during execution
-        if self._filter_type == FilterType.AND:
-            # "And" filter takes two or more filter names as parameters
-            if len(self._filter_params) < 2:
-                raise Exception("'and' filter requires at least two filter names as parameters")
-        elif self._filter_type == FilterType.ATOM_TYPE:
+        if self._filter_type == FilterType.ATOM_TYPE:
             # Atom type filter takes a list of atom types (integers) as parameters
             if len(self._filter_params) == 0:
                 raise Exception("'atom_type' filter requires at least one atom type as a parameter")
@@ -35,6 +31,10 @@ class FilterCommand(Command):
                 raise Exception("'cartesian' filter requires exactly six parameters: x_min (float or 'none'), x_max (float or 'none'), y_min (float or 'none'), y_max (float or 'none'), z_min (float or 'none'), z_max (float or 'none')")
             for param in self._filter_params:
                 helper.parse_float_or_none(param)
+        elif self._filter_type == FilterType.INTERSECT:
+            # Intersect filter takes two or more filter names as parameters
+            if len(self._filter_params) < 2:
+                raise Exception("'intersect' filter requires at least two filter names as parameters")
         elif self._filter_type == FilterType.RADIAL:
             # Radial filter takes 5 parameters: x, y, z, r_min, r_max
             if len(self._filter_params) != 5:
@@ -47,13 +47,13 @@ class FilterCommand(Command):
             raise Exception(f"Unsupported filter_type specified in configuration: '{self._filter_type}' (supported types are {[item.value for item in FilterType]})")
 
     def execute(self, state: SessionState):
-        if self._filter_type == FilterType.AND:
+        if self._filter_type == FilterType.INTERSECT:
             filters: list[Filter] = []
             for filter_name in self._filter_params:
                 if filter_name not in state.filters:
-                    raise Exception(f"'and' filter parameter '{filter_name}' is not the name of an existing filter")
+                    raise Exception(f"'intersect' filter parameter '{filter_name}' is not the name of an existing filter")
                 filters.append(state.filters[filter_name])
-            state.filters[self._filter_name] = AndFilter(filters)
+            state.filters[self._filter_name] = IntersectFilter(filters)
         elif self._filter_type == FilterType.ATOM_TYPE:
             atom_types: set[int] = set()
             for atom_type in self._filter_params:

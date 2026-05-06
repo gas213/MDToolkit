@@ -130,7 +130,7 @@ filter <filter_name> <filter_type> [parameters...]
 | Argument      | Type   | Description                                          |
 |---------------|--------|------------------------------------------------------|
 | `filter_name` | string | Unique name for this filter (cannot be `all`)        |
-| `filter_type` | string | `atom_type`, `cartesian`, `radial`, or `and`         |
+| `filter_type` | string | Type of filter (see choices below)                   |
 
 The remaining parameters depend on `filter_type`:
 
@@ -167,6 +167,20 @@ filter <name> cartesian <x_min> <x_max> <y_min> <y_max> <z_min> <z_max>
 
 Example: `filter slab cartesian 0.0 50.0 none none 10.0 40.0`
 
+#### `intersect`
+
+Combines two or more existing filters, selecting only atoms that pass all of them.
+
+```
+filter <name> intersect <filter_name_1> <filter_name_2> [filter_name ...]
+```
+
+| Parameter     | Type   | Description                       |
+|---------------|--------|-----------------------------------|
+| `filter_name` | string | Name of an already-defined filter |
+
+Example: `filter water_core intersect water core`
+
 #### `radial`
 
 Selects atoms within a spherical shell centered at a fixed point.
@@ -184,20 +198,6 @@ filter <name> radial <cx> <cy> <cz> <r_min> <r_max>
 | `r_max`   | float / none | Maximum radial distance (or `none` for no outer bound) |
 
 Example: `filter core radial 25.0 25.0 25.0 none 10.0`
-
-#### `and`
-
-Combines two or more existing filters, selecting only atoms that pass all of them.
-
-```
-filter <name> and <filter_name_1> <filter_name_2> [filter_name ...]
-```
-
-| Parameter     | Type   | Description                       |
-|---------------|--------|-----------------------------------|
-| `filter_name` | string | Name of an already-defined filter |
-
-Example: `filter water_core and water core`
 
 ---
 
