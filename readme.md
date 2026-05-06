@@ -72,7 +72,7 @@ cartesian_density_profile <filter_name> <aggregation_type> <axis> <bin_start> <b
 
 | Argument                | Type         | Description                                                                |
 |-------------------------|--------------|----------------------------------------------------------------------------|
-| `filter_name`           | string       | Name of a defined filter selecting the atoms to include                    |
+| `filter_name`           | string       | Name of a defined filter selecting the atoms to include (or `all`)         |
 | `aggregation_type`      | string       | `average` or `raw` or `both` - whether to combine results across timesteps |
 | `axis`                  | string       | `x`, `y`, or `z` — axis along which to compute the density profile         |
 | `bin_start`             | float / none | Start of the position range; `none` uses the simulation box boundary       |
@@ -241,7 +241,7 @@ radial_density_profile <filter_name> <aggregation_type> <bin_start> <bin_stop> <
 
 | Argument                | Type   | Description                                                                       |
 |-------------------------|--------|-----------------------------------------------------------------------------------|
-| `filter_name`           | string | Name of a defined filter selecting the atoms to include                           |
+| `filter_name`           | string | Name of a defined filter selecting the atoms to include (or `all`)                |
 | `aggregation_type`      | string | `average` or `raw` or `both` - whether to combine results across timesteps        |
 | `bin_start`             | float  | Start of the radial distance range                                                |
 | `bin_stop`              | float  | End of the radial distance range                                                  |
