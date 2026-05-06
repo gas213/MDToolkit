@@ -8,5 +8,5 @@ class Analysis(ABC):
     aggregation_type: AggregationType
 
     @abstractmethod
-    def get_printable(self) -> str:
+    def get_printables(self) -> dict[str, str]:
         pass

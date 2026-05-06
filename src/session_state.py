@@ -104,7 +104,9 @@ class SessionState:
         if self.results_path is None or not os.path.isdir(self.results_path):
             raise Exception("Cannot write analysis files before results path has been set.")
         for path_relative, analysis in self.analyses.items():
-            write_path_full: str = os.path.join(str(self.results_path), path_relative)
-            os.makedirs(os.path.dirname(write_path_full), exist_ok=True)
-            with open(write_path_full, "w") as file:
-                file.write(analysis.get_printable())
+            write_path_base: str = os.path.join(str(self.results_path), path_relative)
+            os.makedirs(os.path.dirname(write_path_base), exist_ok=True)
+            for suffix, printable in analysis.get_printables().items():
+                write_path_full = write_path_base + "_" + suffix + ".txt"
+                with open(write_path_full, "w") as file:
+                    file.write(printable)

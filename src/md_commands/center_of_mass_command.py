@@ -13,7 +13,7 @@ class CenterOfMassCommand(Command):
     def execute(self, state: SessionState):
         state.md_logger.log("Calculating center of mass...")
         com = calc_center_of_mass(state.atoms, state.atom_masses)
-        if self._aggregation_type == AggregationType.NONE or state.center_of_mass is None:
+        if self._aggregation_type == AggregationType.RAW or state.center_of_mass is None:
             state.center_of_mass = com
         elif self._aggregation_type == AggregationType.AVERAGE:
             n_previous = state.get_data_file_index()

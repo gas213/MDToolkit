@@ -7,11 +7,11 @@ from md_enums.aggregation_type import AggregationType
 class FirstNeighborHistogram(Analysis):
     data: dict[int, dict[int, float]] = field(default_factory=dict) # Key is step number
 
-    def get_printable(self) -> str:
-        output: str = ""
+    def get_printables(self) -> dict[str, str]:
+        printables: dict[str, str] = {}
         if len(self.data) == 0:
-            pass
-        elif self.aggregation_type == AggregationType.AVERAGE:
+            return printables
+        if self.aggregation_type == AggregationType.AVERAGE or self.aggregation_type == AggregationType.BOTH:
             hist_average: dict[int, float] = {}
             fraction: float = 1.0 / len(self.data)
             for histogram in self.data.values():
@@ -21,10 +21,11 @@ class FirstNeighborHistogram(Analysis):
                     hist_average[key] += val
             for key in hist_average:
                 hist_average[key] *= fraction
-            output = " ".join([str(val) for val in hist_average.values()])
-        else:
-            output = "\n".join([str(step) + " " + " ".join([str(val) for val in histogram.values()]) for step, histogram in self.data.items()])
-        return output
-    
+            printables["avg"] = " ".join([str(val) for val in hist_average.values()])
+        if self.aggregation_type == AggregationType.RAW or self.aggregation_type == AggregationType.BOTH:
+            printables["raw"] = "\n".join([str(step) + " " + " ".join([str(val) for val in histogram.values()]) for step, histogram in self.data.items()])
+        
+        return printables
+
     def add_data(self, step: int, data: dict[int, float]):
         self.data[step] = data
