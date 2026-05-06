@@ -6,14 +6,14 @@ A command-based toolkit for analyzing molecular dynamics simulation data. Script
 
 A typical script follows the pattern below.
 - Blank lines as well as lines beginning with # or - or = are ignored
-- All commands are case-insensitive, but their parameters are processed as-is (the value of data_path is case-sensitive, for example)
+- All commands are case-insensitive, but their parameters are processed as-is (the values of set_paths are case-sensitive, for example)
 
 ```
 # Initialization
 
 step_start
 step_end
-data_path
+set_paths
 data_type
 [atom_data_column commands]
 [atom_mass commands]
@@ -98,22 +98,6 @@ center_of_mass <aggregation_type>
 | `aggregation_type` | string | `none`, `average` | `none` replaces any prior result; `average` accumulates across timesteps |
 
 Requires `atom_mass` to be defined for every atom type present. The result is used by `radial_density_profile`.
-
----
-
-### `data_path`
-
-Sets the directory containing simulation data files and initializes the output results directory. This should be one of the first commands in a script.
-
-```
-data_path <path>
-```
-
-| Argument | Type   | Description                                     |
-|----------|--------|-------------------------------------------------|
-| `path`   | string | File system path to the directory of data files |
-
-After this command runs, the toolkit discovers all data files in the directory and filters them to those whose step numbers fall within `[step_start, step_end]`.
 
 ---
 
@@ -277,7 +261,24 @@ Reads header information as well as atomic coordinates and properties from the c
 read_file
 ```
 
-No arguments. Requires `data_path`, `data_type`, and (for text formats) `atom_data_column` definitions.
+No arguments. Requires `set_paths`, `data_type`, and (for text formats) `atom_data_column` definitions.
+
+---
+
+### `set_paths`
+
+Sets the directory containing simulation data files and initializes the output results directory. This should be one of the first commands in a script.
+
+```
+set_paths <data_path> [results_path]
+```
+
+| Argument       | Type   | Description                                     |
+|----------------|--------|-------------------------------------------------|
+| `data_path`    | string | File system path to the directory of data files |
+| `results_path` | string | Relative path to results output directory       |
+
+After this command runs, the toolkit discovers all data files in the `data_path` directory and filters them to those whose step numbers fall within `[step_start, step_end]`. If no value is specified for `results_path`, a default name will be generated based on `data_path`, `step_start` and `step_end`. Path values must not contain any spaces; quoted strings are not supported.
 
 ---
 

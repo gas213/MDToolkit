@@ -13,7 +13,7 @@ class ReadFileCommand(Command):
         helper.check_for_exact_arg_count(args, 0)
 
     def execute(self, state: SessionState):
-        data_file_name = state.data_files[state.step_current]
+        data_file_name = state.data_filenames[state.step_current]
         state.md_logger.log(f"Reading data file {data_file_name}...")
         if state.data_file_type == DataFileType.DUMP_NETCDF:
             state.header = dumpnc.read_header(data_file_name)
