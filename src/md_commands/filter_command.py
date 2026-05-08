@@ -38,9 +38,7 @@ class FilterCommand(Command):
         elif self._filter_type == FilterType.RADIAL:
             # Radial filter takes 5 parameters: x, y, z, r_min, r_max
             if len(self._filter_params) != 5:
-                raise Exception("'radial' filter requires exactly five parameters: x, y, z, r_min (float or 'none'), r_max (float or 'none')")
-            for param in self._filter_params[:3]:
-                helper.parse_float(param)
+                raise Exception("'radial' filter requires exactly five parameters: x (float or center_of_mass analysis path), y (same as x), z (same as x), r_min (float or 'none'), r_max (float or 'none')")
             for param in self._filter_params[3:]:
                 helper.parse_float_or_none(param)
         else:
@@ -68,9 +66,19 @@ class FilterCommand(Command):
             z_max = None if self._filter_params[5].lower() == "none" else float(self._filter_params[5])
             state.filters[self._filter_name] = CartesianFilter(x_min, x_max, y_min, y_max, z_min, z_max)
         elif self._filter_type == FilterType.RADIAL:
-            x = float(self._filter_params[0])
-            y = float(self._filter_params[1])
-            z = float(self._filter_params[2])
+            # If origin arg is strictly numeric, treat it as a coordinate; otherwise, treat it as an analysis path for an existing center of mass analysis
+            try:
+                x = float(self._filter_params[0])
+            except ValueError:
+                x = state.get_current_com(self._filter_params[0]).x
+            try:
+                y = float(self._filter_params[1])
+            except ValueError:
+                y = state.get_current_com(self._filter_params[1]).y
+            try:
+                z = float(self._filter_params[2])
+            except ValueError:
+                z = state.get_current_com(self._filter_params[2]).z
             r_min = None if self._filter_params[3].lower() == "none" else float(self._filter_params[3])
             r_max = None if self._filter_params[4].lower() == "none" else float(self._filter_params[4])
             state.filters[self._filter_name] = RadialFilter(x, y, z, r_min, r_max)

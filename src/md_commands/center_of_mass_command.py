@@ -1,5 +1,6 @@
 from md_commands.command_interface import Command
 from md_commands.command_validation_helper import CommandValidationHelper
+from md_domain.center_of_mass import CenterOfMass
 from md_enums.aggregation_type import AggregationType
 from md_operations.center_of_mass import calc_center_of_mass
 from session_state import SessionState
@@ -7,18 +8,23 @@ from session_state import SessionState
 class CenterOfMassCommand(Command):
     def __init__(self, command_name: str, args: list[str]):
         helper = CommandValidationHelper(command_name)
-        helper.check_for_exact_arg_count(args, 1)
-        self._aggregation_type = helper.check_categorical_arg(args[0].lower(), AggregationType)
+        helper.check_for_exact_arg_count(args, 3)
+        self._filter_name = args[0]
+        self._aggregation_type = helper.check_categorical_arg(args[1].lower(), AggregationType)
+        self._write_path_relative = args[2]
 
     def execute(self, state: SessionState):
         state.md_logger.log("Calculating center of mass...")
-        com = calc_center_of_mass(state.atoms, state.atom_masses)
-        if self._aggregation_type == AggregationType.RAW or state.center_of_mass is None:
-            state.center_of_mass = com
-        elif self._aggregation_type == AggregationType.AVERAGE:
-            n_previous = state.get_data_file_index()
-            state.center_of_mass.x = (n_previous * state.center_of_mass.x + com.x) / (n_previous + 1)
-            state.center_of_mass.y = (n_previous * state.center_of_mass.y + com.y) / (n_previous + 1)
-            state.center_of_mass.z = (n_previous * state.center_of_mass.z + com.z) / (n_previous + 1)
+        atoms = state.get_filtered_atoms(self._filter_name)
+        if len(atoms) == 0:
+            raise Exception(f"center_of_mass command: filter group '{self._filter_name}' contains no atoms.")
+        
+        if self._write_path_relative not in state.analyses:
+            com = CenterOfMass(self._aggregation_type)
+            state.analyses[self._write_path_relative] = com
+        else:
+            com = state.analyses[self._write_path_relative]
+            if not isinstance(com, CenterOfMass):
+                raise Exception(f"Analysis with name '{self._write_path_relative}' already exists but is not a center_of_mass analysis, cannot add data to it.")
 
-        state.md_logger.log(f"Center of mass: {state.center_of_mass.x} {state.center_of_mass.y} {state.center_of_mass.z}") # TODO: remove
+        com.add_data(state.step_current, calc_center_of_mass(atoms, state.atom_masses))

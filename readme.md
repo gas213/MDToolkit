@@ -70,16 +70,16 @@ Calculates the number density of atoms as a function of position along a cartesi
 cartesian_density_profile <filter_name> <aggregation_type> <axis> <bin_start> <bin_stop> <bin_step> <normalization_density> <write_path_relative>
 ```
 
-| Argument                | Type         | Description                                                                |
-|-------------------------|--------------|----------------------------------------------------------------------------|
-| `filter_name`           | string       | Name of a defined filter selecting the atoms to include (or `all`)         |
-| `aggregation_type`      | string       | `average` or `raw` or `both` - whether to combine results across timesteps |
-| `axis`                  | string       | `x`, `y`, or `z` — axis along which to compute the density profile         |
-| `bin_start`             | float / none | Start of the position range; `none` uses the simulation box boundary       |
-| `bin_stop`              | float / none | End of the position range; `none` uses the simulation box boundary         |
-| `bin_step`              | float        | Width of each position bin                                                 |
-| `normalization_density` | float        | Reference bulk density used to normalize the profile                       |
-| `write_path_relative`   | string       | Output file path relative to the results directory                         |
+| Argument                | Type         | Description                                                                       |
+|-------------------------|--------------|-----------------------------------------------------------------------------------|
+| `filter_name`           | string       | Name of a defined filter selecting the atoms to include (or `all`)                |
+| `aggregation_type`      | string       | `average` or `raw` or `both` - whether to combine results across timesteps        |
+| `axis`                  | string       | `x`, `y`, or `z` — axis along which to compute the density profile                |
+| `bin_start`             | float / none | Start of the position range; `none` uses the simulation box boundary              |
+| `bin_stop`              | float / none | End of the position range; `none` uses the simulation box boundary                |
+| `bin_step`              | float        | Width of each position bin                                                        |
+| `normalization_density` | float        | Reference bulk density used to normalize the profile                              |
+| `write_path_relative`   | string       | Output file path relative to the results directory; do not include file extension |
 
 Uses atom masses and the cross-sectional area perpendicular to the chosen axis for density calculations.
 
@@ -90,12 +90,14 @@ Uses atom masses and the cross-sectional area perpendicular to the chosen axis f
 Calculates the center of mass of all loaded atoms for the current timestep.
 
 ```
-center_of_mass <aggregation_type>
+center_of_mass <filter_name> <aggregation_type> <write_path_relative>
 ```
 
-| Argument           | Type   | Description                                                                |
-|--------------------|--------|----------------------------------------------------------------------------|
-| `aggregation_type` | string | `average` or `raw` or `both` - whether to combine results across timesteps |
+| Argument              | Type   | Description                                                                       |
+|-----------------------|--------|-----------------------------------------------------------------------------------|
+| `filter_name`         | string | Name of a defined filter selecting the atoms to include (or `all`)                |
+| `aggregation_type`    | string | `average` or `raw` or `both` - whether to combine results across timesteps        |
+| `write_path_relative` | string | Output file path relative to the results directory; do not include file extension |
 
 Requires `atom_mass` to be defined for every atom type present. The result is used by `radial_density_profile`.
 
@@ -189,15 +191,16 @@ Selects atoms within a spherical shell centered at a fixed point.
 filter <name> radial <cx> <cy> <cz> <r_min> <r_max>
 ```
 
-| Parameter | Type         | Description                                           |
-|-----------|--------------|-------------------------------------------------------|
-| `cx`      | float        | X coordinate of the sphere center                     |
-| `cy`      | float        | Y coordinate of the sphere center                     |
-| `cz`      | float        | Z coordinate of the sphere center                     |
-| `r_min`   | float / none | Minimum radial distance (or `none` for no inner bound) |
-| `r_max`   | float / none | Maximum radial distance (or `none` for no outer bound) |
+| Parameter | Type         | Description                                                                                                                     |
+|-----------|--------------|---------------------------------------------------------------------------------------------------------------------------------|
+| `cx`      | float or com | X coordinate of the sphere center, or an existing center_of_mass analysis declared previously (its `write_path_relative` value) |
+| `cy`      | float or com | Y coordinate of the sphere center, or an existing center_of_mass analysis declared previously (its `write_path_relative` value) |
+| `cz`      | float or com | Z coordinate of the sphere center, or an existing center_of_mass analysis declared previously (its `write_path_relative` value) |
+| `r_min`   | float / none | Minimum radial distance (or `none` for no inner bound)                                                                          |
+| `r_max`   | float / none | Maximum radial distance (or `none` for no outer bound)                                                                          |
 
 Example: `filter core radial 25.0 25.0 25.0 none 10.0`
+If a value given for `cx`, `cy` or `cz` is strictly numeric, it will be treated as the origin coordinates and the code will *not* check to see if there is an existing center_of_mass analysis with the same name.
 
 ---
 
@@ -236,18 +239,19 @@ No arguments.
 Calculates the number density of atoms as a function of radial distance from the center of mass. Results are written to a file.
 
 ```
-radial_density_profile <filter_name> <aggregation_type> <bin_start> <bin_stop> <bin_step> <normalization_density> <write_path_relative>
+radial_density_profile <filter_name> <com_analysis_path> <aggregation_type> <bin_start> <bin_stop> <bin_step> <normalization_density> <write_path_relative>
 ```
 
-| Argument                | Type   | Description                                                                       |
-|-------------------------|--------|-----------------------------------------------------------------------------------|
-| `filter_name`           | string | Name of a defined filter selecting the atoms to include (or `all`)                |
-| `aggregation_type`      | string | `average` or `raw` or `both` - whether to combine results across timesteps        |
-| `bin_start`             | float  | Start of the radial distance range                                                |
-| `bin_stop`              | float  | End of the radial distance range                                                  |
-| `bin_step`              | float  | Width of each distance bin                                                        |
-| `normalization_density` | float  | Reference bulk density used to normalize the profile                              |
-| `write_path_relative`   | string | Output file path relative to the results directory; do not include file extension |
+| Argument                | Type   | Description                                                                               |
+|-------------------------|--------|-------------------------------------------------------------------------------------------|
+| `filter_name`           | string | Name of a defined filter selecting the atoms to include (or `all`)                        |
+| `com_analysis_path`     | string | An existing center_of_mass analysis declared previously (its `write_path_relative` value) |
+| `aggregation_type`      | string | `average` or `raw` or `both` - whether to combine results across timesteps                |
+| `bin_start`             | float  | Start of the radial distance range                                                        |
+| `bin_stop`              | float  | End of the radial distance range                                                          |
+| `bin_step`              | float  | Width of each distance bin                                                                |
+| `normalization_density` | float  | Reference bulk density used to normalize the profile                                      |
+| `write_path_relative`   | string | Output file path relative to the results directory; do not include file extension         |
 
 Requires `center_of_mass` to have been calculated. Uses atom masses for weighted density calculations.
 

@@ -8,18 +8,19 @@ from session_state import SessionState
 class RadialDensityProfileCommand(Command):
     def __init__(self, command_name: str, args: list[str]):
         helper = CommandValidationHelper(command_name)
-        helper.check_for_exact_arg_count(args, 7)
+        helper.check_for_exact_arg_count(args, 8)
         self._filter_name = args[0]
-        self._aggregation_type = helper.check_categorical_arg(args[1].lower(), AggregationType)
-        self._bin_start = helper.parse_float(args[2])
-        self._bin_stop = helper.parse_float(args[3])
-        self._bin_step = helper.parse_float(args[4])
-        self._normalization_density = helper.parse_float(args[5])
-        self._write_path_relative = args[6]
+        self._com_analysis_path = args[1]
+        self._aggregation_type = helper.check_categorical_arg(args[2].lower(), AggregationType)
+        self._bin_start = helper.parse_float(args[3])
+        self._bin_stop = helper.parse_float(args[4])
+        self._bin_step = helper.parse_float(args[5])
+        self._normalization_density = helper.parse_float(args[6])
+        self._write_path_relative = args[7]
 
     def execute(self, state: SessionState):
-        if state.center_of_mass is None: raise Exception("Center of mass must be calculated before building radial density profile")
         state.md_logger.log("Building radial density profile...")
+        com = state.get_current_com(self._com_analysis_path)
         atoms = state.get_filtered_atoms(self._filter_name)
         if len(atoms) == 0:
             raise Exception(f"radial_density_profile command: filter group '{self._filter_name}' contains no atoms.")
@@ -32,4 +33,4 @@ class RadialDensityProfileCommand(Command):
             if not isinstance(density_profile, DensityProfile):
                 raise Exception(f"Analysis with name '{self._write_path_relative}' already exists but is not a density profile, cannot add data to it.")
         
-        density_profile.add_data(state.step_current, build_radial_density_profile(atoms, state.center_of_mass, self._bin_start, self._bin_stop, self._bin_step, state.atom_masses, self._normalization_density))
+        density_profile.add_data(state.step_current, build_radial_density_profile(atoms, com, self._bin_start, self._bin_stop, self._bin_step, state.atom_masses, self._normalization_density))

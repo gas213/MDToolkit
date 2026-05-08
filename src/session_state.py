@@ -3,6 +3,7 @@ import os.path
 
 from md_domain.analysis import Analysis
 from md_domain.atom import Atom
+from md_domain.center_of_mass import CenterOfMass
 from md_domain.header import Header
 from md_domain.vector3d import Vector3D
 from md_enums.atom_data_column_type import AtomDataColumnType
@@ -26,7 +27,6 @@ class SessionState:
         self.header: Header | None = None
         self.atoms: list[Atom] = []
         self.analyses: dict[str, Analysis] = {}
-        self.center_of_mass: Vector3D | None = None
         self.filters: dict[str, Filter] = {}
 
     def new_paths(self, data_path: str, results_path: str | None = None):
@@ -99,6 +99,16 @@ class SessionState:
             return self.filters[filter_name].apply(self.atoms)
         else:
             raise Exception(f"Filter name not found: {filter_name}")
+        
+    def get_current_com(self, com_path: str) -> Vector3D:
+        if com_path not in self.analyses:
+            raise Exception(f"Center of mass path '{com_path}' not found in analyses.")
+        com_analysis = self.analyses[com_path]
+        if not isinstance(com_analysis, CenterOfMass):
+            raise Exception(f"Analysis with name '{com_path}' is not a CenterOfMass, cannot be used as center of mass.")
+        if self.step_current not in com_analysis.data:
+            raise Exception(f"Center of mass analysis '{com_path}' does not contain data for current step {self.step_current}.")
+        return com_analysis.data[self.step_current]
         
     def write_analyses_files(self):
         if self.results_path is None or not os.path.isdir(self.results_path):
