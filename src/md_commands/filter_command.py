@@ -58,13 +58,10 @@ class FilterCommand(Command):
                 atom_types.add(int(atom_type))
             state.filters[self._filter_name] = AtomTypeFilter(atom_types)
         elif self._filter_type == FilterType.CARTESIAN:
-            x_min = None if self._filter_params[0].lower() == "none" else float(self._filter_params[0])
-            x_max = None if self._filter_params[1].lower() == "none" else float(self._filter_params[1])
-            y_min = None if self._filter_params[2].lower() == "none" else float(self._filter_params[2])
-            y_max = None if self._filter_params[3].lower() == "none" else float(self._filter_params[3])
-            z_min = None if self._filter_params[4].lower() == "none" else float(self._filter_params[4])
-            z_max = None if self._filter_params[5].lower() == "none" else float(self._filter_params[5])
-            state.filters[self._filter_name] = CartesianFilter(x_min, x_max, y_min, y_max, z_min, z_max)
+            bounds: list[float | None] = []
+            for i in range(6):
+                bounds.append(self.get_cartesian_boundary_value(self._filter_params[i], i, state))
+            state.filters[self._filter_name] = CartesianFilter(*bounds)
         elif self._filter_type == FilterType.RADIAL:
             # If origin arg is strictly numeric, treat it as a coordinate; otherwise, treat it as an analysis path for an existing center of mass analysis
             try:
@@ -82,3 +79,27 @@ class FilterCommand(Command):
             r_min = None if self._filter_params[3].lower() == "none" else float(self._filter_params[3])
             r_max = None if self._filter_params[4].lower() == "none" else float(self._filter_params[4])
             state.filters[self._filter_name] = RadialFilter(x, y, z, r_min, r_max)
+
+    def get_cartesian_boundary_value(self, arg_val: str, bounds_index: int, state: SessionState) -> float | None:
+        if arg_val.lower() == "none":
+            return None
+        float_value = float(arg_val)
+        if float_value >= 0:
+            return float_value
+        if state.header is None:
+            raise Exception(f"Cannot specify negative value '{arg_val}' for cartesian filter boundary parameter because the box bounds have not been loaded from a data file.")
+        inward_offset = abs(float_value)
+        if bounds_index == 0: # x_min
+            return state.header.box.lo.x + inward_offset
+        elif bounds_index == 1: # x_max
+            return state.header.box.hi.x - inward_offset
+        elif bounds_index == 2: # y_min
+            return state.header.box.lo.y + inward_offset
+        elif bounds_index == 3: # y_max
+            return state.header.box.hi.y - inward_offset
+        elif bounds_index == 4: # z_min
+            return state.header.box.lo.z + inward_offset
+        elif bounds_index == 5: # z_max
+            return state.header.box.hi.z - inward_offset
+        else:
+            raise Exception(f"Invalid bounds_index {bounds_index} in get_cartesian_boundary_value (should be 0-5)")

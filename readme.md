@@ -158,16 +158,17 @@ Selects atoms within an axis-aligned bounding box. Use `none` to leave a bound u
 filter <name> cartesian <x_min> <x_max> <y_min> <y_max> <z_min> <z_max>
 ```
 
-| Parameter | Type         | Description                                         |
-|-----------|--------------|-----------------------------------------------------|
-| `x_min`   | float / none | Minimum x coordinate (or `none` for no lower bound) |
-| `x_max`   | float / none | Maximum x coordinate (or `none` for no upper bound) |
-| `y_min`   | float / none | Minimum y coordinate                                |
-| `y_max`   | float / none | Maximum y coordinate                                |
-| `z_min`   | float / none | Minimum z coordinate                                |
-| `z_max`   | float / none | Maximum z coordinate                                |
+| Parameter | Type         | Description                                                                                                                |
+|-----------|--------------|----------------------------------------------------------------------------------------------------------------------------|
+| `x_min`   | float / none | Minimum x coordinate (if positive), or distance inside the box boundary (if negative), or `none` if using the box boundary |
+| `x_max`   | float / none | Maximum x coordinate (if positive), or distance inside the box boundary (if negative), or `none` if using the box boundary |
+| `y_min`   | float / none | Minimum y coordinate (if positive), or distance inside the box boundary (if negative), or `none` if using the box boundary |
+| `y_max`   | float / none | Maximum y coordinate (if positive), or distance inside the box boundary (if negative), or `none` if using the box boundary |
+| `z_min`   | float / none | Minimum z coordinate (if positive), or distance inside the box boundary (if negative), or `none` if using the box boundary |
+| `z_max`   | float / none | Maximum z coordinate (if positive), or distance inside the box boundary (if negative), or `none` if using the box boundary |
 
-Example: `filter slab cartesian 0.0 50.0 none none 10.0 40.0`
+THIS ESSENTIALLY ASSUMES THAT THE ENTIRE SIMULATION BOX IS POSITIONED IN POSTIVE XYZ SPACE.
+If any of the boundary values are specified as a negative number, then the resulting boundary will be relative to the boundary of the simulation box, offset inward by the magnitude of the specified value. So if the simulation box's xlo is 20 and the x_min parameter is specified as -5, then the resulting value for x_min will be 25.
 
 #### `intersect`
 
