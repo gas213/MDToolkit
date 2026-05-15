@@ -28,5 +28,5 @@ class CenterOfMass(Analysis):
         
         return printables
 
-    def add_data(self, step: int, data: Vector3D):
+    def add_data(self, step: int, data: Vector3D) -> None:
         self.data[step] = data

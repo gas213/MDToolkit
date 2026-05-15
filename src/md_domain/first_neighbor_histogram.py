@@ -27,5 +27,5 @@ class FirstNeighborHistogram(Analysis):
         
         return printables
 
-    def add_data(self, step: int, data: dict[int, float]):
+    def add_data(self, step: int, data: dict[int, float]) -> None:
         self.data[step] = data

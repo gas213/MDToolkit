@@ -27,5 +27,5 @@ class DensityProfile(Analysis):
         
         return printables
     
-    def add_data(self, step: int, data: dict[float, float]):
+    def add_data(self, step: int, data: dict[float, float]) -> None:
         self.data[step] = data

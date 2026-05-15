@@ -3,6 +3,7 @@ from md_commands.atom_mass_command import AtomMassCommand
 from md_commands.cartesian_density_profile_command import CartesianDensityProfileCommand
 from md_commands.center_of_mass_command import CenterOfMassCommand
 from md_commands.command_interface import Command
+from md_commands.count_atoms_command import CountAtomsCommand
 from md_commands.data_type_command import DataTypeCommand
 from md_commands.filter_command import FilterCommand
 from md_commands.first_neighbor_histogram_command import FirstNeighborHistogramCommand
@@ -24,6 +25,8 @@ def create_command(command_name: str, args: list[str]) -> Command:
             return CartesianDensityProfileCommand(command_name, args)
         case "center_of_mass":
             return CenterOfMassCommand(command_name, args)
+        case "count_atoms":
+            return CountAtomsCommand(command_name, args)
         case "data_type":
             return DataTypeCommand(command_name, args)
         case "filter":
