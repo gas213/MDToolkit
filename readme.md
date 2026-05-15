@@ -87,7 +87,7 @@ Uses atom masses and the cross-sectional area perpendicular to the chosen axis f
 
 ### `center_of_mass`
 
-Calculates the center of mass of all loaded atoms for the current timestep.
+Calculates the center of mass for a specified group of atoms.
 
 ```
 center_of_mass <filter_name> <aggregation_type> <write_path_relative>
@@ -100,6 +100,22 @@ center_of_mass <filter_name> <aggregation_type> <write_path_relative>
 | `write_path_relative` | string | Output file path relative to the results directory; do not include file extension |
 
 Requires `atom_mass` to be defined for every atom type present. The result is used by `radial_density_profile`.
+
+---
+
+### `count_atoms`
+
+Counts the number of atoms in a specified group.
+
+```
+count_atoms <filter_name> <aggregation_type> <write_path_relative>
+```
+
+| Argument              | Type   | Description                                                                       |
+|-----------------------|--------|-----------------------------------------------------------------------------------|
+| `filter_name`         | string | Name of a defined filter selecting the atoms to include (or `all`)                |
+| `aggregation_type`    | string | `average` or `raw` or `both` - whether to combine results across timesteps        |
+| `write_path_relative` | string | Output file path relative to the results directory; do not include file extension |
 
 ---
 
