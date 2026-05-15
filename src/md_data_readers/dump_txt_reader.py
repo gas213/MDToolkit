@@ -66,20 +66,24 @@ def read_header(data_file: str) -> Header:
                 
 def read_atoms(data_file: str, atom_data_columns: dict[AtomDataColumnType, int]) -> list[Atom]:
     atoms = []
+    col_id: int = atom_data_columns[AtomDataColumnType.ID]
+    col_type: int = atom_data_columns[AtomDataColumnType.TYPE]
+    col_x: int = atom_data_columns[AtomDataColumnType.X]
+    col_y: int = atom_data_columns[AtomDataColumnType.Y]
+    col_z: int = atom_data_columns[AtomDataColumnType.Z]
     with open(data_file, "r") as data:
         atoms_section_reached = False
         for line in data:
             if not atoms_section_reached:
                 if re.search(regexes["atoms header"], line) is not None:
                     atoms_section_reached = True
-                    continue
-                else: continue
-            elif re.search(regexes["numeric record"], line) is not None:
+                continue
+            else:
                 row = line.split()
-                id: int = int(row[atom_data_columns[AtomDataColumnType.ID]])
-                type: int = int(row[atom_data_columns[AtomDataColumnType.TYPE]])
-                x: float = float(row[atom_data_columns[AtomDataColumnType.X]])
-                y: float = float(row[atom_data_columns[AtomDataColumnType.Y]])
-                z: float = float(row[atom_data_columns[AtomDataColumnType.Z]])
+                id: int = int(row[col_id])
+                type: int = int(row[col_type])
+                x: float = float(row[col_x])
+                y: float = float(row[col_y])
+                z: float = float(row[col_z])
                 atoms.append(Atom(id, type, Vector3D(x, y, z)))
     return atoms
