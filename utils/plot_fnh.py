@@ -11,17 +11,17 @@ import os.path
 CSV_PATH: str = "/home/greg/Downloads/NewDataNaCentric.csv"
 FIG_WIDTH: int = 24 # Total width of entire figure image, in inches
 FIG_HEIGHT: int = 18 # Total height of entire figure image, in inches
-BAR_WIDTH: float = 0.1 # Width of each bar in the histogram plots
-BAR_GAP: float = 0.035 # Gap between each bar within a cluster
 DEFAULT_FONT_FAMILY: str = "serif" # Default font family for all text in the figure
 DEFAULT_SERIF_FONT: str = "cmr10" # Specific serif font to use for all text in the figure (cmr10 == Computer Modern Roman, the default LaTeX font)
 DEFAULT_FONT_SIZE: float = 24 # Default font size for all text in the figure, in points
-YLIM_MAX: float = 0.42 # Maximum y-axis limit for all subplots
-YTICK_SIZE: float = 0.1 # Interval between y-axis ticks for all subplots
 SUBPLOT_PADDING_X: float = 0.2 # Extra horizontal whitespace between subplots, in inches
 SUBPLOT_PADDING_Y: float = 0.5 # Extra vertical whitespace between subplots, in inches
 SUBPLOT_LETTER_OFFSET_X: float = -1.0 # Horizontal offset for subplot letter labels
 SUBPLOT_LETTER_OFFSET_Y: float = 0.5 # Vertical offset for subplot letter labels
+BAR_WIDTH: float = 0.1 # Width of each bar in the histogram plots
+BAR_GAP: float = 0.035 # Gap between each bar within a cluster
+YLIM_MAX: float = 0.42 # Maximum y-axis limit for all subplots
+YTICK_SIZE: float = 0.1 # Interval between y-axis ticks for all subplots
 
 class TimePeriod(Enum):
     EARLY = "Early"
