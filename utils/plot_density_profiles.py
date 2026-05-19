@@ -46,7 +46,6 @@ def build_subplot(all_profiles: list[Profile], temperature: int, time: TimePerio
             line_color: str = "black" if concentration == 8 else "red" if concentration == 16 else "blue"
             line_style: str = "-" if substance == Substance.NACL else "--"
             ax.plot(r_values, profile.data, label=f"{concentration}% {substance.value}", color=line_color, linestyle=line_style)
-    ax.set_title(f"{temperature} C, {time.value} Time")
     ax.set_xlabel("Radius (Angstroms)")
     ax.set_xticks(X_TICKS)
     ax.set_xlim(X_TICKS[0], X_TICKS[-1])
