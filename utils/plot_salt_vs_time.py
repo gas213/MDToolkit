@@ -2,7 +2,7 @@
 import matplotlib.pyplot as plt
 import os
 
-DATA_DIR: str = "/home/greg/Downloads/salt_vs_time/08p_80c/"
+DATA_DIR: str = ""
 DEFAULT_FONT_FAMILY: str = "serif" # Default font family for all text in the figure
 DEFAULT_SERIF_FONT: str = "cmr10" # Specific serif font to use for all text in the figure (cmr10 == Computer Modern Roman, the default LaTeX font)
 DEFAULT_FONT_SIZE: float = 24 # Default font size for all text in the figure, in points

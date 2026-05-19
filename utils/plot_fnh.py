@@ -8,7 +8,7 @@ from matplotlib.transforms import ScaledTranslation
 import numpy as np
 import os.path
 
-CSV_PATH: str = "/home/greg/Downloads/NewDataNaCentric.csv"
+CSV_PATH: str = ""
 FIG_WIDTH: int = 24 # Total width of entire figure image, in inches
 FIG_HEIGHT: int = 18 # Total height of entire figure image, in inches
 DEFAULT_FONT_FAMILY: str = "serif" # Default font family for all text in the figure
