@@ -200,6 +200,24 @@ filter <name> intersect <filter_name_1> <filter_name_2> [filter_name ...]
 
 Example: `filter water_core intersect water core`
 
+#### `neighbor_count`
+
+Selects atoms which have a certain number of neighbor atoms within a cutoff distance.
+
+```
+filter <name> neighbor_count <filter_name_central_atoms> <filter_name_neighbor_atoms> <neighbor_count_min> <neighbor_count_max> <r_cutoff>
+```
+
+| Parameter                    | Type       | Description                                                                                    |
+|------------------------------|------------|------------------------------------------------------------------------------------------------|
+| `filter_name_central_atoms`  | string     | Name of an already-defined filter to use for central atom candidates                           |
+| `filter_name_neighbor_atoms` | string     | Name of an already-defined filter to use for neighbor atom candidates                          |
+| `neighbor_count_min`         | int / none | Minimum number of neighbors required to include a central atom in the resulting filtered group |
+| `neighbor_count_min`         | int / none | Maximum number of neighbors required to include a central atom in the resulting filtered group |
+| `r_cutoff`                   | float      | Cutoff distance for deciding whether an atom counts as a neighbor                              |
+
+Example: `filter sodium_5_or_6 neighbor_count sodium chlorine 5 6 4.0`
+
 #### `radial`
 
 Selects atoms within a spherical shell centered at a fixed point.

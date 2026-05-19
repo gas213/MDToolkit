@@ -25,6 +25,12 @@ class CommandValidationHelper:
         except ValueError:
             raise Exception(f"{self._command_name} command: expected integer instead of '{arg}'")
         
+    def parse_int_or_none(self, arg: str) -> int | None:
+        if arg.lower() == "none":
+            return None
+        else:
+            return self.parse_int(arg)
+        
     def check_for_exact_arg_count(self, args: list[str], expected_arg_count: int):
         if len(args) != expected_arg_count:
             raise Exception(f"{self._command_name} command does not have the right number of args (expected {expected_arg_count}, got {len(args)})")
