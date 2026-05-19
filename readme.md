@@ -237,6 +237,20 @@ filter <name> radial <cx> <cy> <cz> <r_min> <r_max>
 Example: `filter core radial 25.0 25.0 25.0 none 10.0`
 If a value given for `cx`, `cy` or `cz` is strictly numeric, it will be treated as the origin coordinates and the code will *not* check to see if there is an existing center_of_mass analysis with the same name.
 
+#### `union`
+
+Combines two or more existing filters, selecting any atoms that pass at least one of the filters.
+
+```
+filter <name> union <filter_name_1> <filter_name_2> [filter_name ...]
+```
+
+| Parameter     | Type   | Description                       |
+|---------------|--------|-----------------------------------|
+| `filter_name` | string | Name of an already-defined filter |
+
+Example: `filter nacl union sodium chlorine`
+
 ---
 
 ### `first_neighbor_histogram`

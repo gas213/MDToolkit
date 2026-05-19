@@ -6,3 +6,4 @@ class FilterType(Enum):
     INTERSECT = "intersect"
     NEIGHBOR_COUNT = "neighbor_count"
     RADIAL = "radial"
+    UNION = "union"
