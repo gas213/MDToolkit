@@ -1,3 +1,4 @@
+from md_domain.atom import Atom
 from md_filters.filter_interface import Filter
 
 class CartesianFilter(Filter):
@@ -9,7 +10,7 @@ class CartesianFilter(Filter):
         self._z_min = z_min
         self._z_max = z_max
 
-    def apply(self, atoms):
+    def apply(self, atoms: list[Atom]) -> list[Atom]:
         atoms_filtered = atoms[:]
         if self._x_min is not None and self._x_max is not None:
             atoms_filtered = [atom for atom in atoms_filtered if self._x_min <= atom.pos.x <= self._x_max]

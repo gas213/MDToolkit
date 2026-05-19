@@ -1,8 +1,9 @@
+from md_domain.atom import Atom
 from md_filters.filter_interface import Filter
 
 class AtomTypeFilter(Filter):
     def __init__(self, atom_types: set[int]):
         self._atom_types = atom_types
 
-    def apply(self, atoms):
+    def apply(self, atoms: list[Atom]) -> list[Atom]:
         return [atom for atom in atoms if atom.type in self._atom_types]
