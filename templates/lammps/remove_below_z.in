@@ -7,8 +7,8 @@
 # File name of the initial LAMMPS data file
 variable    START_DATA string {{"file"}}
 
-# Z coordinate threshold below which atoms will be removed
-variable    Z_THRESHOLD equal {{float}}
+# Z coordinate cutoff below which atoms will be removed
+variable    Z_CUTOFF equal {{float}}
 
 # Reset atom IDs?
 variable    RESET_ATOM_IDS equal {{true/false}}
@@ -44,7 +44,7 @@ kspace_modify   order 4
 
 ## Define region and group to be removed
 
-region      REGION_TO_REMOVE block INF INF INF INF INF $(v_Z_THRESHOLD) units box
+region      REGION_TO_REMOVE block INF INF INF INF INF $(v_Z_CUTOFF) units box
 group       GROUP_TO_REMOVE region REGION_TO_REMOVE
 
 ## Delete atoms belonging to the the deletion group

@@ -21,7 +21,7 @@ variable SUBSTRATE_ZHI equal {{float}}
 
 # Droplet Z level to shift the substrate box's ZHI to
 # It is assumed that the substrate data includes a small amount of empty space above the surface
-# Hence, this value will also be used as the threshold for vapor removal
+# Hence, this value will also be used as the cutoff for vapor removal
 variable Z_MERGE equal {{float}}
 
 # Set this to true if you are resetting atom IDs using a version of LAMMPS older than 22Dec2022

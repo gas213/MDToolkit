@@ -139,7 +139,7 @@ data_type <data_type>
 
 ### `filter`
 
-Creates a named filter that selects a subset of atoms for use in analysis commands. Filters are referenced by name in commands like `radial_density_profile` and `first_neighbor_histogram`.
+Creates a named filter that selects a subset of atoms for use in analysis commands.
 
 ```
 filter <filter_name> <filter_type> [parameters...]
@@ -223,17 +223,17 @@ If a value given for `cx`, `cy` or `cz` is strictly numeric, it will be treated 
 
 ### `first_neighbor_histogram`
 
-Builds a histogram of distances from each central atom to its nearest neighbor within a threshold radius. Results are written to a file.
+Builds a histogram of distances from each central atom to its nearest neighbor within a cutoff radius. Results are written to a file.
 
 ```
-first_neighbor_histogram <filter_name_atoms_center> <filter_name_atoms_neighbor> <r_threshold> <aggregation_type> <write_path_relative>
+first_neighbor_histogram <filter_name_atoms_center> <filter_name_atoms_neighbor> <r_cutoff> <aggregation_type> <write_path_relative>
 ```
 
 | Argument                     | Type   | Description                                                                       |
 |------------------------------|--------|-----------------------------------------------------------------------------------|
 | `filter_name_atoms_center`   | string | Filter selecting the central atoms                                                |
 | `filter_name_atoms_neighbor` | string | Filter selecting candidate neighbor atoms                                         |
-| `r_threshold`                | float  | Maximum distance to be considered a nearest neighbor                              |
+| `r_cutoff`                   | float  | Maximum distance to be considered a nearest neighbor                              |
 | `aggregation_type`           | string | `average` or `raw` or `both` - whether to combine results across timesteps        |
 | `write_path_relative`        | string | Output file path relative to the results directory; do not include file extension |
 

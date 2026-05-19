@@ -11,7 +11,7 @@ class FirstNeighborHistogramCommand(Command):
         helper.check_for_exact_arg_count(args, 5)
         self._filter_name_atoms_center = args[0]
         self._filter_name_atoms_neighbor = args[1]
-        self._r_threshold = helper.parse_float(args[2])
+        self._r_cutoff = helper.parse_float(args[2])
         self._aggregation_type = helper.check_categorical_arg(args[3].lower(), AggregationType)
         self._write_path_relative = args[4]
 
@@ -32,4 +32,4 @@ class FirstNeighborHistogramCommand(Command):
             if not isinstance(first_neighbor_histogram, FirstNeighborHistogram):
                 raise Exception(f"Analysis with name '{self._write_path_relative}' already exists but is not a FirstNeighborHistogram, cannot add data to it.")
         
-        first_neighbor_histogram.add_data(state.step_current, build_first_neighbor_histogram_data(atoms_center, atoms_neighbor, self._r_threshold))
+        first_neighbor_histogram.add_data(state.step_current, build_first_neighbor_histogram_data(atoms_center, atoms_neighbor, self._r_cutoff))
