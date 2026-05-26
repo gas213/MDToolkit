@@ -5,6 +5,7 @@ from md_filters.filter_interface import Filter
 from md_filters.atom_type_filter import AtomTypeFilter
 from md_filters.cartesian_filter import CartesianFilter
 from md_filters.intersect_filter import IntersectFilter
+from md_filters.mol_neighbors_filter import MoleculeNeighborsFilter
 from md_filters.neighbor_count_filter import NeighborCountFilter
 from md_filters.radial_filter import RadialFilter
 from md_filters.union_filter import UnionFilter
@@ -37,6 +38,10 @@ class FilterCommand(Command):
             # Intersect and union filters take two or more filter names as parameters
             if len(self._filter_params) < 2:
                 raise Exception(f"'{self._filter_type.value}' filter requires at least two filter names as parameters")
+        elif self._filter_type == FilterType.MOL_NEIGHBORS:
+            # Molecule neighbors filter takes 2 parameters: filter name for source atoms, filter name for potential neighbor atoms 
+            if len(self._filter_params) != 2:
+                raise Exception(f"'{self._filter_type.value}' filter requires exactly two parameters: filter name for source atoms, filter name for potential neighbor atoms")
         elif self._filter_type == FilterType.NEIGHBOR_COUNT:
             # Neighbor count filter takes 5 parameters: filter name for central atoms, filter name for neighbor atoms, neighbor count min (int or 'none'), neighbor count max (int or 'none'), cutoff distance (float)
             if len(self._filter_params) != 5:
@@ -71,6 +76,16 @@ class FilterCommand(Command):
                     raise Exception(f"'{self._filter_type.value}' filter parameter '{filter_name}' is not the name of an existing filter")
                 filters.append(state.filters[filter_name])
             state.filters[self._filter_name] = IntersectFilter(filters) if self._filter_type == FilterType.INTERSECT else UnionFilter(filters)
+        elif self._filter_type == FilterType.MOL_NEIGHBORS:
+            filter_name_source_atoms = self._filter_params[0]
+            filter_name_potential_neighbor_atoms = self._filter_params[1]
+            if filter_name_source_atoms not in state.filters:
+                raise Exception(f"'{self._filter_type.value}' filter parameter for source atoms '{filter_name_source_atoms}' is not the name of an existing filter")
+            if filter_name_potential_neighbor_atoms not in state.filters:
+                raise Exception(f"'{self._filter_type.value}' filter parameter for potential neighbor atoms '{filter_name_potential_neighbor_atoms}' is not the name of an existing filter")
+            filter_source_atoms = state.filters[filter_name_source_atoms]
+            filter_potential_neighbor_atoms = state.filters[filter_name_potential_neighbor_atoms]
+            state.filters[self._filter_name] = MoleculeNeighborsFilter(filter_source_atoms, filter_potential_neighbor_atoms)
         elif self._filter_type == FilterType.NEIGHBOR_COUNT:
             filter_name_central_atoms = self._filter_params[0]
             filter_name_neighbor_atoms = self._filter_params[1]

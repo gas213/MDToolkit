@@ -200,6 +200,20 @@ filter <name> intersect <filter_name_1> <filter_name_2> [filter_name ...]
 
 Example: `filter water_core intersect water core`
 
+#### `mol_neighbors`
+
+Given a list of "source" atoms and a list of "potential neighbor" atoms, selects only those potential neighbor atoms which share the same molecule ID as at least one of the source atoms.
+
+```
+filter <name> mol_neighbors <filter_name_sources> <filter_name_potential_neighbors>
+```
+
+| Parameter     | Type   | Description                       |
+|---------------|--------|-----------------------------------|
+| `filter_name` | string | Name of an already-defined filter |
+
+Example: `filter bonded_hydrogens mol_neighbors oxygen_shell hydrogen`
+
 #### `neighbor_count`
 
 Selects atoms which have a certain number of neighbor atoms within a cutoff distance.
