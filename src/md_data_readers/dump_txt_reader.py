@@ -67,6 +67,7 @@ def read_header(data_file: str) -> Header:
 def read_atoms(data_file: str, atom_data_columns: dict[AtomDataColumnType, int]) -> list[Atom]:
     atoms = []
     col_id: int = atom_data_columns[AtomDataColumnType.ID]
+    col_mol: int = atom_data_columns[AtomDataColumnType.MOL]
     col_type: int = atom_data_columns[AtomDataColumnType.TYPE]
     col_x: int = atom_data_columns[AtomDataColumnType.X]
     col_y: int = atom_data_columns[AtomDataColumnType.Y]
@@ -81,9 +82,10 @@ def read_atoms(data_file: str, atom_data_columns: dict[AtomDataColumnType, int])
             else:
                 row = line.split()
                 id: int = int(row[col_id])
+                mol: int = int(row[col_mol])
                 type: int = int(row[col_type])
                 x: float = float(row[col_x])
                 y: float = float(row[col_y])
                 z: float = float(row[col_z])
-                atoms.append(Atom(id, type, Vector3D(x, y, z)))
+                atoms.append(Atom(id, mol, type, Vector3D(x, y, z)))
     return atoms

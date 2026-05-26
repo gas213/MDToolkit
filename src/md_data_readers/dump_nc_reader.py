@@ -21,11 +21,12 @@ def read_header(data_file: str) -> Header:
 def read_atoms(data_file: str) -> list[Atom]:
     dataset = nc.Dataset(data_file, "r")
     ids = dataset.variables["id"][frame]
+    mols = dataset.variables["mol"][frame]
     types = dataset.variables["type"][frame]
     coords = dataset.variables["coordinates"][frame]
     
-    atoms: list[Atom] = [Atom(0, 0, Vector3D(0, 0, 0))] * len(ids)
+    atoms: list[Atom] = [Atom(0, 0, 0, Vector3D(0, 0, 0))] * len(ids)
     for index, id in enumerate(ids):
-        atoms[index] = Atom(id, types[index], Vector3D(coords[index][0], coords[index][1], coords[index][2]))
+        atoms[index] = Atom(id, mols[index], types[index], Vector3D(coords[index][0], coords[index][1], coords[index][2]))
 
     return atoms

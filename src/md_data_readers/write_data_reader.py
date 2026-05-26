@@ -74,11 +74,12 @@ def read_atoms(data_file: str, atom_data_columns: dict[AtomDataColumnType, int])
             elif re.search(regexes["atoms record"], line) is not None:
                 row = line.split()
                 id: int = int(row[atom_data_columns[AtomDataColumnType.ID]])
+                mol: int = int(row[atom_data_columns[AtomDataColumnType.MOL]])
                 type: int = int(row[atom_data_columns[AtomDataColumnType.TYPE]])
                 x: float = float(row[atom_data_columns[AtomDataColumnType.X]])
                 y: float = float(row[atom_data_columns[AtomDataColumnType.Y]])
                 z: float = float(row[atom_data_columns[AtomDataColumnType.Z]])
-                atoms.append(Atom(id, type, Vector3D(x, y, z)))
+                atoms.append(Atom(id, mol, type, Vector3D(x, y, z)))
             elif re.search(regexes["velocities header"], line) is not None:
                 # We reached the end of the atoms section
                 break

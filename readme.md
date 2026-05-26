@@ -32,16 +32,16 @@ next_file
 
 ### `atom_data_column`
 
-Maps an atom property to its column index in the data file. Required for `dump_txt` and `write_data` formats. Must be called once for each of the five required columns: `id`, `type`, `x`, `y`, `z`.
+Maps an atom property to its column index in the data file. Required for `dump_txt` and `write_data` formats. Must be called once for each of the required columns: `id`, `mol`, `type`, `x`, `y`, `z`.
 
 ```
 atom_data_column <column_type> <column_index>
 ```
 
-| Argument       | Type    | Values                        | Description                          |
-|----------------|---------|-------------------------------|--------------------------------------|
-| `column_type`  | string  | `id`, `type`, `x`, `y`, `z`  | The atom property this column holds  |
-| `column_index` | integer | ≥ 0                           | Zero-based column index in the file  |
+| Argument       | Type    | Values                             | Description                          |
+|----------------|---------|------------------------------------|--------------------------------------|
+| `column_type`  | string  | `id`, `mol`, `type`, `x`, `y`, `z` | The atom property this column holds  |
+| `column_index` | integer | ≥ 0                                | Zero-based column index in the file  |
 
 ---
 

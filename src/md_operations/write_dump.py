@@ -11,5 +11,5 @@ def write_dump(write_path: str, box: Box, step: int, atoms: list[Atom]):
         file.write(f"{box.lo.x} {box.hi.x}\n")
         file.write(f"{box.lo.y} {box.hi.y}\n")
         file.write(f"{box.lo.z} {box.hi.z}\n")
-        file.write("ITEM: ATOMS id type x y z\n")
-        file.write("\n".join([f"{atom.id} {atom.type} {atom.pos.x} {atom.pos.y} {atom.pos.z}" for atom in atoms]))
+        file.write("ITEM: ATOMS id mol type x y z\n")
+        file.write("\n".join([f"{atom.id} {atom.mol} {atom.type} {atom.pos.x} {atom.pos.y} {atom.pos.z}" for atom in atoms]))
