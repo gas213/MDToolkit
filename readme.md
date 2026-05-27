@@ -137,6 +137,29 @@ data_type <data_type>
 
 ---
 
+### `dipole_histogram`
+
+Computes the distribution of dipole angles for a group of atoms belonging to water molecules.
+ASSUMES THAT NONE OF THE WATER MOLECULES BEING ANALYZED ARE STRADDLING A PERIODIC BOUNDARY
+
+```
+dipole_histogram <filter_name_oxygen> <filter_name_hydrogen> <cx> <cy> <cz> <aggregation_type> <n_bins> <write_path_relative>
+```
+
+| Argument              | Type         | Description                                                                                                              |
+|-----------------------|--------------|--------------------------------------------------------------------------------------------------------------------------|
+| `filter_name`         | string       | Name of a defined filter selecting the oxygen and hydrogen atoms to include (or `all`)                                   |
+| `cx`                  | float or com | X coordinate of the origin, or an existing center_of_mass analysis declared previously (its `write_path_relative` value) |
+| `cy`                  | float or com | Y coordinate of the origin, or an existing center_of_mass analysis declared previously (its `write_path_relative` value) |
+| `cz`                  | float or com | Z coordinate of the origin, or an existing center_of_mass analysis declared previously (its `write_path_relative` value) |
+| `aggregation_type`    | string       | `average` or `raw` or `both` - whether to combine results across timesteps                                               |
+| `n_bins`              | int          | Number of bins to use when creating histogram                                                                            |
+| `write_path_relative` | string       | Output file path relative to the results directory; do not include file extension                                        |
+
+Example: `dipole_histogram o_shell h_neighbors com_all com_all com_all both 20 dipole_shell`
+
+---
+
 ### `filter`
 
 Creates a named filter that selects a subset of atoms for use in analysis commands.

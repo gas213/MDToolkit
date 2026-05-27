@@ -5,6 +5,7 @@ from md_commands.center_of_mass_command import CenterOfMassCommand
 from md_commands.command_interface import Command
 from md_commands.count_atoms_command import CountAtomsCommand
 from md_commands.data_type_command import DataTypeCommand
+from md_commands.dipole_histogram_command import DipoleHistogramCommand
 from md_commands.filter_command import FilterCommand
 from md_commands.first_neighbor_histogram_command import FirstNeighborHistogramCommand
 from md_commands.next_file_command import NextFileCommand
@@ -29,6 +30,8 @@ def create_command(command_name: str, args: list[str]) -> Command:
             return CountAtomsCommand(command_name, args)
         case "data_type":
             return DataTypeCommand(command_name, args)
+        case "dipole_histogram":
+            return DipoleHistogramCommand(command_name, args)
         case "filter":
             return FilterCommand(command_name, args)
         case "first_neighbor_histogram":

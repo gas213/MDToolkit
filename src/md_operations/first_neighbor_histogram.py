@@ -1,6 +1,6 @@
 from md_domain.atom import Atom
 
-def build_first_neighbor_histogram_data(atoms_center: list[Atom], atoms_neighbor: list[Atom], r_cutoff: float) -> dict[int, float]:    
+def build_first_neighbor_histogram_data(atoms_center: list[Atom], atoms_neighbor: list[Atom], r_cutoff: float) -> dict[int, float]:
     r_cutoff_sq = r_cutoff ** 2
     data: dict[int, float] = {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0}
 

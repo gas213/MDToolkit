@@ -25,6 +25,12 @@ class CommandValidationHelper:
         except ValueError:
             raise Exception(f"{self._command_name} command: expected integer instead of '{arg}'")
         
+    def parse_positive_int(self, arg: str) -> int:
+        value = self.parse_int(arg)
+        if value <= 0:
+            raise Exception(f"{self._command_name} command: expected positive integer instead of '{arg}'")
+        return value
+        
     def parse_int_or_none(self, arg: str) -> int | None:
         if arg.lower() == "none":
             return None
