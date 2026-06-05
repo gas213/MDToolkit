@@ -6,7 +6,7 @@ A command-based toolkit for analyzing molecular dynamics simulation data. Script
 
 A typical script follows the pattern below.
 - Blank lines as well as lines beginning with # or - or = are ignored
-- All commands are case-insensitive, but their parameters are processed as-is (the values of set_paths are case-sensitive, for example)
+- All command names are case-insensitive, but their parameters are processed as-is (the values of set_paths are case-sensitive, for example)
 
 ```
 # Initialization
