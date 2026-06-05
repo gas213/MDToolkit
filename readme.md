@@ -206,7 +206,7 @@ filter <name> cartesian <x_min> <x_max> <y_min> <y_max> <z_min> <z_max>
 | `z_min`   | float / none | Minimum z coordinate (if positive), or distance inside the box boundary (if negative), or `none` if using the box boundary |
 | `z_max`   | float / none | Maximum z coordinate (if positive), or distance inside the box boundary (if negative), or `none` if using the box boundary |
 
-THIS ESSENTIALLY ASSUMES THAT THE ENTIRE SIMULATION BOX IS POSITIONED IN POSTIVE XYZ SPACE.
+THIS ESSENTIALLY ASSUMES THAT THE ENTIRE SIMULATION BOX IS POSITIONED IN POSITIVE XYZ SPACE.
 If any of the boundary values are specified as a negative number, then the resulting boundary will be relative to the boundary of the simulation box, offset inward by the magnitude of the specified value. So if the simulation box's xlo is 20 and the x_min parameter is specified as -5, then the resulting value for x_min will be 25.
 
 #### `intersect`
