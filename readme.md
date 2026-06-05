@@ -333,7 +333,7 @@ radial_density_profile <filter_name> <com_analysis_path> <aggregation_type> <bin
 | `filter_name`           | string | Name of a defined filter selecting the atoms to include (or `all`)                        |
 | `com_analysis_path`     | string | An existing center_of_mass analysis declared previously (its `write_path_relative` value) |
 | `aggregation_type`      | string | `average` or `raw` or `both` - whether to combine results across timesteps                |
-| `bin_start`             | float  | Start of the radial distance range                                                        |
+| `bin_start`             | float  | Start of the radial distance range (first bin will represent "core" up to this value)     |
 | `bin_stop`              | float  | End of the radial distance range                                                          |
 | `bin_step`              | float  | Width of each distance bin                                                                |
 | `normalization_density` | float  | Reference bulk density used to normalize the profile                                      |
