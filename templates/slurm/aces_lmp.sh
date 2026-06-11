@@ -32,7 +32,7 @@
 SCRATCH_DIR=/scratch/user/$USER/
 
 # Absolute path to the Spack setup-env.sh file
-SPACK_SETUP_PATH=/scratch/user/$USER/spack/share/spack/setup-env.sh
+SPACK_SETUP_PATH=/scratch/group/p.mch250010.000/spack/share/spack/setup-env.sh
 
 # Directory where the user's spack environment view is located (the same directory where slurm_install_md.sh was executed from)
 SPACK_ENV_DIR=$HOME/md_env/
