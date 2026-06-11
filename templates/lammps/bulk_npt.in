@@ -32,9 +32,9 @@ variable	    THERMO_FREQ equal {{N}}
 variable	    RESTART_FREQ equal {{N}}
 
 # Random number seeds for velocity commands (Prof. Webb recommends 8-digit integer)
-variable        SEED_H2O equal {{N}}
-variable        SEED_CL equal {{N}}
-variable        SEED_NA equal {{N}}
+variable        RNG_1 equal {{N}}
+variable        RNG_2 equal {{N}}
+variable        RNG_3 equal {{N}}
 
 ## Initialization
 
@@ -105,13 +105,13 @@ fix 		    SHAKE all shake 1e-5 1000 0 m 1.0
 
 # Tdamp of 100*dt and Pdamp of 1000*dt recommended by this page: https://docs.lammps.org/fix_nh.html
 fix             NPT_H2O H2O npt temp $(v_TEMP_K) $(v_TEMP_K) $(100.0*dt) iso $(v_P_ATM) $(v_P_ATM) $(1000.0*dt)
-velocity        H2O create $(v_TEMP_K) $(v_SEED_H2O) dist gaussian
+velocity        H2O create $(v_TEMP_K) $(v_RNG_1) dist gaussian
 
 if "${IS_SALT_PRESENT}" then &
     "fix        NVT_Cl CHLORINE nvt temp $(v_TEMP_K) $(v_TEMP_K) $(100.0*dt)" &
     "fix        NVT_Na SODIUM nvt temp $(v_TEMP_K) $(v_TEMP_K) $(100.0*dt)" &
-    "velocity   CHLORINE create $(v_TEMP_K) $(v_SEED_CL) dist gaussian" &
-    "velocity   SODIUM create $(v_TEMP_K) $(v_SEED_NA) dist gaussian"
+    "velocity   CHLORINE create $(v_TEMP_K) $(v_RNG_2) dist gaussian" &
+    "velocity   SODIUM create $(v_TEMP_K) $(v_RNG_3) dist gaussian"
 
 ## Thermodynamic output settings
 
