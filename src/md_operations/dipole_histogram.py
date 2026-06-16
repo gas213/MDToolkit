@@ -18,7 +18,7 @@ def build_dipole_histogram_data(atoms_o: list[Atom], atoms_h: list[Atom], origin
             raise Exception(f"Error in dipole_histogram analysis: expected to find 2 hydrogens with molecule ID {atom_o.mol} (oxygen atom ID {atom_o.id}), but instead found {len(neighbors_h)}.")
         vec_origin_to_o: Vector3D = atom_o.pos - origin
         h_midpoint: Vector3D = (neighbors_h[0].pos + neighbors_h[1].pos) * 0.5
-        vec_dipole: Vector3D = atom_o.pos - h_midpoint
+        vec_dipole: Vector3D = h_midpoint - atom_o.pos
         cosines.append(np.dot(vec_origin_to_o.to_array(), vec_dipole.to_array()) / (np.linalg.norm(vec_origin_to_o.to_array()) * np.linalg.norm(vec_dipole.to_array())))
 
     bins = np.linspace(-1.0, 1.0, n_bins + 1)
