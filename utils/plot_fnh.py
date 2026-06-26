@@ -18,6 +18,8 @@ SUBPLOT_PADDING_X: float = 0.2 # Extra horizontal whitespace between subplots, i
 SUBPLOT_PADDING_Y: float = 0.5 # Extra vertical whitespace between subplots, in inches
 SUBPLOT_LETTER_OFFSET_X: float = -1.0 # Horizontal offset for subplot letter labels
 SUBPLOT_LETTER_OFFSET_Y: float = 0.5 # Vertical offset for subplot letter labels
+MARGIN_X: float = 0.05 # Left and right margin as a fraction of figure width
+MARGIN_Y: float = 0.05 # Top and bottom margin as a fraction of figure height
 BAR_WIDTH: float = 0.1 # Width of each bar in the histogram plots
 BAR_GAP: float = 0.035 # Gap between each bar within a cluster
 YLIM_MAX: float = 0.42 # Maximum y-axis limit for all subplots
@@ -72,6 +74,7 @@ with open(CSV_PATH, "r") as csv_file:
 
 plt.rc("font", family=DEFAULT_FONT_FAMILY, serif=DEFAULT_SERIF_FONT, size=DEFAULT_FONT_SIZE)
 fig, axes = plt.subplots(3, 2, figsize=(FIG_WIDTH, FIG_HEIGHT), gridspec_kw={'hspace': SUBPLOT_PADDING_Y, 'wspace': SUBPLOT_PADDING_X})
+fig.subplots_adjust(left=MARGIN_X, right=1.0 - MARGIN_X, top=1.0 - MARGIN_Y, bottom=MARGIN_Y)
 build_subplot(histograms, 8, 25, axes[0, 0])
 build_subplot(histograms, 8, 80, axes[0, 1])
 build_subplot(histograms, 16, 25, axes[1, 0])
