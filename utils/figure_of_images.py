@@ -21,8 +21,8 @@ SUBPLOT_PADDING_X: float = 0.0 # Extra horizontal whitespace between subplots, i
 SUBPLOT_PADDING_Y: float = 0.0 # Extra vertical whitespace between subplots, in inches
 SUBPLOT_LETTER_OFFSET_X: float = -0.2 # Horizontal offset for subplot letter labels
 SUBPLOT_LETTER_OFFSET_Y: float = -0.8 # Vertical offset for subplot letter labels
-MARGIN_X: float = 0.02 # Left and right margin as a fraction of figure width
-MARGIN_Y: float = 0.02 # Top and bottom margin as a fraction of figure height
+MARGIN_X: float = 0.0 # Left and right margin as a fraction of figure width
+MARGIN_Y: float = 0.0 # Top and bottom margin as a fraction of figure height
 
 plt.rc("font", family=DEFAULT_FONT_FAMILY, serif=DEFAULT_SERIF_FONT, size=DEFAULT_FONT_SIZE)
 fig, axes = plt.subplots(NUM_ROWS, NUM_COLS, figsize=(FIG_WIDTH, FIG_HEIGHT), gridspec_kw={'hspace': SUBPLOT_PADDING_Y, 'wspace': SUBPLOT_PADDING_X})
