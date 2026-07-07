@@ -12,15 +12,18 @@ FIG_WIDTH: int = 24 # Total width of entire figure image, in inches
 FIG_HEIGHT: int = 18 # Total height of entire figure image, in inches
 DEFAULT_FONT_FAMILY: str = "serif" # Default font family for all text in the figure
 DEFAULT_SERIF_FONT: str = "cmr10" # Specific serif font to use for all text in the figure (cmr10 == Computer Modern Roman, the default LaTeX font)
-DEFAULT_FONT_SIZE: float = 24 # Default font size for all text in the figure, in points
+DEFAULT_MATHTEXT_FONTSET: str = "cm" # Font set to use for "mathtext" aka latex-rendered labels (cm == Computer Modern)
+DEFAULT_FONT_SIZE: float = 32 # Default font size for all text in the figure, in points
 SUBPLOT_PADDING_X: float = 0.2 # Extra horizontal whitespace between subplots, in inches
 SUBPLOT_PADDING_Y: float = 0.5 # Extra vertical whitespace between subplots, in inches
-SUBPLOT_LETTER_OFFSET_X: float = -1.0 # Horizontal offset for subplot letter labels
+SUBPLOT_LETTER_OFFSET_X: float = -1.25 # Horizontal offset for subplot letter labels
 SUBPLOT_LETTER_OFFSET_Y: float = 0.5 # Vertical offset for subplot letter labels
-MARGIN_X: float = 0.05 # Left and right margin as a fraction of figure width
-MARGIN_Y: float = 0.05 # Top and bottom margin as a fraction of figure height
-X_TICKS: list[int] = [15, 35, 55, 75, 95, 115]
-Y_TICKS: list[float] = [0.0, 0.5, 1.0, 1.5]
+MARGIN_LEFT: float = 0.07 # Left margin as a fraction of figure width
+MARGIN_RIGHT: float = 0.03 # Right margin as a fraction of figure width
+MARGIN_TOP: float = 0.06 # Top margin as a fraction of figure height
+MARGIN_BOTTOM: float = 0.08 # Bottom margin as a fraction of figure height
+X_TICKS: list[int] = [30, 50, 70, 90, 110]
+Y_TICKS: list[float] = [0.5, 1.0, 1.5]
 YLIM_MAX: float = 1.75
 
 class TimePeriod(Enum):
@@ -48,10 +51,10 @@ def build_subplot(all_profiles: list[Profile], temperature: int, time: TimePerio
             line_color: str = "black" if concentration == 8 else "red" if concentration == 16 else "blue"
             line_style: str = "-" if substance == Substance.NACL else "--"
             ax.plot(r_values, profile.data, label=f"{concentration}% {substance.value}", color=line_color, linestyle=line_style)
-    ax.set_xlabel("Radius (Angstroms)")
+    ax.set_xlabel(r"$r$ ($\mathrm{\AA}$)")
     ax.set_xticks(X_TICKS)
     ax.set_xlim(X_TICKS[0], X_TICKS[-1])
-    ax.set_ylabel("Normalized Density")
+    ax.set_ylabel(r"$\rho^*$")
     ax.set_ylim(0, YLIM_MAX)
     ax.set_yticks(Y_TICKS)
 
@@ -72,8 +75,9 @@ with open(CSV_PATH, "r") as csv_file:
             profiles[i - 1].data.append(float(row[i]))
 
 plt.rc("font", family=DEFAULT_FONT_FAMILY, serif=DEFAULT_SERIF_FONT, size=DEFAULT_FONT_SIZE)
+plt.rc("mathtext", fontset=DEFAULT_MATHTEXT_FONTSET)
 fig, axes = plt.subplots(3, 2, figsize=(FIG_WIDTH, FIG_HEIGHT), gridspec_kw={'hspace': SUBPLOT_PADDING_Y, 'wspace': SUBPLOT_PADDING_X})
-fig.subplots_adjust(left=MARGIN_X, right=1.0 - MARGIN_X, top=1.0 - MARGIN_Y, bottom=MARGIN_Y)
+fig.subplots_adjust(left=MARGIN_LEFT, right=1.0 - MARGIN_RIGHT, top=1.0 - MARGIN_TOP, bottom=MARGIN_BOTTOM)
 build_subplot(profiles, 25, TimePeriod.EARLY, axes[0, 0])
 build_subplot(profiles, 80, TimePeriod.EARLY, axes[0, 1])
 build_subplot(profiles, 25, TimePeriod.MID, axes[1, 0])

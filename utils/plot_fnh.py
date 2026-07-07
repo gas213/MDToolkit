@@ -13,13 +13,16 @@ FIG_WIDTH: int = 24 # Total width of entire figure image, in inches
 FIG_HEIGHT: int = 18 # Total height of entire figure image, in inches
 DEFAULT_FONT_FAMILY: str = "serif" # Default font family for all text in the figure
 DEFAULT_SERIF_FONT: str = "cmr10" # Specific serif font to use for all text in the figure (cmr10 == Computer Modern Roman, the default LaTeX font)
-DEFAULT_FONT_SIZE: float = 24 # Default font size for all text in the figure, in points
+DEFAULT_MATHTEXT_FONTSET: str = "cm" # Font set to use for "mathtext" aka latex-rendered labels (cm == Computer Modern)
+DEFAULT_FONT_SIZE: float = 32 # Default font size for all text in the figure, in points
 SUBPLOT_PADDING_X: float = 0.2 # Extra horizontal whitespace between subplots, in inches
 SUBPLOT_PADDING_Y: float = 0.5 # Extra vertical whitespace between subplots, in inches
-SUBPLOT_LETTER_OFFSET_X: float = -1.0 # Horizontal offset for subplot letter labels
+SUBPLOT_LETTER_OFFSET_X: float = -1.25 # Horizontal offset for subplot letter labels
 SUBPLOT_LETTER_OFFSET_Y: float = 0.5 # Vertical offset for subplot letter labels
-MARGIN_X: float = 0.05 # Left and right margin as a fraction of figure width
-MARGIN_Y: float = 0.05 # Top and bottom margin as a fraction of figure height
+MARGIN_LEFT: float = 0.07 # Left margin as a fraction of figure width
+MARGIN_RIGHT: float = 0.02 # Right margin as a fraction of figure width
+MARGIN_TOP: float = 0.06 # Top margin as a fraction of figure height
+MARGIN_BOTTOM: float = 0.07 # Bottom margin as a fraction of figure height
 BAR_WIDTH: float = 0.1 # Width of each bar in the histogram plots
 BAR_GAP: float = 0.035 # Gap between each bar within a cluster
 YLIM_MAX: float = 0.42 # Maximum y-axis limit for all subplots
@@ -53,12 +56,11 @@ def build_subplot(all_histograms: list[Histogram], concentration: int, temperatu
             edge_color: str = "none" if hist.region == Region.BULK else pair_color
             ax.bar([float(i) + offset for i in hist.data.keys()], list(hist.data.values()), width=BAR_WIDTH, color=fill_color, edgecolor=edge_color)
             offset += BAR_WIDTH + BAR_GAP
-    ax.set_title(f"{concentration}% at {temperature} C")
-    ax.set_xlabel("Number of Cl First Neighbors")
+    ax.set_xlabel("$CN_{Cl^-}$")
     ax.set_xticks(list(hist_group[0].data.keys()))
-    ax.set_ylabel("Probability")
+    ax.set_ylabel("$p$ (a.u.)")
     ax.set_ylim(0, YLIM_MAX)
-    ax.set_yticks(np.arange(0, YLIM_MAX, YTICK_SIZE))
+    ax.set_yticks(np.arange(YTICK_SIZE, YLIM_MAX, YTICK_SIZE))
 
 histograms: list[Histogram] = []
 with open(CSV_PATH, "r") as csv_file:
@@ -73,8 +75,9 @@ with open(CSV_PATH, "r") as csv_file:
         histograms.append(Histogram(concentration, temperature, time_period, region, data))
 
 plt.rc("font", family=DEFAULT_FONT_FAMILY, serif=DEFAULT_SERIF_FONT, size=DEFAULT_FONT_SIZE)
+plt.rc("mathtext", fontset=DEFAULT_MATHTEXT_FONTSET)
 fig, axes = plt.subplots(3, 2, figsize=(FIG_WIDTH, FIG_HEIGHT), gridspec_kw={'hspace': SUBPLOT_PADDING_Y, 'wspace': SUBPLOT_PADDING_X})
-fig.subplots_adjust(left=MARGIN_X, right=1.0 - MARGIN_X, top=1.0 - MARGIN_Y, bottom=MARGIN_Y)
+fig.subplots_adjust(left=MARGIN_LEFT, right=1.0 - MARGIN_RIGHT, top=1.0 - MARGIN_TOP, bottom=MARGIN_BOTTOM)
 build_subplot(histograms, 8, 25, axes[0, 0])
 build_subplot(histograms, 8, 80, axes[0, 1])
 build_subplot(histograms, 16, 25, axes[1, 0])
