@@ -17,38 +17,37 @@ from md_commands.step_start_command import StepStartCommand
 from md_commands.write_dump_command import WriteDumpCommand
 
 def create_command(command_name: str, args: list[str]) -> Command:
-    match command_name:
-        case "atom_data_column":
-            return AtomDataColumnCommand(command_name, args)
-        case "atom_mass":
-            return AtomMassCommand(command_name, args)
-        case "cartesian_density_profile":
-            return CartesianDensityProfileCommand(command_name, args)
-        case "center_of_mass":
-            return CenterOfMassCommand(command_name, args)
-        case "count_atoms":
-            return CountAtomsCommand(command_name, args)
-        case "data_type":
-            return DataTypeCommand(command_name, args)
-        case "dipole_histogram":
-            return DipoleHistogramCommand(command_name, args)
-        case "filter":
-            return FilterCommand(command_name, args)
-        case "first_neighbor_histogram":
-            return FirstNeighborHistogramCommand(command_name, args)
-        case "next_file":
-            return NextFileCommand(command_name, args)
-        case "radial_density_profile":
-            return RadialDensityProfileCommand(command_name, args)
-        case "read_file":
-            return ReadFileCommand(command_name, args)
-        case "set_paths":
-            return SetPathsCommand(command_name, args)
-        case "step_end":
-            return StepEndCommand(command_name, args)
-        case "step_start":
-            return StepStartCommand(command_name, args)
-        case "write_dump":
-            return WriteDumpCommand(command_name, args)
-        case _:
-            raise Exception(f"Unsupported command: {command_name}")
+    if command_name == "atom_data_column":
+        return AtomDataColumnCommand(command_name, args)
+    elif command_name == "atom_mass":
+        return AtomMassCommand(command_name, args)
+    elif command_name == "cartesian_density_profile":
+        return CartesianDensityProfileCommand(command_name, args)
+    elif command_name == "center_of_mass":
+        return CenterOfMassCommand(command_name, args)
+    elif command_name == "count_atoms":
+        return CountAtomsCommand(command_name, args)
+    elif command_name == "data_type":
+        return DataTypeCommand(command_name, args)
+    elif command_name == "dipole_histogram":
+        return DipoleHistogramCommand(command_name, args)
+    elif command_name == "filter":
+        return FilterCommand(command_name, args)
+    elif command_name == "first_neighbor_histogram":
+        return FirstNeighborHistogramCommand(command_name, args)
+    elif command_name == "next_file":
+        return NextFileCommand(command_name, args)
+    elif command_name == "radial_density_profile":
+        return RadialDensityProfileCommand(command_name, args)
+    elif command_name == "read_file":
+        return ReadFileCommand(command_name, args)
+    elif command_name == "set_paths":
+        return SetPathsCommand(command_name, args)
+    elif command_name == "step_end":
+        return StepEndCommand(command_name, args)
+    elif command_name == "step_start":
+        return StepStartCommand(command_name, args)
+    elif command_name == "write_dump":
+        return WriteDumpCommand(command_name, args)
+    else:
+        raise Exception(f"Unsupported command: {command_name}")
