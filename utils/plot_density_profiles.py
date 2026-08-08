@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from matplotlib.transforms import ScaledTranslation
 import os.path
 
-CSV_PATH: str = ""
+CSV_PATH: str = "/home/greg/Downloads/paper/DensityProfileFigureData_RStar.csv"
 FIG_WIDTH: int = 24 # Total width of entire figure image, in inches
 FIG_HEIGHT: int = 18 # Total height of entire figure image, in inches
 DEFAULT_FONT_FAMILY: str = "serif" # Default font family for all text in the figure
@@ -22,7 +22,7 @@ MARGIN_LEFT: float = 0.07 # Left margin as a fraction of figure width
 MARGIN_RIGHT: float = 0.03 # Right margin as a fraction of figure width
 MARGIN_TOP: float = 0.06 # Top margin as a fraction of figure height
 MARGIN_BOTTOM: float = 0.08 # Bottom margin as a fraction of figure height
-X_TICKS: list[int] = [30, 50, 70, 90, 110]
+X_TICKS: list[float] = [0.3, 0.5, 0.7, 0.9, 1.1]
 Y_TICKS: list[float] = [0.5, 1.0, 1.5]
 YLIM_MAX: float = 1.75
 
@@ -41,7 +41,7 @@ class Profile:
     temperature: int
     time_period: TimePeriod
     substance: Substance
-    data: list[float]
+    data: dict[float, float]
 
 def build_subplot(all_profiles: list[Profile], temperature: int, time: TimePeriod, ax: Axes) -> None:
     profile_group: list[Profile] = [profile for profile in all_profiles if profile.temperature == temperature and profile.time_period == time]
@@ -50,8 +50,8 @@ def build_subplot(all_profiles: list[Profile], temperature: int, time: TimePerio
             profile = next(profile for profile in profile_group if profile.concentration == concentration and profile.substance == substance)
             line_color: str = "black" if concentration == 8 else "red" if concentration == 16 else "blue"
             line_style: str = "-" if substance == Substance.NACL else "--"
-            ax.plot(r_values, profile.data, label=f"{concentration}% {substance.value}", color=line_color, linestyle=line_style)
-    ax.set_xlabel(r"$r$ ($\mathrm{\AA}$)")
+            ax.plot(list(profile.data.keys()), list(profile.data.values()), label=f"{concentration}% {substance.value}", color=line_color, linestyle=line_style)
+    ax.set_xlabel(r"$r^*$")
     ax.set_xticks(X_TICKS)
     ax.set_xlim(X_TICKS[0], X_TICKS[-1])
     ax.set_ylabel(r"$\rho^*$")
@@ -63,16 +63,19 @@ for time in [TimePeriod.EARLY, TimePeriod.MID, TimePeriod.LATE]:
     for temperature in [25, 80]:
         for concentration in [8, 16, 24]:
             for substance in [Substance.NACL, Substance.H2O]:
-                profiles.append(Profile(concentration, temperature, time, substance, []))
+                profiles.append(Profile(concentration, temperature, time, substance, {}))
 
-r_values: list[float] = []
 with open(CSV_PATH, "r") as csv_file:
     reader = csv.reader(csv_file)
     next(reader)  # Skip header row
     for row in reader:
-        r_values.append(float(row[0]))
-        for i in range (1, len(row)):
-            profiles[i - 1].data.append(float(row[i]))
+        profile_index: int = 0
+        for i in range (1, len(row), 3):
+            r_star = float(row[i])
+            profiles[profile_index].data[r_star] = float(row[i + 1])
+            profile_index += 1
+            profiles[profile_index].data[r_star] = float(row[i + 2])
+            profile_index += 1
 
 plt.rc("font", family=DEFAULT_FONT_FAMILY, serif=DEFAULT_SERIF_FONT, size=DEFAULT_FONT_SIZE)
 plt.rc("mathtext", fontset=DEFAULT_MATHTEXT_FONTSET)
