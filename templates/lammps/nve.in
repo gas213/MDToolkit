@@ -100,7 +100,7 @@ restart		    $(v_RESTART_FREQ) restarts/restart_*.rs
 
 ## Constraint for bond lengths
 
-fix 		    SHAKE all shake 1e-5 1000 0 m 1.0
+fix 		    SHAKE all shake 1e-5 1000 0 m 1.0 a 8
 
 ## Thermostatting
 
