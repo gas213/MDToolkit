@@ -96,7 +96,9 @@ class SessionState:
         if filter_name.lower() == "all":
             return self.atoms
         elif filter_name in self.filters:
-            return self.filters[filter_name].apply(self.atoms)
+            atoms_filtered: list[Atom] = self.filters[filter_name].apply(self.atoms)
+            self.md_logger.log(f"Filter '{filter_name}' applied; contains {len(atoms_filtered)} atoms.")
+            return atoms_filtered
         else:
             raise Exception(f"Filter name not found: {filter_name}")
         
