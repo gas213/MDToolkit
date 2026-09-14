@@ -23,7 +23,7 @@
 # wholenode (node-exclusive): max 96 hours and 16 nodes per job, max 64 jobs at a time
 # wide (node-exclusive): max 12 hours and 56 nodes per job, max 5 jobs at a time
 
-#SBATCH -A mch250010
+#SBATCH -A mch260155
 #SBATCH --partition={{debug, shared, wholenode, wide}}
 #SBATCH --time={{d-hh:mm:ss}}
 #SBATCH --nodes={{n}}
