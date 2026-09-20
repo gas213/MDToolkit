@@ -1,10 +1,15 @@
 ## Spack MD Environment Setup Instructions
 
-1. Edit ~/.bashrc and add the following line to the end: `export SPACK_USER_CACHE_PATH="/scratch/group/p.mch250010.000/spack/cache"`
-2. Open a terminal session (on an ACES login node) and run `. ~/.bashrc` to apply the change
-3. Create folder (ex. "md_env") in home space which will contain the spack environment view
-4. Upload files into md_env folder:
-    - aces_spack_install.sh
-    - spack.yaml
-5. Fill out any fields in aces_spack_install.sh and queue it via `sbatch aces_spack_install.sh`
-    - By default, spack uses 16 build workers, so request 16 CPUs for at least an hour (maybe a few hours just to be extra safe)
+1. Make sure `$PROJECT` is pointed to the current allocation; verify/add this at the end of your `~/.bashrc` file:
+    - `export PROJECT="/path/to/project/folder"`
+    - example: `export PROJECT="/scratch/group/p.mch260155.000"`
+2. Add this to the end of `~/.bashrc` after the PROJECT line: `export SPACK_USER_CACHE_PATH="$PROJECT/spack/cache"`
+3. If you modified `~/.bashrc`, either close any existing terminal sessions or enter this command in them: `. ~/.bashrc`
+4. At the top of your home space, create `.spack` folder and upload `packages.yaml` into it
+5. Elsewhere in home space, create folder (ex. `md_env`) which will contain the spack environment view
+6. Upload files into md_env folder:
+    - `aces_spack_install.sh`
+    - `spack.yaml`
+7. In a terminal pointed at your environment folder, queue the install job via `sbatch aces_spack_install.sh`
+    - By default, spack uses 16 build workers, so request 16 CPUs for one hour
+8. Once installation is complete, feel free to delete the `spack_safetodelete` folder in scratch space

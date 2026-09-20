@@ -1,0 +1,130 @@
+packages:
+  all:
+    permissions:
+      write: group
+      group: p.mch260155.000
+  gzip:
+    externals:
+    - spec: gzip@1.13
+      modules:
+      - GCCcore/14.2.0
+      - gzip/1.13
+    buildable: false
+  hdf5:
+    externals:
+    - spec: hdf5@1.14.6
+      modules:
+      - GCC/14.3.0
+      - OpenMPI/5.0.8
+      - HDF5/1.14.6
+    buildable: false
+  hwloc:
+    externals:
+    - spec: hwloc@2.13.0
+      modules:
+      - GCCcore/15.2.0
+      - hwloc/2.13.0
+    buildable: false
+  libaec:
+    externals:
+    - spec: libaec@1.1.4
+      modules:
+      - GCCcore/14.3.0
+      - libaec/1.1.4
+    buildable: false
+  libevent:
+    externals:
+    - spec: libevent@2.1.12
+      modules:
+      - GCCcore/15.2.0
+      - libevent/2.1.12
+    buildable: false
+  libiconv:
+    externals:
+    - spec: libiconv@1.18
+      modules:
+      - GCCcore/15.2.0
+      - libiconv/1.18
+    buildable: false
+  libpciaccess:
+    externals:
+    - spec: libpciaccess@0.17
+      modules:
+      - GCCcore/13.2.0
+      - libpciaccess/0.17
+    buildable: false
+  libxml2:
+    externals:
+    - spec: libxml2@2.13.4
+      modules:
+      - GCCcore/14.2.0
+      - libxml2/2.13.4
+    buildable: false
+  lz4:
+    externals:
+    - spec: lz4@1.10.0
+      modules:
+      - GCCcore/15.2.0
+      - lz4/1.10.0
+    buildable: false
+  netcdf-c:
+    externals:
+    - spec: netcdf-c@4.9.3
+      prefix: /sw/eb/sw/netCDF/4.9.3-gompi-2025b
+      modules:
+      - GCC/14.3.0
+      - OpenMPI/5.0.8
+      - netCDF/4.9.3
+    buildable: false
+  numactl:
+    externals:
+    - spec: numactl@2.0.18
+      modules:
+      - GCCcore/13.3.0
+      - numactl/2.0.18
+    buildable: false
+  openmpi:
+    externals:
+    - spec: openmpi@5.0.8
+      prefix: /sw/eb/sw/OpenMPI/5.0.8-GCC-14.3.0
+      modules:
+      - GCC/14.3.0
+      - OpenMPI/5.0.8
+    buildable: false
+  parallel-netcdf:
+    externals:
+    - spec: parallel-netcdf@1.14.0
+      prefix: /sw/eb/sw/PnetCDF/1.14.0-gompi-2025a
+      modules:
+      - GCC/14.2.0
+      - OpenMPI/5.0.7
+      - PnetCDF/1.14.0
+    buildable: false
+  pmix:
+    externals:
+    - spec: pmix@6.1.0
+      modules:
+      - GCCcore/15.2.0
+      - PMIx/6.1.0
+    buildable: false
+  prrte:
+    externals:
+    - spec: prrte@4.1.0
+      modules:
+      - GCCcore/15.2.0
+      - PRRTE/4.1.0
+    buildable: false
+  snappy:
+    externals:
+    - spec: snappy@1.2.1
+      modules:
+      - GCCcore/13.3.0
+      - snappy/1.2.1
+    buildable: false
+  zstd:
+    externals:
+    - spec: zstd@1.5.7
+      modules:
+      - GCCcore/15.2.0
+      - zstd/1.5.7
+    buildable: false
