@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# vvv REPLACE THE {{FIELDS}} vvv
-
 #SBATCH --partition=cpu
 #SBATCH --time=01:00:00
 #SBATCH --nodes=1
