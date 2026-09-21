@@ -1,6 +1,6 @@
 spack:
   config:
-    # Put required files in project space, and the rest (build files and caches only required during installation) in scratch
+    # Put required files in project space, and the rest in scratch (build files and caches that are only required during installation)
     install_tree:
       root: ${PROJECT}/spack/install_tree
     build_stage:

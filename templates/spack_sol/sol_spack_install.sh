@@ -1,21 +1,11 @@
 #!/bin/bash
 
-# vvv REPLACE THE {{FIELDS}} vvv
-
-# Partitions info:
-# rapids: max 3 days, 64 cores per node
-# hawkcpu: max 3 days, 50 cores per node
-# rapids-express: max 2 hours, max 6 cores
-# hawkcpu-express: max 6 hours, max 6 cores
-
-#SBATCH --partition={{rapids, hawkcpu, rapids-express, hawkcpu-express}}
-#SBATCH --time={{d-hh:mm:ss}}
-#SBATCH --nodes={{n}}
-#SBATCH --ntasks-per-node={{64, 50, 6}}
+#SBATCH --partition=rapids
+#SBATCH --time=01:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=16
 #SBATCH --job-name=md_install
 #SBATCH --output="job.%j.%N.out"
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user={{email}}
 
 cd ${SLURM_SUBMIT_DIR}
 

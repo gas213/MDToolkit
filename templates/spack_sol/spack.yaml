@@ -1,9 +1,19 @@
 spack:
+  config:
+    # Put anything that is not required after installation into scratch (certain build files and caches)
+    build_stage:
+    - /share/ceph/hawk/ebw210_093025/${USER}/spack_safetodelete/build_stage
+    test_stage: /share/ceph/hawk/ebw210_093025/${USER}/spack_safetodelete/test_stage
+    source_cache: /share/ceph/hawk/ebw210_093025/${USER}/spack_safetodelete/source_cache
+  bootstrap:
+    root: /share/ceph/hawk/ebw210_093025/${USER}/spack_safetodelete/bootstrap
   specs:
-  - lammps@20250722 +mpi +netcdf
+  - gzip
+  - netcdf-c
+  - lammps@20250722 +compress +mpi +netcdf cflags="-D WITH_GZIP=ON" cxxflags="-D WITH_GZIP=ON"
   view: true
   concretizer:
-    unify: true
+    unify: when_possible
   packages:
     all:
       target: [x86_64]
