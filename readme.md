@@ -175,7 +175,7 @@ filter <filter_name> <filter_type> [parameters...]
 
 The remaining parameters depend on `filter_type`:
 
-#### `atom_type`
+#### Filter: `atom_type`
 
 Selects atoms whose type matches any of the given type IDs.
 
@@ -189,7 +189,7 @@ filter <name> atom_type <type_id> [type_id ...]
 
 Example: `filter water atom_type 6 7`
 
-#### `cartesian`
+#### Filter: `cartesian`
 
 Selects atoms within an axis-aligned bounding box. Use `none` to leave a bound unrestricted.
 
@@ -209,7 +209,27 @@ filter <name> cartesian <x_min> <x_max> <y_min> <y_max> <z_min> <z_max>
 THIS ESSENTIALLY ASSUMES THAT THE ENTIRE SIMULATION BOX IS POSITIONED IN POSITIVE XYZ SPACE.
 If any of the boundary values are specified as a negative number, then the resulting boundary will be relative to the boundary of the simulation box, offset inward by the magnitude of the specified value. So if the simulation box's xlo is 20 and the x_min parameter is specified as -5, then the resulting value for x_min will be 25.
 
-#### `intersect`
+#### Filter: `cylindrical_z`
+
+Selects atoms within a cylindrical shell or inside/outside a cylindrical region, centered at a fixed point.
+
+```
+filter <name> cylindrical_z <cx> <cy> <z_min> <z_max> <r_min> <r_max>
+```
+
+| Parameter | Type         | Description                                                                                                                     |
+|-----------|--------------|---------------------------------------------------------------------------------------------------------------------------------|
+| `cx`      | float or com | X coordinate of the sphere center, or an existing center_of_mass analysis declared previously (its `write_path_relative` value) |
+| `cy`      | float or com | Y coordinate of the sphere center, or an existing center_of_mass analysis declared previously (its `write_path_relative` value) |
+| `z_min`   | float / none | Minimum Z coordinate (or `none` for no lower bound)                                                                             |
+| `z_max`   | float / none | Maximum Z coordinate (or `none` for no upper bound)                                                                             |
+| `r_min`   | float / none | Minimum radial distance (or `none` for no inner bound)                                                                          |
+| `r_max`   | float / none | Maximum radial distance (or `none` for no outer bound)                                                                          |
+
+Example: `filter central_cylinder cylindrical_z com_drop com_drop none none none 100.0`
+If a value given for `cx` or `cy` is strictly numeric, it will be treated as the origin coordinates and the code will *not* check to see if there is an existing center_of_mass analysis with the same name.
+
+#### Filter: `intersect`
 
 Combines two or more existing filters, selecting only atoms that pass all of them.
 
@@ -223,7 +243,7 @@ filter <name> intersect <filter_name_1> <filter_name_2> [filter_name ...]
 
 Example: `filter water_core intersect water core`
 
-#### `mol_neighbors`
+#### Filter: `mol_neighbors`
 
 Given a list of "source" atoms and a list of "potential neighbor" atoms, selects only those potential neighbor atoms which share the same molecule ID as at least one of the source atoms.
 
@@ -237,7 +257,7 @@ filter <name> mol_neighbors <filter_name_sources> <filter_name_potential_neighbo
 
 Example: `filter bonded_hydrogens mol_neighbors oxygen_shell hydrogen`
 
-#### `neighbor_count`
+#### Filter: `neighbor_count`
 
 Selects atoms which have a certain number of neighbor atoms within a cutoff distance.
 
@@ -255,12 +275,12 @@ filter <name> neighbor_count <filter_name_central_atoms> <filter_name_neighbor_a
 
 Example: `filter sodium_5_or_6 neighbor_count sodium chlorine 5 6 4.0`
 
-#### `radial`
+#### Filter: `spherical`
 
-Selects atoms within a spherical shell centered at a fixed point.
+Selects atoms within a spherical shell or inside/outside a spherical region, centered at a fixed point.
 
 ```
-filter <name> radial <cx> <cy> <cz> <r_min> <r_max>
+filter <name> spherical <cx> <cy> <cz> <r_min> <r_max>
 ```
 
 | Parameter | Type         | Description                                                                                                                     |
@@ -271,10 +291,10 @@ filter <name> radial <cx> <cy> <cz> <r_min> <r_max>
 | `r_min`   | float / none | Minimum radial distance (or `none` for no inner bound)                                                                          |
 | `r_max`   | float / none | Maximum radial distance (or `none` for no outer bound)                                                                          |
 
-Example: `filter core radial 25.0 25.0 25.0 none 10.0`
+Example: `filter core spherical 25.0 25.0 25.0 none 10.0`
 If a value given for `cx`, `cy` or `cz` is strictly numeric, it will be treated as the origin coordinates and the code will *not* check to see if there is an existing center_of_mass analysis with the same name.
 
-#### `union`
+#### Filter: `union`
 
 Combines two or more existing filters, selecting any atoms that pass at least one of the filters.
 

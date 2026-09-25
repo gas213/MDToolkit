@@ -1,7 +1,7 @@
 from md_domain.atom import Atom
 from md_filters.filter_interface import Filter
 
-class RadialFilter(Filter):
+class SphericalFilter(Filter):
     def __init__(self, x: float, y: float, z: float, r_min: float | None, r_max: float | None):
         self._x = x
         self._y = y

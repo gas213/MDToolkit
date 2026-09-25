@@ -4,10 +4,11 @@ from md_enums.filter_type import FilterType
 from md_filters.filter_interface import Filter
 from md_filters.atom_type_filter import AtomTypeFilter
 from md_filters.cartesian_filter import CartesianFilter
+from md_filters.cylindrical_z_filter import CylindricalZFilter
 from md_filters.intersect_filter import IntersectFilter
 from md_filters.mol_neighbors_filter import MoleculeNeighborsFilter
 from md_filters.neighbor_count_filter import NeighborCountFilter
-from md_filters.radial_filter import RadialFilter
+from md_filters.spherical_filter import SphericalFilter
 from md_filters.union_filter import UnionFilter
 from session_state import SessionState
 
@@ -34,6 +35,12 @@ class FilterCommand(Command):
                 raise Exception(f"'{self._filter_type.value}' filter requires exactly six parameters: x_min (float or 'none'), x_max (float or 'none'), y_min (float or 'none'), y_max (float or 'none'), z_min (float or 'none'), z_max (float or 'none')")
             for param in self._filter_params:
                 helper.parse_float_or_none(param)
+        elif self._filter_type == FilterType.CYLINDRICAL_Z:
+            # Cylindrical Z filter takes 6 parameters: x, y, z_min, z_max, r_min, r_max
+            if len(self._filter_params) != 6:
+                raise Exception(f"'{self._filter_type.value}' filter requires exactly six parameters: x (float or center_of_mass analysis path), y (same as x), z_min (float or 'none'), z_max (float or 'none'), r_min (float or 'none'), r_max (float or 'none')")
+            for param in self._filter_params[3:]:
+                helper.parse_float_or_none(param)
         elif self._filter_type == FilterType.INTERSECT or self._filter_type == FilterType.UNION:
             # Intersect and union filters take two or more filter names as parameters
             if len(self._filter_params) < 2:
@@ -49,8 +56,8 @@ class FilterCommand(Command):
             helper.parse_int_or_none(self._filter_params[2])
             helper.parse_int_or_none(self._filter_params[3])
             helper.parse_float(self._filter_params[4])
-        elif self._filter_type == FilterType.RADIAL:
-            # Radial filter takes 5 parameters: x, y, z, r_min, r_max
+        elif self._filter_type == FilterType.SPHERICAL:
+            # Spherical filter takes 5 parameters: x, y, z, r_min, r_max
             if len(self._filter_params) != 5:
                 raise Exception(f"'{self._filter_type.value}' filter requires exactly five parameters: x (float or center_of_mass analysis path), y (same as x), z (same as x), r_min (float or 'none'), r_max (float or 'none')")
             for param in self._filter_params[3:]:
@@ -69,6 +76,21 @@ class FilterCommand(Command):
             for i in range(6):
                 bounds.append(self.get_cartesian_boundary_value(self._filter_params[i], i, state))
             state.filters[self._filter_name] = CartesianFilter(*bounds)
+        elif self._filter_type == FilterType.CYLINDRICAL_Z:
+            # If origin arg is strictly numeric, treat it as a coordinate; otherwise, treat it as an analysis path for an existing center of mass analysis
+            try:
+                x = float(self._filter_params[0])
+            except ValueError:
+                x = state.get_current_com(self._filter_params[0]).x
+            try:
+                y = float(self._filter_params[1])
+            except ValueError:
+                y = state.get_current_com(self._filter_params[1]).y
+            z_min = None if self._filter_params[2].lower() == "none" else float(self._filter_params[2])
+            z_max = None if self._filter_params[3].lower() == "none" else float(self._filter_params[3])
+            r_min = None if self._filter_params[4].lower() == "none" else float(self._filter_params[4])
+            r_max = None if self._filter_params[5].lower() == "none" else float(self._filter_params[5])
+            state.filters[self._filter_name] = CylindricalZFilter(x, y, z_min, z_max, r_min, r_max)
         elif self._filter_type == FilterType.INTERSECT or self._filter_type == FilterType.UNION:
             filters: list[Filter] = []
             for filter_name in self._filter_params:
@@ -99,7 +121,7 @@ class FilterCommand(Command):
             neighbor_count_max = None if self._filter_params[3].lower() == "none" else int(self._filter_params[3])
             r_cutoff = float(self._filter_params[4])
             state.filters[self._filter_name] = NeighborCountFilter(filter_central_atoms, filter_neighbor_atoms, neighbor_count_min, neighbor_count_max, r_cutoff)
-        elif self._filter_type == FilterType.RADIAL:
+        elif self._filter_type == FilterType.SPHERICAL:
             # If origin arg is strictly numeric, treat it as a coordinate; otherwise, treat it as an analysis path for an existing center of mass analysis
             try:
                 x = float(self._filter_params[0])
@@ -115,7 +137,7 @@ class FilterCommand(Command):
                 z = state.get_current_com(self._filter_params[2]).z
             r_min = None if self._filter_params[3].lower() == "none" else float(self._filter_params[3])
             r_max = None if self._filter_params[4].lower() == "none" else float(self._filter_params[4])
-            state.filters[self._filter_name] = RadialFilter(x, y, z, r_min, r_max)
+            state.filters[self._filter_name] = SphericalFilter(x, y, z, r_min, r_max)
 
     def get_cartesian_boundary_value(self, arg_val: str, bounds_index: int, state: SessionState) -> float | None:
         if arg_val.lower() == "none":
