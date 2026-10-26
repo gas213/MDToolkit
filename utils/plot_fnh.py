@@ -25,8 +25,8 @@ MARGIN_TOP: float = 0.06 # Top margin as a fraction of figure height
 MARGIN_BOTTOM: float = 0.07 # Bottom margin as a fraction of figure height
 BAR_WIDTH: float = 0.1 # Width of each bar in the histogram plots
 BAR_GAP: float = 0.035 # Gap between each bar within a cluster
-YLIM_MAX: float = 0.42 # Maximum y-axis limit for all subplots
-YTICK_SIZE: float = 0.1 # Interval between y-axis ticks for all subplots
+YLIM_MAX: float = 1.0 # Maximum y-axis limit for all subplots
+YTICK_SIZE: float = 0.2 # Interval between y-axis ticks for all subplots
 
 class TimePeriod(Enum):
     EARLY = "Early"
@@ -40,13 +40,13 @@ class Region(Enum):
 @dataclass
 class Histogram:
     concentration: int
-    temperature: int
+    figure_column_name: str # Either temperature (25 C vs 80 C) or model (JC vs YMT)
     time_period: TimePeriod
     region: Region
     data: dict[int, float]
 
-def build_subplot(all_histograms: list[Histogram], concentration: int, temperature: int, ax: Axes) -> None:
-    hist_group: list[Histogram] = [hist for hist in all_histograms if hist.concentration == concentration and hist.temperature == temperature]
+def build_subplot(all_histograms: list[Histogram], concentration: int, figure_column_name: str, ax: Axes) -> None:
+    hist_group: list[Histogram] = [hist for hist in all_histograms if hist.concentration == concentration and hist.figure_column_name == figure_column_name]
     offset: float = -2.5 * (BAR_WIDTH + BAR_GAP)
     for time in [TimePeriod.EARLY, TimePeriod.MID, TimePeriod.LATE]:
         for region in [Region.BULK, Region.SHELL]:
@@ -68,22 +68,22 @@ with open(CSV_PATH, "r") as csv_file:
     next(reader)  # Skip header row
     for row in reader:
         concentration = int(row[0])
-        temperature = int(row[1])
+        figure_column_name = str(row[1])
         time_period = TimePeriod(row[2])
         region = Region(row[3])
         data = {i: float(row[i + 4]) for i in range(7)}
-        histograms.append(Histogram(concentration, temperature, time_period, region, data))
+        histograms.append(Histogram(concentration, figure_column_name, time_period, region, data))
 
 plt.rc("font", family=DEFAULT_FONT_FAMILY, serif=DEFAULT_SERIF_FONT, size=DEFAULT_FONT_SIZE)
 plt.rc("mathtext", fontset=DEFAULT_MATHTEXT_FONTSET)
 fig, axes = plt.subplots(3, 2, figsize=(FIG_WIDTH, FIG_HEIGHT), gridspec_kw={'hspace': SUBPLOT_PADDING_Y, 'wspace': SUBPLOT_PADDING_X})
 fig.subplots_adjust(left=MARGIN_LEFT, right=1.0 - MARGIN_RIGHT, top=1.0 - MARGIN_TOP, bottom=MARGIN_BOTTOM)
-build_subplot(histograms, 8, 25, axes[0, 0])
-build_subplot(histograms, 8, 80, axes[0, 1])
-build_subplot(histograms, 16, 25, axes[1, 0])
-build_subplot(histograms, 16, 80, axes[1, 1])
-build_subplot(histograms, 24, 25, axes[2, 0])
-build_subplot(histograms, 24, 80, axes[2, 1])
+build_subplot(histograms, 8, "JC", axes[0, 0])
+build_subplot(histograms, 8, "YMT", axes[0, 1])
+build_subplot(histograms, 16, "JC", axes[1, 0])
+build_subplot(histograms, 16, "YMT", axes[1, 1])
+build_subplot(histograms, 24, "JC", axes[2, 0])
+build_subplot(histograms, 24, "YMT", axes[2, 1])
 
 letters = ["a)", "b)", "c)", "d)", "e)", "f)"]
 for i, ax in enumerate(axes.flat):
